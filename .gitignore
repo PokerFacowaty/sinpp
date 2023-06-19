@@ -1,0 +1,12 @@
+.vscode/
+.DS_store
+.stfolder/
+.env
+*.log
+*.pot
+*.py[cod]
+__pycache__
+db.sqlite3
+media
+dist/
+venv/
