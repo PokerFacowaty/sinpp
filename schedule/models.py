@@ -16,10 +16,10 @@ class Speedrun(models.Model):
     CATEGORY = models.CharField()
 
     # any volunteers taking part as runners, commentators
-    VOLUNTEERS_RUNNING = models.ManyToManyField(Person)
-    VOLUNTEERS_COMMENTATING = models.ManyToManyField(Person)
+    VOLUNTEERS_RUNNING = models.ManyToManyField("Person")
+    VOLUNTEERS_COMMENTATING = models.ManyToManyField("Person")
 
-    VOLUNTEER_SHIFTS = models.ManyToManyField(Shift)
+    VOLUNTEER_SHIFTS = models.ManyToManyField("Shift")
     START_TIME = models.DateTimeField()
     ESTIMATE = models.DurationField()
     END_TIME = models.DateTimeField()
@@ -33,8 +33,8 @@ class Speedrun(models.Model):
 class Shift(models.Model):
     '''A single shift of a single volunteer'''
 
-    VOLUNTEER = models.ForeignKey(Person, on_delete=models.CASCADE)
-    ROLE = models.ForeignKey(Role, on_delete=models.CASCADE)
+    VOLUNTEER = models.ForeignKey("Person", on_delete=models.CASCADE)
+    ROLE = models.ForeignKey("Role", on_delete=models.CASCADE)
     START_DATE_TIME = models.DateTimeField()
     END_DATE_TIME = models.DateTimeField()
 
@@ -44,7 +44,7 @@ class Person(models.Model):
     PRONOUNS = models.CharField()
     SPEEDRUNS = models.ManyToManyField(Speedrun)
     # PROFILES = models.ManyToManyField(SocialMediaProfile)
-    ROLES = models.ManyToManyField(Role)
+    ROLES = models.ManyToManyField("Role")
 
 
 class AvailabilityBlock(models.Model):
