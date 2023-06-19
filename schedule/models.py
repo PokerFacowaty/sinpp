@@ -12,12 +12,15 @@ class Event(models.Model):
 class Speedrun(models.Model):
 
     EVENT = models.ForeignKey(Event, on_delete=models.CASCADE)
-    GAME = models.CharField()
-    CATEGORY = models.CharField()
+    GAME = models.CharField(max_length=25)
+    CATEGORY = models.CharField(max_length=25)
 
     # any volunteers taking part as runners, commentators
-    VOLUNTEERS_RUNNING = models.ManyToManyField("Person")
-    VOLUNTEERS_COMMENTATING = models.ManyToManyField("Person")
+    VOLUNTEERS_RUNNING = models.ManyToManyField("Person",
+                                                related_name="SPEEDRUNS_RAN")
+    VOLUNTEERS_COMMENTATING = models.ManyToManyField(
+                                        "Person",
+                                        related_name="SPEEDRUNS_COMMENTATED")
 
     VOLUNTEER_SHIFTS = models.ManyToManyField("Shift")
     START_TIME = models.DateTimeField()
@@ -40,9 +43,8 @@ class Shift(models.Model):
 
 
 class Person(models.Model):
-    NICKNAME = models.CharField()
-    PRONOUNS = models.CharField()
-    SPEEDRUNS = models.ManyToManyField(Speedrun)
+    NICKNAME = models.CharField(max_length=25)
+    PRONOUNS = models.CharField(max_length=25)
     # PROFILES = models.ManyToManyField(SocialMediaProfile)
     ROLES = models.ManyToManyField("Role")
 
@@ -54,7 +56,7 @@ class AvailabilityBlock(models.Model):
 
 
 class Role(models.Model):
-    NAME = models.CharField()
+    NAME = models.CharField(max_length=25)
 
     # Aka whether the particular role is assinged hour-based shifts
     # or speedrun-based shifts
