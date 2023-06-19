@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "sinpp"
-version = "pre-release"
+version = "v0.1.0"
 description = "Schedule-i-nator++"
 authors = ["PokerFacowaty <pokerfacowaty.bn@gmail.com>"]
 license = "MIT"
