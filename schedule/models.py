@@ -58,6 +58,18 @@ class AvailabilityBlock(models.Model):
 
 
 class Role(models.Model):
+
+    # Visibility options for role (so the role's event schedule effectively)
+    # Each level contains the previous; the levels also assume volunteers
+    # don't have accounts, so everything outside of stuff is simply public
+    ROLE_STAFF = "RL"  # Only the staff with the same role
+    EVENT_STAFF = "ES"  # Event staff with any role
+    PUBLIC = "PU"  # Everyone can see the role's schedule
+
+    VISIBILITY_CHOICES = [(ROLE_STAFF, "Role Staff"),
+                          (EVENT_STAFF, "Event Staff"),
+                          (PUBLIC, "Public")]
+
     NAME = models.CharField(max_length=25)
     EVENT = models.ForeignKey("Event", on_delete=models.CASCADE)
 
