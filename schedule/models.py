@@ -38,6 +38,7 @@ class Shift(models.Model):
 
     VOLUNTEER = models.ForeignKey("Person", on_delete=models.CASCADE)
     ROLE = models.ForeignKey("Role", on_delete=models.CASCADE)
+    EVENT = models.ForeignKey("Event", on_delete=models.CASCADE)
     START_DATE_TIME = models.DateTimeField()
     END_DATE_TIME = models.DateTimeField()
 
@@ -50,13 +51,15 @@ class Person(models.Model):
 
 
 class AvailabilityBlock(models.Model):
-    PERSON = models.ForeignKey(Person, on_delete=models.CASCADE)
+    PERSON = models.ForeignKey("Person", on_delete=models.CASCADE)
+    EVENT = models.ForeignKey("Event", on_delete=models.CASCADE)
     START_DATE_TIME = models.DateTimeField()
     END_DATE_TIME = models.DateTimeField()
 
 
 class Role(models.Model):
     NAME = models.CharField(max_length=25)
+    EVENT = models.ForeignKey("Event", on_delete=models.CASCADE)
 
     # Aka whether the particular role is assinged hour-based shifts
     # or speedrun-based shifts
