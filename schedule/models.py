@@ -34,7 +34,7 @@ class Speedrun(models.Model):
 class Shift(models.Model):
     '''A single shift of a single volunteer'''
 
-    VOLUNTEER = models.ForeignKey("Person", on_delete=models.CASCADE)
+    VOLUNTEER = models.ManyToManyField("Person")
     ROLE = models.ForeignKey("Role", on_delete=models.CASCADE)
     EVENT = models.ForeignKey("Event", on_delete=models.CASCADE)
     START_DATE_TIME = models.DateTimeField()
