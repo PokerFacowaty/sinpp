@@ -69,6 +69,8 @@ class Role(models.Model):
     VISIBILITY_CHOICES = [(ROLE_STAFF, "Role Staff"),
                           (EVENT_STAFF, "Event Staff"),
                           (PUBLIC, "Public")]
+    VISIBILITY = models.CharField(max_length=25, choices=VISIBILITY_CHOICES,
+                                  default=ROLE_STAFF)
 
     NAME = models.CharField(max_length=25)
     EVENT = models.ForeignKey("Event", on_delete=models.CASCADE)
