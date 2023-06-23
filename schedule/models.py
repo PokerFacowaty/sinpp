@@ -26,8 +26,10 @@ class Speedrun(models.Model):
     END_TIME = models.DateTimeField()
 
     def save(self, *args, **kwargs):
-        if self.END_TIME is None:
+        if self.END_TIME is None and self.ESTIMATE is not None:
             self.END_TIME = self.START_TIME + self.ESTIMATE
+        elif self.END_TIME is not None and self.ESTIMATE is None:
+            self.ESTIMATE = self.END_TIME - self.START_TIME
         super(Speedrun, self).save(*args, **kwargs)
 
 
