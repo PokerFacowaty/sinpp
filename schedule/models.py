@@ -16,11 +16,9 @@ class Speedrun(models.Model):
     CATEGORY = models.CharField(max_length=25, blank=True)
 
     # any volunteers taking part as runners, commentators
-    VOLUNTEERS_RUNNING = models.ManyToManyField("Person",
-                                                related_name="SPEEDRUNS_RAN")
-    VOLUNTEERS_COMMENTATING = models.ManyToManyField(
+    VOLUNTEERS_ENGAGED = models.ManyToManyField(
                                         "Person",
-                                        related_name="SPEEDRUNS_COMMENTATED")
+                                        related_name="SPEEDRUNS_ENGAGED_IN")
 
     VOLUNTEER_SHIFTS = models.ManyToManyField("Shift")
     START_TIME = models.DateTimeField()
