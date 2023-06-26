@@ -1,4 +1,5 @@
 from django.db import models
+from datetime import timedelta
 
 
 class Event(models.Model):
@@ -7,6 +8,12 @@ class Event(models.Model):
     SHORT_TITLE = models.CharField(max_length=25)
     START_DATE_TIME = models.DateTimeField()
     END_DATE_TIME = models.DateTimeField()
+    # How many minutes are added to each block before considering someone
+    # available, setting this to 0 means that if a person's availability
+    # starts at 15:00 and an activity starts at the same time, they're
+    # considered available. Setting this to 15 means they have to be available
+    # since at least 14:45 to be considered available for the activity.
+    TIME_SAFETY_MARGIN = models.DurationField(default=timedelta(minutes=15))
 
 
 class Speedrun(models.Model):
