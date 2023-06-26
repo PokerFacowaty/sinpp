@@ -8,6 +8,8 @@ class EventTestCase(TestCase):
     # TODO:
     # - Events generating a short title if not provided (added + tested)
     # - Event has proper dates
+    # - Event parses TIME_SAFETY_MARGIN correctly from string? (if that should
+    # happen since I'm not sure)
     def setUp(self):
         start_date = timezone.now()
         end_date = timezone.now() + timedelta(days=1)
