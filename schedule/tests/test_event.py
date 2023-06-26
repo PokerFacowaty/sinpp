@@ -1,6 +1,7 @@
 from django.test import TestCase
+from django.utils import timezone
 from schedule.models import Event
-from datetime import datetime, timedelta
+from datetime import timedelta
 
 
 class EventTestCase(TestCase):
@@ -8,8 +9,8 @@ class EventTestCase(TestCase):
     # - Events generating a short title if not provided (added + tested)
     # - Event has proper dates
     def setUp(self):
-        start_date = datetime.now()
-        end_date = datetime.now() + timedelta(days=1)
+        start_date = timezone.now()
+        end_date = timezone.now() + timedelta(days=1)
         Event.objects.create(NAME="GSPS 2026",
                              SHORT_TITLE="GSPS26",
                              START_DATE_TIME=start_date,
