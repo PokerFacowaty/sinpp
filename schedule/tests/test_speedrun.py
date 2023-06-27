@@ -40,6 +40,7 @@ class SpeedrunTestCase(TestCase):
 
     def test_speedrun_has_calculated_end_time(self):
         run = Speedrun.objects.get(GAME="GTA IV")
+        # TODO: check if time math isn't an issue here
         self.assertEqual(run.END_TIME, run.START_TIME + run.ESTIMATE)
 
     def test_speedrun_has_volunteer_one_engaged(self):
