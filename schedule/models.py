@@ -1,5 +1,5 @@
 from django.db import models
-from datetime import timedelta
+from datetime import timedelta, datetime
 
 
 class Event(models.Model):
@@ -55,6 +55,16 @@ class Person(models.Model):
     PRONOUNS = models.CharField(max_length=25, blank=True)
     # PROFILES = models.ManyToManyField(SocialMediaProfile)
     ROLES = models.ManyToManyField("Role", blank=True)
+
+    def is_available(self, start_time: datetime, end_time: datetime,
+                     event: Event) -> bool:
+        blocks = AvailabilityBlock.objects.filter(PERSON=self)
+        margin = event.TIME_SAFETY_MARGIN
+        for bl in blocks:
+            if ((start_time - bl.START_DATE_TIME) > margin
+               and (bl.END_DATE_TIME - end_time) > margin):
+                return True
+        return False
 
 
 class AvailabilityBlock(models.Model):
