@@ -41,6 +41,8 @@ class AvailabilityBlockTestCase(TestCase):
         # NOTE: this doesn't check by *how much* they differ, time arithmetic
         # is a little DB-dependent, need to read more about this before I
         # decide to test it
+        # NOTE: the only way to ensure proper time arithmetic is by using
+        # PostgresSQL as the database
         # https://docs.djangoproject.com/en/4.2/ref/models/fields/#durationfield
         self.assertTrue((avail.START_DATE_TIME < run.START_TIME
                          and avail.END_DATE_TIME > run.END_TIME))
