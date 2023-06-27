@@ -6,7 +6,6 @@ from datetime import timedelta
 
 class SpeedrunTestCase(TestCase):
     # TODO:
-    # - Check for listing volunteers involved in the run
     # - Check for listing volunteer shifts, both run based and hour based
     # - Add an option to provide START + END and calculate ESTIMATE?
     # (add + test)
