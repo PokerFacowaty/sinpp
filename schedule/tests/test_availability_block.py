@@ -45,3 +45,12 @@ class AvailabilityBlockTestCase(TestCase):
                          >= run.EVENT.TIME_SAFETY_MARGIN
                          and (avail.END_DATE_TIME - run.END_TIME)
                          >= run.EVENT.TIME_SAFETY_MARGIN))
+
+    def test_check_if_available_function(self):
+        run = Speedrun.objects.get(GAME="GTA: Vice City")
+        person = Person.objects.get(NICKNAME="Duncan")
+        # Not 100% about this since it assumes a single block but this can
+        # be changed later
+        avail = AvailabilityBlock.objects.get(PERSON=person)
+        self.assertTrue(person.is_available(run.START_TIME, run.END_TIME,
+                                            run.EVENT))
