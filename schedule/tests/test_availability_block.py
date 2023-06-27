@@ -38,11 +38,10 @@ class AvailabilityBlockTestCase(TestCase):
         # Not 100% about this since it assumes a single block but this can
         # be changed later
         avail = AvailabilityBlock.objects.get(PERSON=person)
-        # NOTE: this doesn't check by *how much* they differ, time arithmetic
-        # is a little DB-dependent, need to read more about this before I
-        # decide to test it
         # NOTE: the only way to ensure proper time arithmetic is by using
         # PostgresSQL as the database
         # https://docs.djangoproject.com/en/4.2/ref/models/fields/#durationfield
-        self.assertTrue((avail.START_DATE_TIME < run.START_TIME
-                         and avail.END_DATE_TIME > run.END_TIME))
+        self.assertTrue(((run.START_TIME - avail.START_DATE_TIME)
+                         >= run.EVENT.TIME_SAFETY_MARGIN
+                         and (avail.END_DATE_TIME - run.END_TIME)
+                         >= run.EVENT.TIME_SAFETY_MARGIN))
