@@ -39,10 +39,10 @@ class AvailabilityBlockTestCase(TestCase):
 
     def test_check_if_available_manually(self):
         run = Speedrun.objects.get(GAME="GTA: Vice City")
+        avail_start = run.EVENT.START_DATE_TIME + timedelta(minutes=30)
         person = Person.objects.get(NICKNAME="Duncan")
-        # Not 100% about this since it assumes a single block but this can
-        # be changed later
-        avail = AvailabilityBlock.objects.get(PERSON=person)
+        avail = AvailabilityBlock.objects.get(PERSON=person,
+                                              START_DATE_TIME=avail_start)
         # NOTE: the only way to ensure proper time arithmetic is by using
         # PostgresSQL as the database
         # https://docs.djangoproject.com/en/4.2/ref/models/fields/#durationfield
