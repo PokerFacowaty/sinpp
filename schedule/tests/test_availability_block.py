@@ -24,6 +24,12 @@ class AvailabilityBlockTestCase(TestCase):
                                                  EVENT=esaa,
                                                  START_DATE_TIME=avail_start,
                                                  END_DATE_TIME=avail_end)
+        avail2_start = event_start_date + timedelta(hours=4)
+        avail2_end = event_start_date + timedelta(hours=5)
+        avail2 = AvailabilityBlock.objects.create(PERSON=person,
+                                                  EVENT=esaa,
+                                                  START_DATE_TIME=avail2_start,
+                                                  END_DATE_TIME=avail2_end)
         run_start = event_start_date + timedelta(hours=1)
         run_end = event_start_date + timedelta(hours=1, minutes=30)
         run = Speedrun.objects.create(EVENT=esaa,
@@ -52,3 +58,14 @@ class AvailabilityBlockTestCase(TestCase):
         # be changed later
         self.assertTrue(person.is_available(run.START_TIME, run.END_TIME,
                                             run.EVENT))
+
+    def test_check_if_not_available_manually(self):
+        run = Speedrun.objects.get(GAME="GTA: Vice City")
+        person = Person.objects.get(NICKNAME="Duncan")
+        avail_start = run.EVENT.START_DATE_TIME + timedelta(hours=4)
+        avail = AvailabilityBlock.objects.get(PERSON=person,
+                                              START_DATE_TIME=avail_start)
+        self.assertFalse((run.START_TIME - avail.START_DATE_TIME)
+                         >= run.EVENT.TIME_SAFETY_MARGIN
+                         and (avail.END_DATE_TIME - run.END_TIME)
+                         >= run.EVENT.TIME_SAFETY_MARGIN)
