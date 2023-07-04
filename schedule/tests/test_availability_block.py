@@ -5,8 +5,7 @@ from datetime import timedelta
 
 
 class AvailabilityBlockTestCase(TestCase):
-    # TODO:
-    # - check if a Person is NOT avaiable when they shouldn't be
+
     def setUp(self):
         event_start_date = timezone.now()
         event_end_date = timezone.now() + timedelta(days=1)
