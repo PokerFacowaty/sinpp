@@ -49,6 +49,8 @@ class Shift(models.Model):
     START_DATE_TIME = models.DateTimeField()
     END_DATE_TIME = models.DateTimeField()
 
+    SPEEDRUNS = models.ManyToManyField("Speedrun", blank=True)
+
 
 class Person(models.Model):
     NICKNAME = models.CharField(max_length=25)
