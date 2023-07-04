@@ -16,8 +16,13 @@ class AvailabilityBlockTestCase(TestCase):
                                     END_DATE_TIME=event_end_date)
         role = Role.objects.create(NAME="Social Media",
                                    EVENT=esaa)
+        # person has two blocks, one is during the run and the other is
+        # outside of it.
+        # person2 has a single block that's outside the run.
         person = Person.objects.create(NICKNAME="Duncan")
+        person2 = Person.objects.create(NICKNAME="Elaine")
         person.ROLES.set([role])
+        person2.ROLES.set([role])
         avail_start = event_start_date + timedelta(minutes=30)
         avail_end = event_start_date + timedelta(hours=2)
         avail = AvailabilityBlock.objects.create(PERSON=person,
@@ -30,6 +35,13 @@ class AvailabilityBlockTestCase(TestCase):
                                                   EVENT=esaa,
                                                   START_DATE_TIME=avail2_start,
                                                   END_DATE_TIME=avail2_end)
+        p2_av_start = event_start_date + timedelta(hours=5)
+        p2_av_end = event_start_date + timedelta(hours=6)
+        p2_avail = AvailabilityBlock.objects.create(
+                                        PERSON=person2,
+                                        EVENT=esaa,
+                                        START_DATE_TIME=p2_av_start,
+                                        END_DATE_TIME=p2_av_end)
         run_start = event_start_date + timedelta(hours=1)
         run_end = event_start_date + timedelta(hours=1, minutes=30)
         run = Speedrun.objects.create(EVENT=esaa,
@@ -69,3 +81,9 @@ class AvailabilityBlockTestCase(TestCase):
                          >= run.EVENT.TIME_SAFETY_MARGIN
                          and (avail.END_DATE_TIME - run.END_TIME)
                          >= run.EVENT.TIME_SAFETY_MARGIN)
+
+    def test_check_if_not_available_function(self):
+        run = Speedrun.objects.get(GAME="GTA: Vice City")
+        person = Person.objects.get(NICKNAME="Elaine")
+        self.assertFalse(person.is_available(run.START_TIME, run.END_TIME,
+                                             run.EVENT))
