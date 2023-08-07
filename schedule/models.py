@@ -54,6 +54,7 @@ class Intermission(models.Model):
             self.END_TIME = self.START_TIME + self.DURATION
         elif self.END_TIME is not None and self.DURATION is None:
             self.DURATION = self.END_TIME - self.START_TIME
+        super(Intermission, self).save(*args, **kwargs)
 
 
 class Shift(models.Model):
