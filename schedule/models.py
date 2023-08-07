@@ -40,6 +40,22 @@ class Speedrun(models.Model):
         super(Speedrun, self).save(*args, **kwargs)
 
 
+class Intermission(models.Model):
+
+    EVENT = models.ForeignKey(Event, on_delete=models.CASCADE)
+    VOLUNTEER_SHIFTS = models.ManyToManyField(
+                       "Person", related_name="INTERMISSIONS_ENGAGED_IN")
+    START_TIME = models.DateTimeField()
+    DURATION = models.DurationField()
+    END_TIME = models.DateTimeField()
+
+    def save(self, *args, **kwargs):
+        if self.END_TIME is None and self.DURATION is not None:
+            self.END_TIME = self.START_TIME + self.DURATION
+        elif self.END_TIME is not None and self.DURATION is None:
+            self.DURATION = self.END_TIME - self.START_TIME
+
+
 class Shift(models.Model):
     '''A single shift of one or more volunteers'''
 
