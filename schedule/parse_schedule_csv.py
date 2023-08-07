@@ -12,9 +12,11 @@ def parse_oengus(filepath: str, event: Event):
         for row in rdr:
             # NOTE: Oengus estimates and setup times are not ISO 8601
             # because of no trailing zeros on hours, so that's why I'm parsing
-            # them manually instead of using time.fromisoformat
+            # them manually instead of using time.fromisoformat.
+            # They also need to be sliced because of timezone names added
+            # at the end (e.x. "2022-02-12T16:37:00+01:00[Europe/Warsaw]")
 
-            run_start = dt.fromisoformat(row["time"])
+            run_start = dt.fromisoformat(row["time"][:25])
             estimate = [int(x) for x in row["estimate"].split(":")]
             estimate = time(hour=estimate[0],
                             minute=estimate[1],
