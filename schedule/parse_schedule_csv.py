@@ -1,11 +1,11 @@
 import csv
 from pathlib import Path
-from models import Event, Speedrun, Intermission
+from schedule.models import Event, Speedrun, Intermission
 from datetime import datetime as dt
-from datetime import time
+from datetime import time, timedelta
 
 
-def parse_oengus(filepath: str, event: Event):
+def parse_oengus(filepath: Path, event: Event):
     with open(Path(filepath)) as cf:
         rdr = csv.DictReader(cf)
 
@@ -18,20 +18,20 @@ def parse_oengus(filepath: str, event: Event):
 
             run_start = dt.fromisoformat(row["time"][:25])
             estimate = [int(x) for x in row["estimate"].split(":")]
-            estimate = time(hour=estimate[0],
-                            minute=estimate[1],
-                            second=estimate[2])
+            estimate = timedelta(hours=estimate[0],
+                                 minutes=estimate[1],
+                                 seconds=estimate[2])
             inter_dur = [int(y) for y in row["setup_time"].split(":")]
-            inter_dur = time(hour=inter_dur[0],
-                             minute=inter_dur[1],
-                             second=inter_dur[2])
+            inter_dur = timedelta(hours=inter_dur[0],
+                                  minutes=inter_dur[1],
+                                  seconds=inter_dur[2])
 
-            Speedrun(EVENT=event,
-                     GAME=row["game"],
-                     CATEGORY=row["category"],
-                     START_TIME=run_start,
-                     ESTIMATE=estimate)
+            Speedrun.objects.create(EVENT=event,
+                                    GAME=row["game"],
+                                    CATEGORY=row["category"],
+                                    START_TIME=run_start,
+                                    ESTIMATE=estimate)
 
-            Intermission(EVENT=event,
-                         START_TIME=run_start + estimate,
-                         DURATION=inter_dur)
+            Intermission.objects.create(EVENT=event,
+                                        START_TIME=run_start + estimate,
+                                        DURATION=inter_dur)
