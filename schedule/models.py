@@ -8,12 +8,6 @@ class Event(models.Model):
     SHORT_TITLE = models.CharField(max_length=25)
     START_DATE_TIME = models.DateTimeField()
     END_DATE_TIME = models.DateTimeField()
-    # How many minutes are added to each block before considering someone
-    # available, setting this to 0 means that if a person's availability
-    # starts at 15:00 and an activity starts at the same time, they're
-    # considered available. Setting this to 15 means they have to be available
-    # since at least 14:45 to be considered available for the activity.
-    TIME_SAFETY_MARGIN = models.DurationField(default=timedelta(minutes=15))
 
 
 class Speedrun(models.Model):
@@ -76,9 +70,9 @@ class Person(models.Model):
     ROLES = models.ManyToManyField("Role", blank=True)
 
     def is_available(self, start_time: datetime, end_time: datetime,
-                     event: Event) -> bool:
+                     role) -> bool:
         blocks = AvailabilityBlock.objects.filter(PERSON=self)
-        margin = event.TIME_SAFETY_MARGIN
+        margin = role.TIME_SAFETY_MARGIN
         for bl in blocks:
             if ((start_time - bl.START_DATE_TIME) > margin
                and (bl.END_DATE_TIME - end_time) > margin):
@@ -94,6 +88,9 @@ class AvailabilityBlock(models.Model):
 
 
 class Role(models.Model):
+    '''Roles are made unique for every event (at least for now), since that
+       allows for easier implementation of things like hour-based vs run-based,
+       time safety margin etc'''
 
     # Visibility options for role (so the role's event schedule effectively)
     # Each level contains the previous; the levels also assume volunteers
@@ -114,3 +111,10 @@ class Role(models.Model):
     # Aka whether the particular role is assinged hour-based shifts
     # or speedrun-based shifts
     HOUR_BASED = models.BooleanField(default=False)
+
+    # How many minutes are added to each block before considering someone
+    # available, setting this to 0 means that if a person's availability
+    # starts at 15:00 and an activity starts at the same time, they're
+    # considered available. Setting this to 15 means they have to be available
+    # since at least 14:45 to be considered available for the activity.
+    TIME_SAFETY_MARGIN = models.DurationField(default=timedelta(minutes=15))

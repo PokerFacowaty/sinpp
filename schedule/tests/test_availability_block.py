@@ -52,37 +52,41 @@ class AvailabilityBlockTestCase(TestCase):
         run = Speedrun.objects.get(GAME="GTA: Vice City")
         avail_start = run.EVENT.START_DATE_TIME + timedelta(minutes=30)
         person = Person.objects.get(NICKNAME="Duncan")
+        margin = Role.objects.get(NAME="Social Media").TIME_SAFETY_MARGIN
         avail = AvailabilityBlock.objects.get(PERSON=person,
                                               START_DATE_TIME=avail_start)
         # NOTE: the only way to ensure proper time arithmetic is by using
         # PostgresSQL as the database
         # https://docs.djangoproject.com/en/4.2/ref/models/fields/#durationfield
         self.assertTrue(((run.START_TIME - avail.START_DATE_TIME)
-                         >= run.EVENT.TIME_SAFETY_MARGIN
+                         >= margin
                          and (avail.END_DATE_TIME - run.END_TIME)
-                         >= run.EVENT.TIME_SAFETY_MARGIN))
+                         >= margin))
 
     def test_check_if_available_function(self):
         run = Speedrun.objects.get(GAME="GTA: Vice City")
         person = Person.objects.get(NICKNAME="Duncan")
+        role = Role.objects.get(NAME="Social Media")
         # Not 100% about this since it assumes a single block but this can
         # be changed later
         self.assertTrue(person.is_available(run.START_TIME, run.END_TIME,
-                                            run.EVENT))
+                                            role))
 
     def test_check_if_not_available_manually(self):
         run = Speedrun.objects.get(GAME="GTA: Vice City")
         person = Person.objects.get(NICKNAME="Duncan")
+        margin = Role.objects.get(NAME="Social Media").TIME_SAFETY_MARGIN
         avail_start = run.EVENT.START_DATE_TIME + timedelta(hours=4)
         avail = AvailabilityBlock.objects.get(PERSON=person,
                                               START_DATE_TIME=avail_start)
         self.assertFalse((run.START_TIME - avail.START_DATE_TIME)
-                         >= run.EVENT.TIME_SAFETY_MARGIN
+                         >= margin
                          and (avail.END_DATE_TIME - run.END_TIME)
-                         >= run.EVENT.TIME_SAFETY_MARGIN)
+                         >= margin)
 
     def test_check_if_not_available_function(self):
         run = Speedrun.objects.get(GAME="GTA: Vice City")
         person = Person.objects.get(NICKNAME="Elaine")
+        role = Role.objects.get(NAME="Social Media")
         self.assertFalse(person.is_available(run.START_TIME, run.END_TIME,
-                                             run.EVENT))
+                                             role))
