@@ -19,8 +19,8 @@ class Event(models.Model):
 class Speedrun(models.Model):
 
     EVENT = models.ForeignKey(Event, on_delete=models.CASCADE)
-    GAME = models.CharField(max_length=25)
-    CATEGORY = models.CharField(max_length=25, blank=True)
+    GAME = models.CharField(max_length=100)
+    CATEGORY = models.CharField(max_length=100, blank=True)
 
     # any volunteers taking part as runners, commentators
     VOLUNTEERS_ENGAGED = models.ManyToManyField(
