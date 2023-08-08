@@ -86,6 +86,10 @@ class Person(models.Model):
 
     def is_available(self, start_time: datetime, end_time: datetime,
                      role) -> bool:
+        '''Whether the current start_time and end_time are within a Person's
+           availability block. Not to be confused with is_free(), which checks
+           if a Person is already doing a shift at the event at that time.'''
+
         blocks = AvailabilityBlock.objects.filter(PERSON=self)
         margin = role.TIME_SAFETY_MARGIN
         for bl in blocks:
