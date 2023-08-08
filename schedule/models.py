@@ -1,5 +1,6 @@
 from django.db import models
 from datetime import timedelta, datetime
+from django.db.models import Q
 
 
 class Event(models.Model):
@@ -92,6 +93,16 @@ class Person(models.Model):
                and (bl.END_DATE_TIME - end_time) > margin):
                 return True
         return False
+
+    def is_free(self, start_time: datetime, end_time: datetime) -> bool:
+        '''Returns whether the person is already on shift at the specified
+           time.'''
+        # Get all shifts of that person where its end is later than the
+        # start_time OR its start is earlier than end_time
+        shifts = Shift.objects.filter(Q(VOLUNTEER__in=[self]),
+                                      Q(END_DATE_TIME__gt=start_time)
+                                      | Q(START_DATE_TIME__lt=end_time))
+        return False if shifts else True
 
 
 class AvailabilityBlock(models.Model):
