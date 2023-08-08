@@ -108,9 +108,18 @@ class Role(models.Model):
     NAME = models.CharField(max_length=25)
     EVENT = models.ForeignKey("Event", on_delete=models.CASCADE)
 
-    # Aka whether the particular role is assinged hour-based shifts
-    # or speedrun-based shifts
-    HOUR_BASED = models.BooleanField(default=False)
+    # Aka whether the particular role is assinged hour-based shifts,
+    # speedrun-based shifts or intermission-based shifts
+
+    HOUR_BASED = "HB"
+    SPEEDRUN_BASED = "SB"
+    INTERMISSION_BASED = "IB"
+
+    TYPE_CHOICES = [(HOUR_BASED, "Hour-based"),
+                    (SPEEDRUN_BASED, "Speedrun-based"),
+                    (INTERMISSION_BASED, "Intermission-based")]
+    TYPE = models.CharField(max_length=25, choices=TYPE_CHOICES,
+                            default=HOUR_BASED)
 
     # How many minutes are added to each block before considering someone
     # available, setting this to 0 means that if a person's availability

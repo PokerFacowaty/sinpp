@@ -15,15 +15,15 @@ class RoleTestCase(TestCase):
                                     END_DATE_TIME=event_end_date)
         Role.objects.create(NAME="Tech", EVENT=gtam)
         Role.objects.create(NAME="Fundraising", EVENT=gtam, VISIBILITY="PU",
-                            HOUR_BASED=True)
+                            TYPE="SB")
 
     def test_default_values_visibility(self):
         role = Role.objects.get(NAME="Tech")
         self.assertEqual(role.VISIBILITY, "RL")
 
-    def test_default_values_hour_based(self):
+    def test_default_values_type(self):
         role = Role.objects.get(NAME="Tech")
-        self.assertFalse(role.HOUR_BASED)
+        self.assertTrue(role.TYPE, "HB")
 
     def test_non_default_values_visibility(self):
         role = Role.objects.get(NAME="Fundraising")
@@ -31,7 +31,7 @@ class RoleTestCase(TestCase):
 
     def test_non_default_values_hour_based(self):
         role = Role.objects.get(NAME="Fundraising")
-        self.assertTrue(role.HOUR_BASED)
+        self.assertTrue(role.TYPE, "SB")
 
     def test_proper_event(self):
         event = Event.objects.get(NAME="GTAMarathon 2027")
