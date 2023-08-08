@@ -11,6 +11,10 @@ class Event(models.Model):
 
 
 class Room(models.Model):
+    '''Basically a stream in case of a traditional speedrunning marathon.
+       The idea of rooms makes it more general and also probably easier to
+       understand - a volunteer cannot be in two separate rooms at the same
+       time, be it physical rooms, streams or voice chats.'''
 
     EVENT = models.ForeignKey(Event, on_delete=models.CASCADE)
     NAME = models.CharField(max_length=100)
