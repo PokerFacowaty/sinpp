@@ -37,3 +37,11 @@ class ShiftTestCase(TestCase):
         end = (Event.objects.get(NAME="GDQ2").START_DATE_TIME
                + timedelta(hours=2, minutes=30))
         self.assertFalse(prsn.is_free(start, end))
+
+    def test_if_free(self):
+        prsn = Person.objects.get(NICKNAME="MyPerson")
+        start = (Event.objects.get(NAME="GDQ2").START_DATE_TIME
+                 + timedelta(hours=2, minutes=30))
+        end = (Event.objects.get(NAME="GDQ2").START_DATE_TIME
+               + timedelta(minutes=30))
+        self.assertTrue(prsn.is_free(start, end))
