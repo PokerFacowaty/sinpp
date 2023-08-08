@@ -10,9 +10,19 @@ class Event(models.Model):
     END_DATE_TIME = models.DateTimeField()
 
 
+class Room(models.Model):
+
+    EVENT = models.ForeignKey(Event, on_delete=models.CASCADE)
+    NAME = models.CharField(max_length=100)
+    SPEEDRUNS = models.ManyToManyField("Speedrun")
+
+
 class Speedrun(models.Model):
 
     EVENT = models.ForeignKey(Event, on_delete=models.CASCADE)
+    # The room functionality should be optional, so that it's not a pain
+    # for anyone who doesn't need it
+    ROOM = models.ForeignKey(Room, on_delete=models.SET_NULL, null=True)
     GAME = models.CharField(max_length=100)
     CATEGORY = models.CharField(max_length=100, blank=True)
 
