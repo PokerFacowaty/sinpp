@@ -28,3 +28,11 @@ class CSVParsingTestCase(TestCase):
         time_to_compare = datetime(year=2022, month=2, day=12, hour=11,
                                    tzinfo=timezone.utc)
         self.assertEqual(first_run.START_TIME, time_to_compare)
+
+    def test_last_run_time(self):
+        event = Event.objects.get(SHORT_TITLE="ESAW22")
+        last_run = Speedrun.objects.filter(EVENT=event).order_by(
+            "START_TIME").reverse()[0]
+        time_to_compare = datetime(year=2022, month=2, day=20, hour=0,
+                                   minute=25, tzinfo=timezone.utc)
+        self.assertEqual(last_run.START_TIME, time_to_compare)
