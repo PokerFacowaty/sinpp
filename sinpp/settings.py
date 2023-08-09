@@ -126,6 +126,7 @@ USE_TZ = True
 
 STATIC_URL = os.environ['STATIC']
 STATIC_ROOT = os.environ['STATIC_ROOT']
+MEDIA_ROOT = BASE_DIR / 'schedule' / 'static' / 'schedule' / 'csvs'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field

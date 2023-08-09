@@ -3,10 +3,22 @@ from pathlib import Path
 from schedule.models import Event, Speedrun, Intermission
 from datetime import datetime as dt
 from datetime import time, timedelta
+from django.conf import settings
+import uuid
+
+
+def handle_uploaded_file(f, type: str):
+    # The + ".csv" part is a hack for testing, obviously
+    filepath = settings.MEDIA_ROOT / (str(uuid.uuid4()) + ".csv")
+    with open(filepath, "wb+") as destination:
+        for chunk in f.chunks():
+            destination.write(chunk)
+    return filepath
 
 
 def parse_oengus(filepath: Path, event: Event):
-    with open(Path(filepath)) as cf:
+    print(filepath, event)
+    with open(filepath) as cf:
         rdr = csv.DictReader(cf)
 
         for row in rdr:
