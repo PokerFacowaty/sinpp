@@ -66,15 +66,17 @@ class Speedrun(models.Model):
         super(Speedrun, self).save(*args, **kwargs)
 
     def __str__(self) -> str:
-        return (self.GAME
-                + (f' [{self.CATEGORY}]' or '')
-                + (f' ({self.ROOM})' or '')
-                + (f' ({self.EVENT})'))
+        result = self.GAME + f' [{self.CATEGORY}]'
+        if self.ROOM:
+            result += f' ({self.ROOM})'
+        result += f' ({self.EVENT})'
+        return result
 
 
 class Intermission(models.Model):
 
     EVENT = models.ForeignKey(Event, on_delete=models.CASCADE)
+    ROOM = models.ForeignKey(Room, on_delete=models.SET_NULL, null=True)
     VOLUNTEER_SHIFTS = models.ManyToManyField(
                        "Person", related_name="INTERMISSIONS_ENGAGED_IN")
     START_TIME = models.DateTimeField()
@@ -89,8 +91,11 @@ class Intermission(models.Model):
         super(Intermission, self).save(*args, **kwargs)
 
         def __str__(self) -> str:
-            return (f"Intermission @ {self.START_TIME}"
-                    + f" ({self.EVENT})")
+            result = f'Intermission @ {self.START_TIME}'
+            if self.ROOM:
+                result += f' ({self.ROOm})'
+            result += f' ({self.EVENT})'
+            return result
 
 
 class Shift(models.Model):
@@ -99,13 +104,18 @@ class Shift(models.Model):
     VOLUNTEER = models.ManyToManyField("Person")
     ROLE = models.ForeignKey("Role", on_delete=models.CASCADE)
     EVENT = models.ForeignKey("Event", on_delete=models.CASCADE)
+    ROOM = models.ForeignKey(Room, on_delete=models.SET_NULL, null=True)
     START_DATE_TIME = models.DateTimeField()
     END_DATE_TIME = models.DateTimeField()
 
     SPEEDRUNS = models.ManyToManyField("Speedrun", blank=True)
 
     def __str__(self) -> str:
-        return (f"{self.VOLUNTEER} @ {self.START_DATE_TIME} ({self.EVENT})")
+        result = f'{self.VOLUNTEER} @ {self.START_DATE_TIME}'
+        if self.ROOM:
+            result += f' ({self.ROOm})'
+        result += f' ({self.EVENT})'
+        return result
 
 
 class Person(models.Model):
