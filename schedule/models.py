@@ -11,6 +11,9 @@ class Event(models.Model):
     START_DATE_TIME = models.DateTimeField()
     END_DATE_TIME = models.DateTimeField()
 
+    def __str__(self) -> str:
+        return self.NAME
+
 
 class EventForm(ModelForm):
     class Meta:
@@ -31,6 +34,9 @@ class Room(models.Model):
     EVENT = models.ForeignKey(Event, on_delete=models.CASCADE)
     NAME = models.CharField(max_length=100)
     SPEEDRUNS = models.ManyToManyField("Speedrun")
+
+    def __str__(self) -> str:
+        return self.NAME + f' ({self.EVENT})'
 
 
 class Speedrun(models.Model):
@@ -59,6 +65,12 @@ class Speedrun(models.Model):
             self.ESTIMATE = self.END_TIME - self.START_TIME
         super(Speedrun, self).save(*args, **kwargs)
 
+    def __str__(self) -> str:
+        return (self.GAME
+                + (f' [{self.CATEGORY}]' or '')
+                + (f' ({self.ROOM})' or '')
+                + (f' ({self.EVENT})'))
+
 
 class Intermission(models.Model):
 
@@ -76,6 +88,10 @@ class Intermission(models.Model):
             self.DURATION = self.END_TIME - self.START_TIME
         super(Intermission, self).save(*args, **kwargs)
 
+        def __str__(self) -> str:
+            return (f"Intermission @ {self.START_TIME}"
+                    + f" ({self.EVENT})")
+
 
 class Shift(models.Model):
     '''A single shift of one or more volunteers'''
@@ -87,6 +103,9 @@ class Shift(models.Model):
     END_DATE_TIME = models.DateTimeField()
 
     SPEEDRUNS = models.ManyToManyField("Speedrun", blank=True)
+
+    def __str__(self) -> str:
+        return (f"{self.VOLUNTEER} @ {self.START_DATE_TIME} ({self.EVENT})")
 
 
 class Person(models.Model):
@@ -119,12 +138,18 @@ class Person(models.Model):
                                       | Q(START_DATE_TIME__lt=end_time))
         return False if shifts else True
 
+    def __str__(self) -> str:
+        return self.NICKNAME
+
 
 class AvailabilityBlock(models.Model):
     PERSON = models.ForeignKey("Person", on_delete=models.CASCADE)
     EVENT = models.ForeignKey("Event", on_delete=models.CASCADE)
     START_DATE_TIME = models.DateTimeField()
     END_DATE_TIME = models.DateTimeField()
+
+    def __str__(self) -> str:
+        return f"{self.PERSON} @ {self.START_DATE_TIME} ({self.EVENT})"
 
 
 class Role(models.Model):
@@ -167,3 +192,6 @@ class Role(models.Model):
     # considered available. Setting this to 15 means they have to be available
     # since at least 14:45 to be considered available for the activity.
     TIME_SAFETY_MARGIN = models.DurationField(default=timedelta(minutes=15))
+
+    def __str__(self) -> str:
+        return f"{self.NAME} ({self.EVENT})"
