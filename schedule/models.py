@@ -1,6 +1,7 @@
 from django.db import models
 from datetime import timedelta, datetime
 from django.db.models import Q
+from django.forms import ModelForm, DateTimeInput, DateTimeField
 
 
 class Event(models.Model):
@@ -9,6 +10,16 @@ class Event(models.Model):
     SHORT_TITLE = models.CharField(max_length=25)
     START_DATE_TIME = models.DateTimeField()
     END_DATE_TIME = models.DateTimeField()
+
+
+class EventForm(ModelForm):
+    class Meta:
+        model = Event
+        fields = ['NAME', 'SHORT_TITLE', 'START_DATE_TIME', 'END_DATE_TIME']
+        widgets = {"START_DATE_TIME": DateTimeInput(
+                                      attrs={'type': 'datetime-local'}),
+                   "END_DATE_TIME": DateTimeInput(
+                                   attrs={'type': 'datetime-local'})}
 
 
 class Room(models.Model):
