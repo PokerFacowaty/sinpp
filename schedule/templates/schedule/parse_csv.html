@@ -1,5 +1,9 @@
+{% extends 'schedule/base.html' %}
+{% load static %}
+{% block content %}
 <form action="./" method="post" enctype="multipart/form-data">
     {% csrf_token %}
     {{ form }}
     <input type="submit" value="Submit">
 </form>
+{% endblock %}
