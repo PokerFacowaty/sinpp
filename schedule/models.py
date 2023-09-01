@@ -2,14 +2,38 @@ from django.db import models
 from datetime import timedelta, datetime
 from django.db.models import Q
 from django.forms import ModelForm, DateTimeInput, DateTimeField
+from rules.contrib.models import RulesModel
+from rules import predicate, add_rule, add_perm
+from django.contrib.auth.models import Group
 
 
-class Event(models.Model):
+class Event(RulesModel):
 
     NAME = models.CharField(max_length=100)
     SHORT_TITLE = models.CharField(max_length=25)
     START_DATE_TIME = models.DateTimeField()
     END_DATE_TIME = models.DateTimeField()
+    STAFF = models.ForeignKey(Group, related_name="staff_of",
+                              on_delete=models.CASCADE)
+
+    @classmethod
+    def create(cls, NAME, SHORT_TITLE, START_DATE_TIME, END_DATE_TIME):
+        print("create called")
+        Group.objects.create(name=SHORT_TITLE + " Staff")
+        print(Group.objects.get(name=SHORT_TITLE + " Staff"))
+        staff_group = Group.objects.get(name=SHORT_TITLE + " Staff")
+        event = cls(NAME=NAME, SHORT_TITLE=SHORT_TITLE,
+                    START_DATE_TIME=START_DATE_TIME,
+                    END_DATE_TIME=END_DATE_TIME, STAFF=staff_group)
+        return event
+
+    @predicate
+    def is_event_staff(user, event):
+        return user.groups.filter(name=event.STAFF).exists()
+
+    add_perm('event.view_event', is_event_staff)
+    add_perm('event.change_event', is_event_staff)
+    add_perm('event.delete_event', is_event_staff)
 
     def __str__(self) -> str:
         return self.NAME

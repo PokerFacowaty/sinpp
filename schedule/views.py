@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.http import HttpResponseRedirect
 from .forms import UploadCSVForm
 from schedule.parse_schedule_csv import parse_oengus, handle_uploaded_file
-from .models import EventForm
+from .models import EventForm, Event
 from django.contrib.auth.models import Group, User
 from django.contrib.auth.decorators import login_required
 
@@ -32,9 +32,11 @@ def add_event(request):
     if request.method == "POST":
         form = EventForm(request.POST)
         if form.is_valid():
-            form.save()
-            sh_tl = form.cleaned_data['SHORT_TITLE']
-            grp = Group.objects.create(name=sh_tl + " Staff")
+            cl = form.cleaned_data
+            ev = Event.create(cl["NAME"], cl["SHORT_TITLE"],
+                              cl["START_DATE_TIME"], cl["END_DATE_TIME"])
+            ev.save()
+            grp = Group.objects.get(name=cl["SHORT_TITLE"] + " Staff")
             usr = User.objects.get(username=request.user)
             grp.user_set.add(usr)
     else:
