@@ -9,10 +9,12 @@ class UploadCSVForm(forms.Form):
     # TODO: .all() just for testing
     # event = forms.ModelChoiceField(queryset=Event.objects.all())
     event = forms.ModelChoiceField(queryset=None)
-    room = forms.ModelChoiceField(queryset=Room.objects.all(), required=False)
+    room = forms.ModelChoiceField(queryset=None)
 
     def __init__(self, *args, **kwargs):
         data = kwargs.pop('data', None)
         super(UploadCSVForm, self).__init__(*args, **kwargs)
-        self.fields['event'].queryset = Event.objects.filter(
-                                        Q(STAFF__in=data["groups"]))
+        event_queryset = Event.objects.filter(Q(STAFF__in=data["groups"]))
+        self.fields['event'].queryset = event_queryset
+        self.fields['room'].queryset = Room.objects.filter(
+                                       Q(EVENT__in=event_queryset))
