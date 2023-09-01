@@ -55,7 +55,7 @@ class Room(models.Model):
 
     EVENT = models.ForeignKey(Event, on_delete=models.CASCADE)
     NAME = models.CharField(max_length=100)
-    SPEEDRUNS = models.ManyToManyField("Speedrun")
+    SPEEDRUNS = models.ManyToManyField("Speedrun", blank=True)
 
     def __str__(self) -> str:
         return self.NAME + f' ({self.EVENT})'
