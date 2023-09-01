@@ -1,6 +1,6 @@
 from django.contrib import admin
 from .models import (Event, Speedrun, Shift, Person, AvailabilityBlock, Role,
-                     Intermission)
+                     Intermission, Room)
 
 admin.site.register(Event)
 admin.site.register(Speedrun)
@@ -9,3 +9,4 @@ admin.site.register(Person)
 admin.site.register(AvailabilityBlock)
 admin.site.register(Role)
 admin.site.register(Intermission)
+admin.site.register(Room)
