@@ -135,3 +135,8 @@ MEDIA_ROOT = BASE_DIR / 'schedule' / 'static' / 'schedule' / 'csvs'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 LOGIN_REDIRECT_URL = '/'
+
+AUTHENTICATION_BACKENDS = [
+    'rules.permissions.ObjectPermissionBackend',
+    'django.contrib.auth.backends.ModelBackend'
+]
