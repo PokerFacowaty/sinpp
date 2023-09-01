@@ -10,6 +10,8 @@ from django.contrib.auth.decorators import login_required
 def index(request):
     return render(request, 'schedule/main.html')
 
+# TODO: forms need a success / failure screen
+
 
 def upload_csv(request):
     if request.method == "POST":
