@@ -13,6 +13,7 @@ def index(request):
 # TODO: forms need a success / failure screen
 
 
+@login_required
 def upload_csv(request):
     if request.method == "POST":
         form = UploadCSVForm(request.POST, request.FILES)
@@ -23,7 +24,9 @@ def upload_csv(request):
             filepath = handle_uploaded_file(request.FILES['file_'], "Oengus")
             parse_oengus(filepath, event)
     else:
-        form = UploadCSVForm()
+        usr = User.objects.get(username=request.user)
+        groups = usr.groups.all()
+        form = UploadCSVForm(data={'groups': groups})
     return render(request, "schedule/parse_csv.html", {"form": form})
 
 
