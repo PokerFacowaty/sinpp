@@ -18,9 +18,7 @@ class Event(RulesModel):
 
     @classmethod
     def create(cls, NAME, SHORT_TITLE, START_DATE_TIME, END_DATE_TIME):
-        print("create called")
         Group.objects.create(name=SHORT_TITLE + " Staff")
-        print(Group.objects.get(name=SHORT_TITLE + " Staff"))
         staff_group = Group.objects.get(name=SHORT_TITLE + " Staff")
         event = cls(NAME=NAME, SHORT_TITLE=SHORT_TITLE,
                     START_DATE_TIME=START_DATE_TIME,
