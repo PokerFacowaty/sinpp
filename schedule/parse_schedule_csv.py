@@ -9,6 +9,7 @@ import uuid
 
 def handle_uploaded_file(f, type: str):
     # The + ".csv" part is a hack for testing, obviously
+    # TODO: handle that when I stop testing
     filepath = settings.MEDIA_ROOT / (str(uuid.uuid4()) + ".csv")
     with open(filepath, "wb+") as destination:
         for chunk in f.chunks():
