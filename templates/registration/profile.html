@@ -2,4 +2,12 @@
 {% load static %}
 {% block content %}
 <h1>{{ user.username }}</h1>
+<h1>Your events:</h1>
+{% for event, rooms in events_rooms.items %}
+<h2>{{ event }}</h2>
+<h3>Rooms:</h3>
+{% for room in rooms %}
+<h4>{{ room.NAME }}</h4>
+{% endfor %}
+{% endfor %}
 {% endblock %}
