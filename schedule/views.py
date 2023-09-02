@@ -5,6 +5,8 @@ from schedule.parse_schedule_csv import parse_oengus, handle_uploaded_file
 from .models import EventForm, Event, Room
 from django.contrib.auth.models import Group, User
 from django.contrib.auth.decorators import login_required
+from rules import has_perm
+from django.core.exceptions import PermissionDenied
 
 
 def index(request):
@@ -51,6 +53,9 @@ def add_event(request):
 def schedule(request, event, room):
     ev = Event.objects.get(SHORT_TITLE=event)
     rm = Room.objects.get(EVENT=ev, SLUG=room)
-    content = {'room': rm}
-
-    return render(request, 'schedule/base_schedule.html', content)
+    usr = User.objects.get(username=request.user)
+    if usr.has_perm('event.view_event', ev):
+        content = {'room': rm}
+        return render(request, 'schedule/base_schedule.html', content)
+    else:
+        raise PermissionDenied()
