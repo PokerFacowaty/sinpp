@@ -56,7 +56,6 @@ class Room(models.Model):
 
     EVENT = models.ForeignKey(Event, on_delete=models.CASCADE)
     NAME = models.CharField(max_length=100)
-    SPEEDRUNS = models.ManyToManyField("Speedrun", blank=True)
     SLUG = models.SlugField(max_length=25, unique=True, null=False)
 
     def __str__(self) -> str:
