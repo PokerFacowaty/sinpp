@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.http import HttpResponseRedirect
 from .forms import UploadCSVForm
 from schedule.parse_schedule_csv import parse_oengus, handle_uploaded_file
-from .models import EventForm, Event
+from .models import EventForm, Event, Room
 from django.contrib.auth.models import Group, User
 from django.contrib.auth.decorators import login_required
 
@@ -45,3 +45,12 @@ def add_event(request):
     else:
         form = EventForm()
     return render(request, "schedule/add_event.html", {"form": form})
+
+
+@login_required
+def schedule(request, event, room):
+    ev = Event.objects.get(SHORT_TITLE=event)
+    rm = Room.objects.get(EVENT=ev, SLUG=room)
+    content = {'room': room}
+
+    return render(request, 'schedule/base_schedule.html', content)
