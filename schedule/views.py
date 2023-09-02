@@ -51,6 +51,6 @@ def add_event(request):
 def schedule(request, event, room):
     ev = Event.objects.get(SHORT_TITLE=event)
     rm = Room.objects.get(EVENT=ev, SLUG=room)
-    content = {'room': room}
+    content = {'room': rm}
 
     return render(request, 'schedule/base_schedule.html', content)
