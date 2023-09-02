@@ -10,7 +10,8 @@ from django.contrib.auth.models import Group
 class Event(RulesModel):
 
     NAME = models.CharField(max_length=100)
-    SHORT_TITLE = models.CharField(max_length=25)
+    # TODO: change this to SLUG, but check where it's referenced first
+    SHORT_TITLE = models.SlugField(max_length=25, unique=True, null=False)
     START_DATE_TIME = models.DateTimeField()
     END_DATE_TIME = models.DateTimeField()
     STAFF = models.ForeignKey(Group, related_name="staff_of",
@@ -56,6 +57,7 @@ class Room(models.Model):
     EVENT = models.ForeignKey(Event, on_delete=models.CASCADE)
     NAME = models.CharField(max_length=100)
     SPEEDRUNS = models.ManyToManyField("Speedrun", blank=True)
+    SLUG = models.SlugField(max_length=25, unique=True, null=False)
 
     def __str__(self) -> str:
         return self.NAME + f' ({self.EVENT})'
