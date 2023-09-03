@@ -1,6 +1,6 @@
 import csv
 from pathlib import Path
-from schedule.models import Event, Speedrun, Intermission
+from schedule.models import Event, Speedrun, Intermission, Room
 from datetime import datetime as dt
 from datetime import time, timedelta
 from django.conf import settings
@@ -17,7 +17,7 @@ def handle_uploaded_file(f, type: str):
     return filepath
 
 
-def parse_oengus(filepath: Path, event: Event):
+def parse_oengus(filepath: Path, event: Event, room=None):
     print(filepath, event)
     with open(filepath) as cf:
         rdr = csv.DictReader(cf)
@@ -40,11 +40,13 @@ def parse_oengus(filepath: Path, event: Event):
                                   seconds=inter_dur[2])
 
             Speedrun.objects.create(EVENT=event,
+                                    ROOM=room,
                                     GAME=row["game"],
                                     CATEGORY=row["category"],
                                     START_TIME=run_start,
                                     ESTIMATE=estimate)
 
             Intermission.objects.create(EVENT=event,
+                                        ROOM=room,
                                         START_TIME=run_start + estimate,
                                         DURATION=inter_dur)

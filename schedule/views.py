@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.http import HttpResponseRedirect
 from .forms import UploadCSVForm
 from schedule.parse_schedule_csv import parse_oengus, handle_uploaded_file
-from .models import EventForm, Event, Room
+from .models import EventForm, Event, Room, Speedrun
 from django.contrib.auth.models import Group, User
 from django.contrib.auth.decorators import login_required
 from rules import has_perm
@@ -17,17 +17,17 @@ def index(request):
 
 @login_required
 def upload_csv(request):
+    usr = User.objects.get(username=request.user)
+    groups = usr.groups.all()
     if request.method == "POST":
-        form = UploadCSVForm(request.POST, request.FILES)
+        form = UploadCSVForm(request.POST, request.FILES, data={'groups': groups})
         print(form.errors)
         if form.is_valid():
             event = form.cleaned_data['event']
-            room = form.cleaned_data['room']
+            room = form.cleaned_data.get('room', None)
             filepath = handle_uploaded_file(request.FILES['file_'], "Oengus")
-            parse_oengus(filepath, event)
+            parse_oengus(filepath, event, room)
     else:
-        usr = User.objects.get(username=request.user)
-        groups = usr.groups.all()
         form = UploadCSVForm(data={'groups': groups})
     return render(request, "schedule/parse_csv.html", {"form": form})
 
@@ -53,9 +53,11 @@ def add_event(request):
 def schedule(request, event, room):
     ev = Event.objects.get(SHORT_TITLE=event)
     rm = Room.objects.get(EVENT=ev, SLUG=room)
+    runs = Speedrun.objects.filter(EVENT=ev, ROOM=rm).order_by("START_TIME")
     usr = User.objects.get(username=request.user)
     if usr.has_perm('event.view_event', ev):
-        content = {'room': rm}
+        content = {'room': rm, 'speedruns': runs}
+        print(runs)
         return render(request, 'schedule/base_schedule.html', content)
     else:
         raise PermissionDenied()

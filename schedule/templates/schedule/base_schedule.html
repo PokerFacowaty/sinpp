@@ -2,4 +2,16 @@
 {% load static %}
 {% block content %}
 <h1>{{ room.EVENT }} - {{ room.NAME }} Schedule</h1>
+<table>
+    <tr>
+        <th>Time</th>
+        <th>Run</th>
+    </tr>
+{% for speedrun in speedruns %}
+    <tr>
+        <td>{{ speedrun.START_TIME }}</td>
+        <td>{{ speedrun.GAME }}</td>
+    </tr>
+{% endfor %}
+</table>
 {% endblock %}
