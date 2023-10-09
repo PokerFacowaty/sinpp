@@ -1,16 +1,28 @@
 {% extends 'schedule/base.html' %}
 {% load static %}
+{% load base_schedule_filters %}
+{% block head %}<script src="{% static "schedule/js/base_schedule.js" %}"></script>{% endblock %}
 {% block content %}
 <h1>{{ room.EVENT }} - {{ room.NAME }} Schedule</h1>
 <table>
     <tr>
         <th>Time</th>
         <th>Run</th>
+        <th>Fundraising Shifts</th>
     </tr>
 {% for speedrun in speedruns %}
     <tr>
         <td>{{ speedrun.START_TIME }}</td>
         <td>{{ speedrun.GAME }}</td>
+        {% if forloop.counter0 < shifts|length %}
+            {% with sh=shifts|index:forloop.counter0 %}
+            <td>
+            {% for person in sh.VOLUNTEER.all %}
+                {{ person }}
+            {% endfor %}
+            </td>
+            {% endwith %}
+        {% endif %}
     </tr>
 {% endfor %}
 </table>

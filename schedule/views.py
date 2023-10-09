@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.http import HttpResponseRedirect
 from .forms import UploadCSVForm
 from schedule.parse_schedule_csv import parse_oengus, handle_uploaded_file
-from .models import EventForm, Event, Room, Speedrun
+from .models import EventForm, Event, Room, Speedrun, Shift
 from django.contrib.auth.models import Group, User
 from django.contrib.auth.decorators import login_required
 from rules import has_perm
@@ -55,8 +55,9 @@ def schedule(request, event, room):
     rm = Room.objects.get(EVENT=ev, SLUG=room)
     runs = Speedrun.objects.filter(EVENT=ev, ROOM=rm).order_by("START_TIME")
     usr = User.objects.get(username=request.user)
+    shifts = Shift.objects.filter(EVENT=ev, ROOM=rm)
     if usr.has_perm('event.view_event', ev):
-        content = {'room': rm, 'speedruns': runs}
+        content = {'room': rm, 'speedruns': runs, 'shifts': shifts}
         print(runs)
         return render(request, 'schedule/base_schedule.html', content)
     else:
