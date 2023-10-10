@@ -29,8 +29,10 @@ SECRET_KEY = os.environ['SECRET_KEY']
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ['DEBUG'] == 'True'
 
-ALLOWED_HOSTS = []
-
+ALLOWED_HOSTS = ['.pokerfacowaty.com']
+CSRF_TRUSTED_ORIGINS = ['https://*.pokerfacowaty.com']
+CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = True
 
 # Application definition
 
