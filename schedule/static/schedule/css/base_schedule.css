@@ -1,0 +1,44 @@
+:root {
+    --timeHeight: 120px;
+    --runsColumnWidth: 300px;
+    --runsWidth: 290px;
+}
+
+body {
+    background-color: black;
+    color: white;
+}
+
+#schedule-table {
+    display: flex;
+    position: absolute;
+}
+
+#time-column {
+    width: 100px;
+    margin-right: 10px;
+    margin-left: 10px;
+}
+
+.time-marker {
+    width: 100px;
+    /* border: 1px solid; */
+    height: var(--timeHeight);
+}
+
+#runs-column {
+    width: var(--runsColumnWidth);
+    border: 1px solid;
+}
+
+.run, .interm {
+    width: var(--runsWidth);
+    padding-left: 5px;
+    padding-right: 5px;
+    background-color: blue;
+    font-size: 0.8rem;
+}
+
+.interm {
+    background-color: red;
+}

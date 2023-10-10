@@ -1,9 +1,13 @@
 {% extends 'schedule/base.html' %}
 {% load static %}
 {% load base_schedule_filters %}
-{% block head %}<script src="{% static "schedule/js/base_schedule.js" %}"></script>{% endblock %}
+{% block head %}
+<script src="{% static "schedule/js/base_schedule.js" %}"></script>
+<link id="stylesheet" rel="stylesheet" type="text/css" href="{% static "schedule/css/base_schedule.css" %}">
+{% endblock %}
 {% block content %}
 <h1>{{ room.EVENT }} - {{ room.NAME }} Schedule</h1>
+{% comment %}
 <table>
     <tr>
         <th>Time</th>
@@ -26,4 +30,46 @@
     </tr>
 {% endfor %}
 </table>
+{% endcomment %}
+{% comment %} <table>
+    <tr>
+        <th>Time</th>
+        <th>Run</th>
+        <th>Fundraising Shifts</th>
+    </tr>
+    {% for block, length in runs_interms %}
+        <td>{{ block.START_TIME }}</td>
+        {% if block.GAME %}
+            <td>{{ block.GAME }}</td>
+        {% else %}
+            <td>Intermission</td>
+        {% if forloop.counter0 < shifts|length %}
+            <td>
+                {% with sh=shifts|index:forloop.counter0 %}
+                    
+                {% endwith %}
+        {% endfor %}
+    {% endfor %}
+    <tr>
+        <td rowspan="{{ length }}">{{ block.START_TIME }}</td>
+        
+    </tr>
+    {% endfor %}
+</table> {% endcomment %}
+<div id="schedule-table">
+    <div id="time-column">
+        {% for x in hours %}
+            <div class="time-marker">{{ x }}:00</div>
+        {% endfor %}
+    </div>
+<div id="runs-column">
+    {% for x in runs_interms %}
+        {% if x.type == 'run' %}
+            <div class="run" data-start="{{ x.start }}" data-length="{{ x.length }}">{{ x.obj.START_TIME.time }} {{ x.obj.GAME }}</div>
+        {% elif x.type == 'interm' %}
+            <div class="interm" data-start="{{ x.start }}" data-length="{{ x.length }}">{{ x.obj.START_TIME.time }} Intermission ({{ x.obj.DURATION }})</div>
+        {% endif %}
+    {% endfor %}
+</div>
+</div>
 {% endblock %}
