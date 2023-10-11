@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.http import HttpResponseRedirect
 from .forms import UploadCSVForm
 from schedule.parse_schedule_csv import parse_oengus, handle_uploaded_file
-from .models import EventForm, Event, Room, Speedrun, Shift, Intermission
+from .models import EventForm, Event, Room, Speedrun, Shift, Intermission, Role
 from django.contrib.auth.models import Group, User
 from django.contrib.auth.decorators import login_required
 from rules import has_perm
@@ -61,7 +61,12 @@ def schedule(request, event, room):
     # start in minutes since the start time, duration in minutes)]
     runs = Speedrun.objects.filter(EVENT=ev, ROOM=rm)
     interms = Intermission.objects.filter(EVENT=ev, ROOM=rm)
-    shifts = Shift.objects.filter(EVENT=ev, ROOM=rm)
+    ev_roles = Role.objects.filter(EVENT=ev)
+    # shifts = Shift.objects.filter(EVENT=ev, ROOM=rm)
+    shifts = [{x.NAME:
+               [y for y in Shift.objects.filter(EVENT=ev, ROOM=rm, ROLE=x)]}
+              for x in ev_roles]
+    print(shifts)
 
     if runs[0].START_TIME < interms[0].START_TIME:
         start_time = runs[0].START_TIME
@@ -79,9 +84,6 @@ def schedule(request, event, room):
                           x.START_TIME - start_time).total_seconds() // 60,
                       'length': math.ceil(x.DURATION.total_seconds() // 60)}
                      for x in interms]
-    timed_shifts = [(x, math.ceil((x.END_DATE_TIME
-                                   - x.START_DATE_TIME).total_seconds() // 60))
-                    for x in shifts]
 
     runs_interms = []
     runs_interms = [x for x in timed_runs]
@@ -108,8 +110,8 @@ def schedule(request, event, room):
     if usr.has_perm('event.view_event', ev):
         # TODO: move this to the beginning so that no resources are wasted
         # when someone is not permitted
-        content = {'room': rm, 'runs_interms': runs_interms,
-                   'shifts': timed_shifts, 'times': times}
+        content = {'room': rm, 'runs_interms': runs_interms, 'times': times,
+                   'roles': [x.NAME for x in ev_roles], 'shifts': shifts}
         return render(request, 'schedule/base_schedule.html', content)
     else:
         raise PermissionDenied()
