@@ -1,5 +1,5 @@
 :root {
-    --timeHeight: 118px; /* 120px so that a minute is 2 px - 2px for border */
+    --timeHeight: 120px; /* 120px so that a minute is 2 px - 2px for border */
     --runsColumnWidth: 300px;
     --runsWidth: 290px; /* --runsColumnWidth - padding */
     --shiftsColumnWidth: 300px;
@@ -9,6 +9,11 @@
 body {
     background-color: black;
     color: white;
+}
+
+h1 {
+    color: white;
+    margin-left: 10px;
 }
 
 #column-names {
@@ -24,12 +29,16 @@ body {
 #time-runs {
     text-align: center;
     background-color: blueviolet;
+    margin-left: 5px;
+    margin-right: 5px;
 }
 
 .role-name {
     width: var(--runsColumnWidth);
     text-align: center;
     background-color: brown;
+    margin-left: 5px;
+    margin-right: 5px;
 }
 
 #schedule-table {
@@ -45,7 +54,8 @@ body {
 
 .time-marker {
     width: 100px;
-    border: 1px solid;
+    /* border: 1px solid; */
+    border-top: 1px solid;
     height: var(--timeHeight);
 }
 
@@ -54,12 +64,16 @@ body {
 }
 
 #runs-column {
-    border: 1px solid;
+    /* border: 1px solid; */
+    margin-left: 5px;
+    margin-right: 5px;
 }
 
 .shifts-column {
     width: var(--shiftsColumnWidth);
-    border: 1px solid;
+    /* border: 1px solid; */
+    margin-left: 5px;
+    margin-right: 5px;
 }
 
 .shift {
@@ -67,7 +81,8 @@ body {
     padding-left: 5px;
     padding-right: 5px;
     background-color: aquamarine;
-    font-size: 0.8rem;
+    margin-left: 5px;
+    margin-right: 5px;
 }
 
 .run, .interm {
@@ -75,7 +90,9 @@ body {
     padding-left: 5px;
     padding-right: 5px;
     background-color: blue;
-    font-size: 0.8rem;
+    font-size: 14px;
+    margin-left: 5px;
+    margin-right: 5px;
 }
 
 .interm {
