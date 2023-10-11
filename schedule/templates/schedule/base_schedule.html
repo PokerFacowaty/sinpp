@@ -7,60 +7,8 @@
 {% endblock %}
 {% block content %}
 <h1>{{ room.EVENT }} - {{ room.NAME }} Schedule</h1>
-{% comment %}
-<table>
-    <tr>
-        <th>Time</th>
-        <th>Run</th>
-        <th>Fundraising Shifts</th>
-    </tr>
-{% for speedrun in speedruns %}
-    <tr>
-        <td>{{ speedrun.START_TIME }}</td>
-        <td>{{ speedrun.GAME }}</td>
-        {% if forloop.counter0 < shifts|length %}
-            {% with sh=shifts|index:forloop.counter0 %}
-            <td>
-            {% for person in sh.VOLUNTEER.all %}
-                {{ person }}
-            {% endfor %}
-            </td>
-            {% endwith %}
-        {% endif %}
-    </tr>
-{% endfor %}
-</table>
-{% endcomment %}
-{% comment %} <table>
-    <tr>
-        <th>Time</th>
-        <th>Run</th>
-        <th>Fundraising Shifts</th>
-    </tr>
-    {% for block, length in runs_interms %}
-        <td>{{ block.START_TIME }}</td>
-        {% if block.GAME %}
-            <td>{{ block.GAME }}</td>
-        {% else %}
-            <td>Intermission</td>
-        {% if forloop.counter0 < shifts|length %}
-            <td>
-                {% with sh=shifts|index:forloop.counter0 %}
-                    
-                {% endwith %}
-        {% endfor %}
-    {% endfor %}
-    <tr>
-        <td rowspan="{{ length }}">{{ block.START_TIME }}</td>
-        
-    </tr>
-    {% endfor %}
-</table> {% endcomment %}
 <div id="schedule-table">
         <div id="time-column">
-            {% comment %} {% for x in hours %}
-                <div class="time-marker">{{ x }}:00</div>
-            {% endfor %} {% endcomment %}
             {% for t in times %}
                 <div class="time-marker">{{ t }}</div>
             {% endfor %}
