@@ -29,5 +29,16 @@
             {% endif %}
         {% endfor %}
     </div>
+    {% for role, shifts in shifts.items %}
+        <div class="shifts-column">
+            {% for shift in shifts %}
+                <div class="shift block">
+                    {% for name in shift.VOLUNTEER_NAMES %}
+                        {{ name }}
+                    {% endfor %}
+                </div>
+            {% endfor %}
+        </div>
+    {% endfor %}
 </div>
 {% endblock %}

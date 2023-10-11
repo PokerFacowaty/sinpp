@@ -63,9 +63,12 @@ def schedule(request, event, room):
     interms = Intermission.objects.filter(EVENT=ev, ROOM=rm)
     ev_roles = Role.objects.filter(EVENT=ev)
     # shifts = Shift.objects.filter(EVENT=ev, ROOM=rm)
-    shifts = [{x.NAME:
-               [y for y in Shift.objects.filter(EVENT=ev, ROOM=rm, ROLE=x)]}
-              for x in ev_roles]
+    role_shifts = {x.NAME:
+                   [y for y in Shift.objects.filter(EVENT=ev, ROOM=rm, ROLE=x)]
+                   for x in ev_roles}
+    for role in role_shifts.values():
+        for sh in role:
+            sh.VOLUNTEER_NAMES = sh.VOLUNTEER.all()
 
     if runs[0].START_TIME < interms[0].START_TIME:
         start_time = runs[0].START_TIME
@@ -110,7 +113,9 @@ def schedule(request, event, room):
         # TODO: move this to the beginning so that no resources are wasted
         # when someone is not permitted
         content = {'room': rm, 'runs_interms': runs_interms, 'times': times,
-                   'roles': [x.NAME for x in ev_roles], 'shifts': shifts}
+                   'roles': [x.NAME for x in ev_roles], 'shifts': role_shifts}
+        print(content["roles"])
+        print(content["shifts"])
         return render(request, 'schedule/base_schedule.html', content)
     else:
         raise PermissionDenied()
