@@ -133,6 +133,14 @@ class Shift(models.Model):
 
     SPEEDRUNS = models.ManyToManyField("Speedrun", blank=True)
 
+    @predicate
+    def is_event_staff(user, event):
+        return user.groups.filter(name=event.STAFF).exists()
+
+    add_perm('shift.add_shift', is_event_staff)
+    add_perm('shift.change_shift', is_event_staff)
+    add_perm('shift.delete_shift', is_event_staff)
+
     def __str__(self) -> str:
         result = f'{", ".join([x.NICKNAME for x in self.VOLUNTEER.all()])} @ {self.START_DATE_TIME}'
         if self.ROOM:
