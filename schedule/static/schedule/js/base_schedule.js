@@ -9,8 +9,8 @@ function main(){
 }
 
 const waitLoad = setInterval(() => {
-    if (document.body !== null){
+    if (document.getElementsByClassName("block") !== null){
         clearInterval(waitLoad);
-        document.body.onload = main()
+        main();
     }
 }, 100)
