@@ -57,6 +57,19 @@ body {
     border: 1px solid;
 }
 
+.shifts-column {
+    width: var(--shiftsColumnWidth);
+    border: 1px solid;
+}
+
+.shift {
+    width: var(--shiftsWidth);
+    padding-left: 5px;
+    padding-right: 5px;
+    background-color: aquamarine;
+    font-size: 0.8rem;
+}
+
 .run, .interm {
     width: var(--runsWidth);
     padding-left: 5px;
