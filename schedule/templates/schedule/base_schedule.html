@@ -57,19 +57,22 @@
     {% endfor %}
 </table> {% endcomment %}
 <div id="schedule-table">
-    <div id="time-column">
-        {% for x in hours %}
-            <div class="time-marker">{{ x }}:00</div>
+        <div id="time-column">
+            {% comment %} {% for x in hours %}
+                <div class="time-marker">{{ x }}:00</div>
+            {% endfor %} {% endcomment %}
+            {% for t in times %}
+                <div class="time-marker">{{ t }}</div>
+            {% endfor %}
+        </div>
+    <div id="runs-column">
+        {% for x in runs_interms %}
+            {% if x.type == 'run' %}
+                <div class="run" data-start="{{ x.start }}" data-length="{{ x.length }}">{{ x.obj.START_TIME.time }} {{ x.obj.GAME }}</div>
+            {% elif x.type == 'interm' %}
+                <div class="interm" data-start="{{ x.start }}" data-length="{{ x.length }}">{{ x.obj.START_TIME.time }} Intermission ({{ x.obj.DURATION }})</div>
+            {% endif %}
         {% endfor %}
     </div>
-<div id="runs-column">
-    {% for x in runs_interms %}
-        {% if x.type == 'run' %}
-            <div class="run" data-start="{{ x.start }}" data-length="{{ x.length }}">{{ x.obj.START_TIME.time }} {{ x.obj.GAME }}</div>
-        {% elif x.type == 'interm' %}
-            <div class="interm" data-start="{{ x.start }}" data-length="{{ x.length }}">{{ x.obj.START_TIME.time }} Intermission ({{ x.obj.DURATION }})</div>
-        {% endif %}
-    {% endfor %}
-</div>
 </div>
 {% endblock %}
