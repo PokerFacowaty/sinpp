@@ -9,12 +9,27 @@ body {
     color: white;
 }
 
+#column-names {
+    display: flex;
+    margin-bottom: 5px;
+}
+
+#time-name {
+    text-align: center;
+    background-color: brown;
+}
+
+#time-runs {
+    text-align: center;
+    background-color: blueviolet;
+}
+
 #schedule-table {
     display: flex;
     position: absolute;
 }
 
-#time-column {
+#time-column, #time-name {
     width: 100px;
     margin-right: 10px;
     margin-left: 10px;
@@ -26,8 +41,11 @@ body {
     height: var(--timeHeight);
 }
 
-#runs-column {
+#runs-column, #time-runs {
     width: var(--runsColumnWidth);
+}
+
+#runs-column {
     border: 1px solid;
 }
 
