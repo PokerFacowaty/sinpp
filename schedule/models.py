@@ -136,7 +136,7 @@ class Shift(models.Model):
     def __str__(self) -> str:
         result = f'{self.VOLUNTEER} @ {self.START_DATE_TIME}'
         if self.ROOM:
-            result += f' ({self.ROOm})'
+            result += f' ({self.ROOM})'
         result += f' ({self.EVENT})'
         return result
 
