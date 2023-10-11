@@ -113,7 +113,7 @@ def schedule(request, event, room):
         # TODO: move this to the beginning so that no resources are wasted
         # when someone is not permitted
         content = {'room': rm, 'runs_interms': runs_interms, 'times': times,
-                   'roles': [x.NAME for x in ev_roles], 'shifts': role_shifts}
+                   'shifts': role_shifts}
         return render(request, 'schedule/base_schedule.html', content)
     else:
         raise PermissionDenied()
