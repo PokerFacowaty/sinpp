@@ -2,6 +2,8 @@
     --timeHeight: 118px; /* 120px so that a minute is 2 px - 2px for border */
     --runsColumnWidth: 300px;
     --runsWidth: 290px; /* --runsColumnWidth - padding */
+    --shiftsColumnWidth: 300px;
+    --shiftsWidth: 290px;
 }
 
 body {
@@ -22,6 +24,12 @@ body {
 #time-runs {
     text-align: center;
     background-color: blueviolet;
+}
+
+.role-name {
+    width: var(--runsColumnWidth);
+    text-align: center;
+    background-color: brown;
 }
 
 #schedule-table {

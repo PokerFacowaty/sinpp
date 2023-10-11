@@ -7,6 +7,13 @@
 {% endblock %}
 {% block content %}
 <h1>{{ room.EVENT }} - {{ room.NAME }} Schedule</h1>
+<div id="column-names">
+    <div id="time-name">Time</div>
+    <div id="time-runs">Speedruns / Intermissions</div>
+    {% for role in roles %}
+        <div class="role-name"> {{ role }} </div>
+    {% endfor %}
+</div>
 <div id="schedule-table">
         <div id="time-column">
             {% for t in times %}
