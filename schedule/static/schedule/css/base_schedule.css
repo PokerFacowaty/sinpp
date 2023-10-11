@@ -1,7 +1,7 @@
 :root {
-    --timeHeight: 118px;
+    --timeHeight: 118px; /* 120px so that a minute is 2 px - 2px for border */
     --runsColumnWidth: 300px;
-    --runsWidth: 290px;
+    --runsWidth: 290px; /* --runsColumnWidth - padding */
 }
 
 body {
