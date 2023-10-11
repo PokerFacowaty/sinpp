@@ -63,17 +63,20 @@ def schedule(request, event, room):
     interms = Intermission.objects.filter(EVENT=ev, ROOM=rm)
     ev_roles = Role.objects.filter(EVENT=ev)
     # shifts = Shift.objects.filter(EVENT=ev, ROOM=rm)
+    if runs[0].START_TIME < interms[0].START_TIME:
+        start_time = runs[0].START_TIME
+    else:
+        start_time = interms[0].START_TIME
     role_shifts = {x.NAME:
                    [y for y in Shift.objects.filter(EVENT=ev, ROOM=rm, ROLE=x)]
                    for x in ev_roles}
     for role in role_shifts.values():
         for sh in role:
-            sh.VOLUNTEER_NAMES = sh.VOLUNTEER.all()
-
-    if runs[0].START_TIME < interms[0].START_TIME:
-        start_time = runs[0].START_TIME
-    else:
-        start_time = interms[0].START_TIME
+            # Lower case for things added here and not in the model
+            sh.volunteer_names = sh.VOLUNTEER.all()
+            sh.start = ((sh.START_DATE_TIME - start_time).total_seconds() // 60)
+            sh.length = math.ceil((sh.END_DATE_TIME
+                                   - sh.START_DATE_TIME).total_seconds() // 60)
 
     timed_runs = [{'type': 'run',
                    'obj': x,
