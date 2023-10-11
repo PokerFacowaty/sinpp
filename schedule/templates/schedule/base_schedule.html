@@ -68,9 +68,9 @@
     <div id="runs-column">
         {% for x in runs_interms %}
             {% if x.type == 'run' %}
-                <div class="run" data-start="{{ x.start }}" data-length="{{ x.length }}">{{ x.obj.START_TIME.time }} {{ x.obj.GAME }}</div>
+                <div class="run block" data-start="{{ x.start }}" data-length="{{ x.length }}">{{ x.obj.START_TIME.time }} {{ x.obj.GAME }}</div>
             {% elif x.type == 'interm' %}
-                <div class="interm" data-start="{{ x.start }}" data-length="{{ x.length }}">{{ x.obj.START_TIME.time }} Intermission ({{ x.obj.DURATION }})</div>
+                <div class="interm block" data-start="{{ x.start }}" data-length="{{ x.length }}">{{ x.obj.START_TIME.time }} Intermission ({{ x.obj.DURATION }})</div>
             {% endif %}
         {% endfor %}
     </div>
