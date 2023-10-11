@@ -66,7 +66,6 @@ def schedule(request, event, room):
     shifts = [{x.NAME:
                [y for y in Shift.objects.filter(EVENT=ev, ROOM=rm, ROLE=x)]}
               for x in ev_roles]
-    print(shifts)
 
     if runs[0].START_TIME < interms[0].START_TIME:
         start_time = runs[0].START_TIME
