@@ -1,5 +1,5 @@
 :root {
-    --timeHeight: 120px; /* 120px so that a minute is 2 px - 2px for border */
+    --timeHeight: 119px; /* 120px so that a minute is 2 px - 2px for border */
     --runsColumnWidth: 300px;
     --runsWidth: 290px; /* --runsColumnWidth - padding */
     --shiftsColumnWidth: 300px;
