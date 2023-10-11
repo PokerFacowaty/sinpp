@@ -48,15 +48,15 @@ function openDialog(x, y, type){
 document.addEventListener('click', function(e){
     if (e.target.classList.contains("addShiftFromRun")){
         console.log("addShiftFromRun");
-        openDialog(e.clientX, e.clientY, "addShiftFromRun")
+        openDialog(e.pageX, e.pageY, "addShiftFromRun")
     }
     else if (e.target.classList.contains("editShift")){
         console.log("editShift");
-        openDialog(e.clientX, e.clientY, "editShift")
+        openDialog(e.pageX, e.pageY, "editShift")
     }
     else if (e.target.classList.contains("removeShift")){
         console.log("removeShift");
-        openDialog(e.clientX, e.clientY, "removeShift");
+        openDialog(e.pageX, e.pageY, "removeShift");
     }
 })
 
