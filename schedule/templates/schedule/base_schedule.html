@@ -23,9 +23,14 @@
     <div id="runs-column">
         {% for x in runs_interms %}
             {% if x.type == 'run' %}
-                <div class="run block" data-start="{{ x.start }}" data-length="{{ x.length }}" style="visibility: hidden">{{ x.obj.START_TIME.time }} {{ x.obj.GAME }}</div>
+                <div class="run block" data-start="{{ x.start }}" data-length="{{ x.length }}" style="visibility: hidden">
+                    <div>{{ x.obj.START_TIME.time }} {{ x.obj.GAME }}</div>
+                    <button class="addShiftFromRun">Add Shift From This Run</button>
+                </div>
             {% elif x.type == 'interm' %}
-                <div class="interm block" data-start="{{ x.start }}" data-length="{{ x.length }}" style="visibility: hidden">{{ x.obj.START_TIME.time }} Intermission ({{ x.obj.DURATION }})</div>
+                <div class="interm block" data-start="{{ x.start }}" data-length="{{ x.length }}" style="visibility: hidden">
+                    {{ x.obj.START_TIME.time }} Intermission ({{ x.obj.DURATION }})
+                </div>
             {% endif %}
         {% endfor %}
     </div>
@@ -33,9 +38,13 @@
         <div class="shifts-column">
             {% for shift in shifts %}
                 <div class="shift block" data-start="{{ shift.start }}" data-length="{{ shift.length }}" style="visibility: hidden">
-                    {% for name in shift.volunteer_names %}
-                        {{ name }}
-                    {% endfor %}
+                    <div>
+                        {% for name in shift.volunteer_names %}
+                            {{ name }}
+                        {% endfor %}
+                    </div>
+                    <button class="editShift">Edit Shift</button>
+                    <button class="removeShift">Remove Shift</button>
                 </div>
             {% endfor %}
         </div>
