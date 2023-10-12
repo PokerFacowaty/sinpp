@@ -148,18 +148,23 @@ def shift(request, shift_id):
             data = serializers.serialize('json', shift)
             return JsonResponse({'context': data})
 
-        if request.method == "POST":
-            data = json.load(request)
-            shift = data.get('payload')
-            new_shift = Shift.objects.create(
-                                    ROLE=shift['ROLE'],
-                                    EVENT=shift['EVENT'],
-                                    ROOM=shift['ROOM'],
-                                    START_DATE_TIME=shift['START_DATE_TIME'],
-                                    END_DATE_TIME=shift['END_DATE_TIME'])
-            new_shift.save()
-            return JsonResponse({'status': 'Shift added!',
-                                 'context': {'id': new_shift.id}})
         return JsonResponse({'status': 'Invalid request.'}, status=400)
     else:
         return HttpResponseBadRequest('Invalid request')
+
+
+def add_shift(request):
+    if request.method == "POST":
+        data = json.load(request)
+        print(data)
+        shift = data.get('payload')
+        print(shift)
+        new_shift = Shift.objects.create(
+                                ROLE=Role.objects.get(pk=int(shift['ROLE'])),
+                                EVENT=Event.objects.get(pk=int(shift['EVENT'])),
+                                ROOM=Room.objects.get(pk=int(shift['ROOM'])),
+                                START_DATE_TIME=shift['START_DATE_TIME'],
+                                END_DATE_TIME=shift['END_DATE_TIME'])
+        new_shift.save()
+        return JsonResponse({'status': 'Shift added!',
+                                'context': {'id': new_shift.id}})
