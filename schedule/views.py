@@ -22,7 +22,8 @@ def upload_csv(request):
     usr = User.objects.get(username=request.user)
     groups = usr.groups.all()
     if request.method == "POST":
-        form = UploadCSVForm(request.POST, request.FILES, data={'groups': groups})
+        form = UploadCSVForm(request.POST, request.FILES,
+                             data={'groups': groups})
         print(form.errors)
         if form.is_valid():
             event = form.cleaned_data['event']
@@ -74,7 +75,8 @@ def schedule(request, event, room):
         for sh in role:
             # Lower case for things added here and not in the model
             sh.volunteer_names = sh.VOLUNTEER.all()
-            sh.start = ((sh.START_DATE_TIME - start_time).total_seconds() // 60)
+            sh.start = ((sh.START_DATE_TIME
+                         - start_time).total_seconds() // 60)
             sh.length = math.ceil((sh.END_DATE_TIME
                                    - sh.START_DATE_TIME).total_seconds() // 60)
 
