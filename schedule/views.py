@@ -12,6 +12,7 @@ import math
 from datetime import timedelta
 import json
 from django.core import serializers
+from django.views.decorators.csrf import ensure_csrf_cookie
 
 
 def index(request):
@@ -56,6 +57,7 @@ def add_event(request):
 
 
 @login_required
+@ensure_csrf_cookie
 def schedule(request, event, room):
     ev = Event.objects.get(SHORT_TITLE=event)
     rm = Room.objects.get(EVENT=ev, SLUG=room)
