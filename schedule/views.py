@@ -1,5 +1,6 @@
 from django.shortcuts import render
-from django.http import HttpResponseRedirect
+from django.http import (HttpResponseRedirect, JsonResponse,
+                         HttpResponseBadRequest)
 from .forms import UploadCSVForm
 from schedule.parse_schedule_csv import parse_oengus, handle_uploaded_file
 from .models import EventForm, Event, Room, Speedrun, Shift, Intermission, Role
@@ -9,6 +10,8 @@ from rules import has_perm
 from django.core.exceptions import PermissionDenied
 import math
 from datetime import timedelta
+import json
+from django.core import serializers
 
 
 def index(request):
@@ -122,3 +125,39 @@ def schedule(request, event, room):
         return render(request, 'schedule/base_schedule.html', content)
     else:
         raise PermissionDenied()
+
+
+# NOTE: @login_required is HTML, so throws an error with JSON
+@login_required
+def shift(request, shift_id):
+    shift = Shift.objects.filter(pk=shift_id)
+    if not shift:
+        return JsonResponse({'context': "Shift not found"}, status=404)
+
+    usr = User.objects.get(username=request.user)
+    ev = Shift.objects.get(pk=shift_id).EVENT
+    if not usr.has_perm('shift.view_shift', ev):
+        JsonResponse({'context': 'Permission denied'}, status=403)
+
+    is_ajax = request.headers.get("X-Requested-With") == "XMLHttpRequest"
+
+    if is_ajax:
+        if request.method == "GET":
+            data = serializers.serialize('json', shift)
+            return JsonResponse({'context': data})
+
+        if request.method == "POST":
+            data = json.load(request)
+            shift = data.get('payload')
+            new_shift = Shift.objects.create(
+                                    ROLE=shift['ROLE'],
+                                    EVENT=shift['EVENT'],
+                                    ROOM=shift['ROOM'],
+                                    START_DATE_TIME=shift['START_DATE_TIME'],
+                                    END_DATE_TIME=shift['END_DATE_TIME'])
+            new_shift.save()
+            return JsonResponse({'status': 'Shift added!',
+                                 'context': {'id': new_shift.id}})
+        return JsonResponse({'status': 'Invalid request.'}, status=400)
+    else:
+        return HttpResponseBadRequest('Invalid request')
