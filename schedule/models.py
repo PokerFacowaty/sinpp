@@ -137,6 +137,7 @@ class Shift(models.Model):
     def is_event_staff(user, event):
         return user.groups.filter(name=event.STAFF).exists()
 
+    add_perm('shift.view_shift', is_event_staff)
     add_perm('shift.add_shift', is_event_staff)
     add_perm('shift.change_shift', is_event_staff)
     add_perm('shift.delete_shift', is_event_staff)
