@@ -11,7 +11,7 @@
     <div id="time-name">Time</div>
     <div id="time-runs">Speedruns / Intermissions</div>
     {% for role in shifts.keys %}
-        <div class="role-name"> {{ role }} </div>
+        <div class="role-name"> {{ role.0 }} </div>
     {% endfor %}
 </div>
 <div id="schedule-table">
@@ -35,7 +35,7 @@
         {% endfor %}
     </div>
     {% for role, shifts in shifts.items %}
-        <div class="shifts-column">
+        <div class="shifts-column" data-role-id="{{ role.1 }}">
             {% for shift in shifts %}
                 <div class="shift block" data-start="{{ shift.start }}" data-length="{{ shift.length }}" style="visibility: hidden">
                     <div>

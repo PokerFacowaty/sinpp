@@ -73,7 +73,7 @@ def schedule(request, event, room):
         start_time = runs[0].START_TIME
     else:
         start_time = interms[0].START_TIME
-    role_shifts = {x.NAME:
+    role_shifts = {(x.NAME, x.id):
                    [y for y in Shift.objects.filter(EVENT=ev, ROOM=rm, ROLE=x)]
                    for x in ev_roles}
     for role in role_shifts.values():
