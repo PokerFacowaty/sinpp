@@ -35,9 +35,9 @@ function openDialog(x, y, type){
         // TODO: min & max
         inner = (`<button autofocus id="closeButton">Cancel</button>`
                  + '<label for="start-time">Start time:</label>'
-                 + '<input type="datetime-local id="start-time" name="start-time">'
+                 + '<input type="datetime-local" id="start-time" name="start-time">'
                  + '<label for="end-time">End time:</label>'
-                 + '<input type="datetime-local id="end-time" name="end-time">')
+                 + '<input type="datetime-local" id="end-time" name="end-time">')
     }
 
     dialog.innerHTML = inner;
