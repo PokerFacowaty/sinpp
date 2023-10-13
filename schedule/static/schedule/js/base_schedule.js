@@ -51,6 +51,7 @@ function createShiftBox(e){
     let rounded_pos = Math.round(y - y % 30);
 
     let shiftBox = document.createElement("div");
+    shiftBox.id = "unsaved-shift";
     shiftBox.classList.add("shift", "block");
     shiftBox.style.position = "absolute";
     shiftBox.style.top = `${rounded_pos}px`;
