@@ -31,17 +31,47 @@ function openDialog(x, y, type){
                  + "<p>Removing Shift</p>"
                  + "</dialog>")
     }
+    else if (type === "addShift"){
+        // TODO: min & max
+        inner = (`<button autofocus id="closeButton">Cancel</button>`
+                 + '<label for="start-time">Start time:</label>'
+                 + '<input type="datetime-local id="start-time" name="start-time">'
+                 + '<label for="end-time">End time:</label>'
+                 + '<input type="datetime-local id="end-time" name="end-time">')
+    }
 
     dialog.innerHTML = inner;
+    dialog.id = "form-dialog"
     dialog.classList.add("form-dialog");
     dialog.style = `position: absolute; left: ${x}px; top: ${y}px; margin: 0`
     document.body.appendChild(dialog);
 
     const closeButton = document.getElementById("closeButton");
     closeButton.addEventListener("click", () => {
+        if (document.getElementById("unsaved-shift")){
+            document.getElementById("unsaved-shift").remove();
+            }
         dialog.close();
         dialog.remove();
     })
+
+    if (type === "addShift"){
+        document.body.addEventListener("click", () => {
+            // This is so a click outside the dialog "cleans up"
+            if (document.getElementById("unsaved-shift")){
+            document.getElementById("unsaved-shift").remove();
+            }
+            dialog.close();
+            dialog.remove();
+            document.body.removeEventListener("click", () => {}, false);
+        })
+        dialog.addEventListener("click", (e) => {
+            // So that clicking inside the dialog doesn't "clean up"
+            e.preventDefault();
+            e.stopPropagation();
+            e.stopImmediatePropagation();
+        })
+    }
     dialog.show();
 }
 
@@ -93,7 +123,16 @@ document.addEventListener('click', function(e){
         openDialog(e.pageX, e.pageY, "removeShift");
     }
     else if (e.target.classList.contains("shifts-column")){
+        // close Dialog if it's open
+        if (document.getElementById("form-dialog")){
+            document.getElementById("form-dialog").close();
+            document.getElementById("form-dialog").remove();
+        }
+        if (document.getElementById("unsaved-shift")){
+            document.getElementById("unsaved-shift").remove();
+        }
         createShiftBox(e);
+        openDialog(e.pageX, e.pageY, "addShift");
     }
 })
 
