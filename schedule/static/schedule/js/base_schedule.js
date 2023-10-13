@@ -45,6 +45,21 @@ function openDialog(x, y, type){
     dialog.show();
 }
 
+function createShiftBox(e){
+    let rect = e.target.getBoundingClientRect();
+    let y = e.clientY - rect.top;
+    let rounded_pos = Math.round(y - y % 30);
+
+    let shiftBox = document.createElement("div");
+    shiftBox.classList.add("shift", "block");
+    shiftBox.style.position = "absolute";
+    shiftBox.style.top = `${rounded_pos}px`;
+    shiftBox.style.height = `${60}px`;
+    shiftBox.style.visibility = "visible";
+
+    e.target.appendChild(shiftBox);
+}
+
 // https://docs.djangoproject.com/en/4.2/howto/csrf/#acquiring-the-token-if-csrf-use-sessions-and-csrf-cookie-httponly-are-false
 function getCookie(name) {
     let cookieValue = null;
@@ -75,6 +90,9 @@ document.addEventListener('click', function(e){
     else if (e.target.classList.contains("removeShift")){
         console.log("removeShift");
         openDialog(e.pageX, e.pageY, "removeShift");
+    }
+    else if (e.target.classList.contains("shifts-column")){
+        createShiftBox(e);
     }
 })
 
