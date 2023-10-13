@@ -22,11 +22,13 @@ h1 {
 }
 
 #time-name {
+    flex-shrink: 0;
     text-align: center;
     background-color: brown;
 }
 
 #time-runs {
+    flex-shrink: 0;
     text-align: center;
     background-color: blueviolet;
     margin-left: 5px;
@@ -34,6 +36,7 @@ h1 {
 }
 
 .role-name {
+    flex-shrink: 0;
     width: var(--runsColumnWidth);
     text-align: center;
     background-color: brown;
