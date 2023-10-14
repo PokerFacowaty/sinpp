@@ -162,6 +162,7 @@ document.addEventListener('click', function(e){
 })
 
 const waitLoad = setInterval(() => {
+    // TODO: needs changing, this won't work with an empty schedule
     if (document.getElementsByClassName("block") !== null){
         clearInterval(waitLoad);
         TABLE_START_TIME = new Date(document.getElementById("schedule-table").dataset.startTs);
