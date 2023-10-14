@@ -33,11 +33,12 @@ function openDialog(x, y, type){
     }
     else if (type === "addShift"){
         // TODO: min & max
+        // TODO: initial values
         inner = (`<button autofocus id="closeButton">Cancel</button>`
-                 + '<label for="start-time">Start time:</label>'
-                 + '<input type="datetime-local" id="start-time" name="start-time">'
-                 + '<label for="end-time">End time:</label>'
-                 + '<input type="datetime-local" id="end-time" name="end-time">')
+                 + '<label for="start-time" style="display: block">Start time:</label>'
+                 + '<input type="datetime-local" id="start-time" name="start-time" style="display: block">'
+                 + '<label for="end-time" style="display: block">End time:</label>'
+                 + '<input type="datetime-local" id="end-time" name="end-time" style="display: block">')
     }
 
     dialog.innerHTML = inner;
