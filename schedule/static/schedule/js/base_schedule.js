@@ -36,8 +36,6 @@ function openDialog(x, y, type){
                  + "</dialog>")
     }
     else if (type === "addShift"){
-        // TODO: min & max
-        // TODO: initial values
         /*
         A short intro to what's going to happen here. Currently, the event is
         operating in UTC and I plan to always have the event stored internally
