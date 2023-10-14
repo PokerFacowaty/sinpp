@@ -172,6 +172,8 @@ function sendRequest(e){
                 shift.classList.add("shift", "block");
                 shift.innerHTML = `<button class="editShift">Edit Shift</button>
                 <button class="removeShift">Remove Shift</button>`;
+                dialog.close();
+                dialog.remove();
             })
             // .then(data => {
             //     console.log(data);
