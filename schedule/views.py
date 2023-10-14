@@ -58,9 +58,11 @@ def add_event(request):
 
 @login_required
 @ensure_csrf_cookie
-def schedule(request, event, room):
-    ev = Event.objects.get(SHORT_TITLE=event)
-    rm = Room.objects.get(EVENT=ev, SLUG=room)
+def schedule(request, event_id, room_id):
+    # ev = Event.objects.get(SHORT_TITLE=event)
+    # rm = Room.objects.get(EVENT=ev, SLUG=room)
+    ev = Event.objects.get(pk=event_id)
+    rm = Room.objects.get(pk=room_id)
     usr = User.objects.get(username=request.user)
 
     # experimenting with [("run" or "interm", thing,
