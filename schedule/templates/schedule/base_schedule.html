@@ -37,7 +37,7 @@
     {% for role, shifts in shifts.items %}
         <div class="shifts-column" data-role-id="{{ role.1 }}">
             {% for shift in shifts %}
-                <div class="shift block" data-start="{{ shift.start }}" data-length="{{ shift.length }}" style="visibility: hidden">
+                <div class="shift block" data-start="{{ shift.start }}" data-length="{{ shift.length }}" data-shift-id="{{ shift.id }}" style="visibility: hidden">
                     <div>
                         {% for name in shift.volunteer_names %}
                             {{ name }}
