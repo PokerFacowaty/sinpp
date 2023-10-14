@@ -189,7 +189,10 @@ function sendRequest(e){
         })
         .then(response => response.json())
         .then(data => {
-            console.log(data);
+            document.querySelector(`[data-shift-id="${shiftId}"].shift`).remove();
+            let dialog = document.querySelector("dialog.remove-shift")
+            dialog.close();
+            dialog.remove();
         })
     }
 }
