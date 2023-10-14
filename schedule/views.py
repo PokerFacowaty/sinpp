@@ -124,7 +124,7 @@ def schedule(request, event, room):
         # when someone is not permitted
         content = {'room': rm, 'runs_interms': runs_interms, 'times': times,
                    'shifts': role_shifts, 'table_start': table_start.isoformat(),
-                   'table_end': table_end.isoformat()}
+                   'table_end': (table_end + timedelta(hours=1)).isoformat()}
         return render(request, 'schedule/base_schedule.html', content)
     else:
         raise PermissionDenied()

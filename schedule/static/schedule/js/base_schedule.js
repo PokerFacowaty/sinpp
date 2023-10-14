@@ -1,3 +1,7 @@
+// TODO: fix them as const once I figure out the loading
+let TABLE_START_TIME;
+let TABLE_END_TIME;
+
 function main(){
     const blocks = document.getElementsByClassName("block");
     for (const bl of blocks){
@@ -140,6 +144,9 @@ document.addEventListener('click', function(e){
 const waitLoad = setInterval(() => {
     if (document.getElementsByClassName("block") !== null){
         clearInterval(waitLoad);
+        TABLE_START_TIME = new Date(document.getElementById("schedule-table").dataset.startTs);
+        TABLE_END_TIME = new Date(document.getElementById("schedule-table").dataset.endTs);
+        console.log(TABLE_START_TIME, TABLE_END_TIME)
         main();
     }
 }, 100)
