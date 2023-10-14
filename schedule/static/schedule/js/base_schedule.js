@@ -161,10 +161,21 @@ function sendRequest(e){
                                             ROOM: roomId,
                                             START_DATE_TIME: start_time,
                                             END_DATE_TIME: end_time}})})
-            .then(response => response.json())
-            .then(data => {
-                console.log(data);
+            .then(response => {
+                if (response.ok){
+                    return new Promise(resolve => {resolve(response.json())})
+                }
+                // response.json()
             })
+            .then(data => {
+                shift.id = "";
+                shift.classList.add("shift", "block");
+                shift.innerHTML = `<button class="editShift">Edit Shift</button>
+                <button class="removeShift">Remove Shift</button>`;
+            })
+            // .then(data => {
+            //     console.log(data);
+            // })
     }
     else if (classes.contains("remove-shift")){
         const shiftId = Number(e.target.parentElement.dataset.shiftId);
