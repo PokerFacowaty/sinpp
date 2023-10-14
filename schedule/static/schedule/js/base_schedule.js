@@ -38,11 +38,31 @@ function openDialog(x, y, type){
     else if (type === "addShift"){
         // TODO: min & max
         // TODO: initial values
+        /*
+        A short intro to what's going to happen here. Currently, the event is
+        operating in UTC and I plan to always have the event stored internally
+        in UTC (with inputs / output in local timezones).
+
+        RIGHT NOW though, the event is UTC and the output to the schedule page
+        in UTC in a sense that it starts at the same time no matter where you
+        view the page. This isn't an issue by itself BUT the datetime-local
+        input obviously has timezones. So FOR NOW I'm going to hack around it
+        by turning the UTC into local (as 1:1 the same time) and vice versa
+        for actual place on the event timeline <-> the input field. This will
+        be fixed once I get around to viewing the events in local timezones
+        properly, since the lack of this feature is what's causing the issue.
+
+        Personally, I think there should be a choice to see the event and times
+        in the event's timezone (so the internal UTC value + event's offset)
+        for on-site events aside from the local tz.
+        */
+
+        shift_pos_top = Number(document.getElementById("unsaved-shift").style.top.slice(0, -2));
         inner = (`<button autofocus id="closeButton">Cancel</button>`
                  + '<label for="start-time" style="display: block">Start time:</label>'
-                 + '<input type="datetime-local" id="start-time" name="start-time" style="display: block">'
+                 + `<input type="datetime-local" id="start-time" value="${(new Date(TABLE_START_TIME.getTime() + shift_pos_top * 30 * 1000)).toISOString().replace("Z", "")}" name="start-time" style="display: block">`
                  + '<label for="end-time" style="display: block">End time:</label>'
-                 + '<input type="datetime-local" id="end-time" name="end-time" style="display: block">')
+                 + `<input type="datetime-local" id="end-time" value="${(new Date(TABLE_START_TIME.getTime() + (shift_pos_top + 60) * 30 * 1000)).toISOString().replace("Z", "")}" name="end-time" style="display: block">`)
     }
 
     dialog.innerHTML = inner;
