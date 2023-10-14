@@ -13,7 +13,7 @@ function main(){
     }
 }
 
-function openDialog(x, y, type){
+function openDialog(x, y, type, id=null){
     if (document.getElementsByTagName("dialog").length > 0){
         document.getElementsByTagName("dialog")[0].remove();
     }
@@ -32,8 +32,10 @@ function openDialog(x, y, type){
     }
     else if (type === "removeShift"){
         inner = ('<button autofocus id="closeButton">Cancel</button>'
-                 + "<p>Removing Shift</p>"
-                 + "</dialog>")
+                 + "<p>Are you sure?</p>"
+                 + `<button id="remove-button">Remove</button>`)
+        dialog.classList.add("remove-shift");
+        dialog.dataset.shiftId = id;
     }
     else if (type === "addShift"){
         /*
@@ -80,10 +82,9 @@ function openDialog(x, y, type){
         dialog.remove();
     })
 
-    const addButton = document.getElementById("add-button");
-    addButton.addEventListener("click", sendRequest, false);
-
     if (type === "addShift"){
+        const addButton = document.getElementById("add-button");
+        addButton.addEventListener("click", sendRequest, false);
         document.body.addEventListener("click", () => {
             // This is so a click outside the dialog "cleans up"
             if (document.getElementById("unsaved-shift")){
@@ -100,6 +101,21 @@ function openDialog(x, y, type){
             e.stopImmediatePropagation();
         })
     }
+    else if (type === "removeShift"){
+        const removeButton = document.getElementById("remove-button");
+        removeButton.addEventListener("click", sendRequest, false);
+        document.body.addEventListener("click", () => {
+            dialog.close();
+            dialog.remove();
+            document.body.removeEventListener("click", () => {}, false);
+        })
+        dialog.addEventListener("click", (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            e.stopImmediatePropagation();
+        })
+    }
+
     dialog.show();
 }
 
@@ -121,18 +137,18 @@ function createShiftBox(e){
 
 function sendRequest(e){
     const dialog = e.target.parentElement;
-    const shift = document.getElementById("unsaved-shift");
-
-    const roleId = Number(shift.parentElement.dataset.roleId);
-    const eventId = 21; // TODO: replace hardcoded values
-    const roomId = 2;
-
-    // TODO: unhack the timezone shenanigans
-    const start_time = document.getElementById("start-time").value + "Z"
-    const end_time = document.getElementById("end-time").value + "Z"
-
     const classes = dialog.classList;
+
     if (classes.contains("add-shift")){
+        const shift = document.getElementById("unsaved-shift");
+        const roleId = Number(shift.parentElement.dataset.roleId);
+        const eventId = 21; // TODO: replace hardcoded values
+        const roomId = 2;
+
+        // TODO: unhack the timezone shenanigans
+        const start_time = document.getElementById("start-time").value + "Z"
+        const end_time = document.getElementById("end-time").value + "Z"
+
         fetch("https://sinpp-dev.pokerfacowaty.com/add_shift/", {
             method: "POST",
             credentials: "same-origin",
@@ -149,6 +165,21 @@ function sendRequest(e){
             .then(data => {
                 console.log(data);
             })
+    }
+    else if (classes.contains("remove-shift")){
+        const shiftId = Number(e.target.parentElement.dataset.shiftId);
+        fetch(`https://sinpp-dev.pokerfacowaty.com/remove_shift/${shiftId}`, {
+            method: "DELETE",
+            credentials: "same-origin",
+            headers: {
+                "X-Requested-With": "XMLHttpRequest",
+                "X-CSRFToken": getCookie("csrftoken"),
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log(data);
+        })
     }
 }
 
@@ -180,8 +211,8 @@ document.addEventListener('click', function(e){
         openDialog(e.pageX, e.pageY, "editShift")
     }
     else if (e.target.classList.contains("removeShift")){
-        console.log("removeShift");
-        openDialog(e.pageX, e.pageY, "removeShift");
+        const shiftId = Number(e.target.parentElement.dataset.shiftId);
+        openDialog(e.pageX, e.pageY, "removeShift", shiftId);
     }
     else if (e.target.classList.contains("shifts-column")){
         // close Dialog if it's open
