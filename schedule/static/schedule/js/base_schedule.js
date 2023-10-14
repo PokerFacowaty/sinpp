@@ -83,7 +83,10 @@ function openDialog(x, y, type, id=null){
     })
 
     if (type === "addShift"){
+        const startTime = document.getElementById("start-time");
+        const endTime = document.getElementById("end-time");
         const addButton = document.getElementById("add-button");
+
         addButton.addEventListener("click", sendRequest, false);
         document.body.addEventListener("click", () => {
             // This is so a click outside the dialog "cleans up"
@@ -99,6 +102,36 @@ function openDialog(x, y, type, id=null){
             e.preventDefault();
             e.stopPropagation();
             e.stopImmediatePropagation();
+        })
+
+        startTime.addEventListener("focusout", () => {
+            // This should be done in a function counting the positions btw
+            const shift = document.getElementById("unsaved-shift");
+            let mins_since_start = ((new Date(startTime.value + "Z")
+                                    - TABLE_START_TIME) / 1000 / 60);
+            console.log(`${new Date(startTime.value)} - ${TABLE_START_TIME} is ${mins_since_start}`)
+            let diff_mins = ((new Date(endTime.value + "Z")
+                               - new Date(startTime.value + "Z"))
+                               / 1000 / 60);
+            console.log(`${new Date(endTime.value)} - ${new Date(startTime.value)} is ${diff_mins}`)
+            if (diff_mins > 0 && mins_since_start >= 0){
+                shift.style.height = `${diff_mins * 2}px`
+                shift.style.top = `${mins_since_start * 2}px`;
+            }
+        })
+        endTime.addEventListener("focusout", () => {
+            const shift = document.getElementById("unsaved-shift");
+            let mins_since_start = ((new Date(startTime.value + "Z")
+                                    - TABLE_START_TIME) / 1000 / 60);
+            console.log(`${new Date(startTime.value)} - ${TABLE_START_TIME} is ${mins_since_start}`)
+            let diff_mins = ((new Date(endTime.value + "Z")
+                               - new Date(startTime.value + "Z"))
+                               / 1000 / 60);
+            console.log(`${new Date(endTime.value)} - ${new Date(startTime.value)} is ${diff_mins}`)
+            if (diff_mins > 0 && mins_since_start >= 0){
+                shift.style.height = `${diff_mins * 2}px`
+                shift.style.top = `${mins_since_start * 2}px`;
+            }
         })
     }
     else if (type === "removeShift"){
