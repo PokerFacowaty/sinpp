@@ -59,8 +59,6 @@ def add_event(request):
 @login_required
 @ensure_csrf_cookie
 def schedule(request, event_id, room_id):
-    # ev = Event.objects.get(SHORT_TITLE=event)
-    # rm = Room.objects.get(EVENT=ev, SLUG=room)
     ev = Event.objects.get(pk=event_id)
     rm = Room.objects.get(pk=room_id)
     usr = User.objects.get(username=request.user)
@@ -70,7 +68,6 @@ def schedule(request, event_id, room_id):
     runs = Speedrun.objects.filter(EVENT=ev, ROOM=rm)
     interms = Intermission.objects.filter(EVENT=ev, ROOM=rm)
     ev_roles = Role.objects.filter(EVENT=ev)
-    # shifts = Shift.objects.filter(EVENT=ev, ROOM=rm)
     if runs[0].START_TIME < interms[0].START_TIME:
         start_time = runs[0].START_TIME
     else:
