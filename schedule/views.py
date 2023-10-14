@@ -169,6 +169,7 @@ def add_shift(request):
         return JsonResponse({'status': 'Shift added!',
                                 'context': {'id': new_shift.id}})
 
+
 # TODO: add authorization for both this and add_shift
 def remove_shift(request, shift_id):
     is_ajax = request.headers.get("X-Requested-With") == "XMLHttpRequest"
