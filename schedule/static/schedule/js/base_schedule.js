@@ -62,7 +62,9 @@ function openDialog(x, y, type){
                  + '<label for="start-time" style="display: block">Start time:</label>'
                  + `<input type="datetime-local" id="start-time" value="${(new Date(TABLE_START_TIME.getTime() + shift_pos_top * 30 * 1000)).toISOString().replace("Z", "")}" name="start-time" style="display: block">`
                  + '<label for="end-time" style="display: block">End time:</label>'
-                 + `<input type="datetime-local" id="end-time" value="${(new Date(TABLE_START_TIME.getTime() + (shift_pos_top + 60) * 30 * 1000)).toISOString().replace("Z", "")}" name="end-time" style="display: block">`)
+                 + `<input type="datetime-local" id="end-time" value="${(new Date(TABLE_START_TIME.getTime() + (shift_pos_top + 60) * 30 * 1000)).toISOString().replace("Z", "")}" name="end-time" style="display: block">`
+                 + `<button id="add-button">Add</button>`)
+        dialog.classList.add("add-shift");
     }
 
     dialog.innerHTML = inner;
@@ -79,6 +81,9 @@ function openDialog(x, y, type){
         dialog.close();
         dialog.remove();
     })
+
+    const addButton = document.getElementById("add-button");
+    addButton.addEventListener("click", sendRequest, false);
 
     if (type === "addShift"){
         document.body.addEventListener("click", () => {
@@ -114,6 +119,39 @@ function createShiftBox(e){
     shiftBox.style.visibility = "visible";
 
     e.target.appendChild(shiftBox);
+}
+
+function sendRequest(e){
+    const dialog = e.target.parentElement;
+    const shift = document.getElementById("unsaved-shift");
+
+    const roleId = Number(shift.parentElement.dataset.roleId);
+    const eventId = 21; // TODO: replace hardcoded values
+    const roomId = 2;
+
+    // TODO: unhack the timezone shenanigans
+    const start_time = document.getElementById("start-time").value + "Z"
+    const end_time = document.getElementById("end-time").value + "Z"
+
+    const classes = dialog.classList;
+    if (classes.contains("add-shift")){
+        fetch("https://sinpp-dev.pokerfacowaty.com/add_shift/", {
+            method: "POST",
+            credentials: "same-origin",
+            headers: {
+                "X-Requested-With": "XMLHttpRequest",
+                "X-CSRFToken": getCookie("csrftoken"),
+            },
+            body: JSON.stringify({payload: {ROLE: roleId,
+                                            EVENT: eventId,
+                                            ROOM: roomId,
+                                            START_DATE_TIME: start_time,
+                                            END_DATE_TIME: end_time}})})
+            .then(response => response.json())
+            .then(data => {
+                console.log(data);
+            })
+    }
 }
 
 // https://docs.djangoproject.com/en/4.2/howto/csrf/#acquiring-the-token-if-csrf-use-sessions-and-csrf-cookie-httponly-are-false
