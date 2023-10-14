@@ -168,3 +168,17 @@ def add_shift(request):
         new_shift.save()
         return JsonResponse({'status': 'Shift added!',
                                 'context': {'id': new_shift.id}})
+
+# TODO: add authorization for both this and add_shift
+def remove_shift(request, shift_id):
+    is_ajax = request.headers.get("X-Requested-With") == "XMLHttpRequest"
+    if is_ajax:
+        shift = Shift.objects.filter(pk=shift_id)
+        if not shift:
+            return JsonResponse({'context': 'Shift not found'}, status=404)
+        if request.method == "DELETE":
+            shift.delete()
+            return JsonResponse({'status': 'Shift deleted'})
+        return JsonResponse({'status': 'Invalid request'}, status=400)
+    else:
+        return JsonResponse({'status': 'Invalid request'}, status=400)
