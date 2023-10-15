@@ -57,6 +57,7 @@ def add_event(request):
 @login_required
 @ensure_csrf_cookie
 def schedule(request, event_id, room_id):
+    # TODO: clean this mess up a bit
     ev = Event.objects.get(pk=event_id)
     rm = Room.objects.get(pk=room_id)
     usr = User.objects.get(username=request.user)
