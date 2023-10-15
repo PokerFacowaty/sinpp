@@ -177,7 +177,7 @@ def remove_shift(request, shift_id):
         if is_ajax and request.method == "DELETE":
             shift = Shift.objects.filter(pk=shift_id)
             if shift:
-                shift.delete()
+                shift[0].delete()
                 return JsonResponse({'context': 'Shift deleted'})
             return JsonResponse({'context': 'Shift not found'}, status=404)
         return JsonResponse({'context': 'Invalid request'}, status=400)
