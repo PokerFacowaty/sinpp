@@ -83,6 +83,8 @@ def schedule(request, event_id, room_id):
                          - start_time).total_seconds() // 60)
             sh.length = math.ceil((sh.END_DATE_TIME
                                    - sh.START_DATE_TIME).total_seconds() // 60)
+            sh.start_iso = sh.START_DATE_TIME.isoformat()
+            sh.end_iso = sh.END_DATE_TIME.isoformat()
 
     timed_runs = [{'type': 'run',
                    'obj': x,
