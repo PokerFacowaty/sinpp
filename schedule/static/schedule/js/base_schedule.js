@@ -319,7 +319,7 @@ function sendRequest(e){
     })
     .then(data => {
         if (type === "add-shift"){
-            shift.id = "";
+            shift.removeAttribute("id");
             shift.innerHTML = ('<button class="edit-shift">Edit Shift</button>'
                                + '<button class="remove-shift">Remove Shift'
                                + '</button>')
