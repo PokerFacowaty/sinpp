@@ -25,7 +25,7 @@
             {% if x.type == 'run' %}
                 <div class="run block" data-start="{{ x.start }}" data-length="{{ x.length }}" data-id="{{ x.obj.id }}" style="visibility: hidden">
                     <div>{{ x.obj.START_TIME.time }} {{ x.obj.GAME }}</div>
-                    <button class="addShiftFromRun">Add Shift From This Run</button>
+                    <button class="add-shift-from-run">Add Shift From This Run</button>
                 </div>
             {% elif x.type == 'interm' %}
                 <div class="interm block" data-start="{{ x.start }}" data-length="{{ x.length }}" data-id="{{ x.obj.id }}" style="visibility: hidden">
@@ -43,8 +43,8 @@
                             {{ name }}
                         {% endfor %}
                     </div>
-                    <button class="editShift">Edit Shift</button>
-                    <button class="removeShift">Remove Shift</button>
+                    <button class="edit-shift">Edit Shift</button>
+                    <button class="remove-shift">Remove Shift</button>
                 </div>
             {% endfor %}
         </div>

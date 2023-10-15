@@ -1,5 +1,6 @@
 :root {
     --timeHeight: 119px; /* 120px so that a minute is 2 px - 2px for border */
+    --timeTopBorder: 1px;
     --runsColumnWidth: 300px;
     --runsWidth: 280px; /* --runsColumnWidth - padding - margins */
     --shiftsColumnWidth: 300px;
@@ -58,7 +59,7 @@ h1 {
 .time-marker {
     width: 100px;
     /* border: 1px solid; */
-    border-top: 1px solid;
+    border-top: var(--timeTopBorder) solid;
     height: var(--timeHeight);
 }
 

@@ -1,44 +1,114 @@
-// TODO: fix them as const once I figure out the loading
-let TABLE_START_TIME;
-let TABLE_END_TIME;
+const cnsts = {};
 
 function main(){
+    loadCSSRoot();
+    addOtherCnsts();
+    setBlocksPosHeight();
+
+    document.addEventListener("click", (e) => {
+        // TODO: change it so I'm not repeating myself? I should probably wait
+        // for all cases first
+        if (e.target.classList.contains("add-shift-from-run")){ // TODO: change class in HTML
+            cleanUp();
+            const dialog = createDialog(e.pageX, e.pageY,
+                                        "add-shift-from-run");
+        }
+        else if (e.target.classList.contains("edit-shift")){ // TODO: change class in HTML
+            cleanUp();
+            const dialog = createDialog(e.pageX, e.pageY, "edit-shift");
+        }
+        else if (e.target.classList.contains("remove-shift")){ // TODO: change class in HTML
+            cleanUp();
+            const dialog = createDialog(e.pageX, e.pageY, "remove-shift",
+                                        e.target.parentElement);
+            document.body.appendChild(dialog);
+            addDialogListeners(dialog, "remove-shift");
+            dialog.show();
+        }
+        else if (e.target.classList.contains("shifts-column")){
+            cleanUp();
+            const unsaved_shift = createNewShiftBox(e);
+            const dialog = createDialog(e.pageX, e.pageY, "add-shift",
+                                      unsaved_shift);
+            console.log(dialog);
+            document.body.appendChild(dialog);
+            addDialogListeners(dialog, "add-shift");
+            dialog.show();
+        }
+    });
+}
+
+function loadCSSRoot(){
+    const propsToGet = ["--timeHeight",
+                        "--timeTopBorder"];
+    for (prop of propsToGet){
+        cnsts[prop] = getComputedStyle(document.documentElement, null)
+                      .getPropertyValue(prop);
+    }
+}
+
+function addOtherCnsts(){
+    cnsts.PX_PER_MIN = (Number(cnsts["--timeHeight"].slice(0, -2))
+                         + Number(cnsts["--timeTopBorder"].slice(0, -2))) / 60;
+    cnsts.TABLE_START_TIME = new Date(document.getElementById(
+                                      "schedule-table").dataset.startTs);
+    cnsts.TABLE_END_TIME = new Date(document.getElementById(
+                                    "schedule-table").dataset.endTs);
+    cnsts.NEW_SHIFT_MINS = 30;
+}
+
+function setBlocksPosHeight(){
     const blocks = document.getElementsByClassName("block");
     for (const bl of blocks){
-        bl.style.position = "absolute";
-        bl.style.top = `${Number(bl.getAttribute("data-start")) * 2 + 1}px`;
-        let length = Number(bl.getAttribute("data-length"));
-        bl.style.height = `${length * 2}px`;
+        bl.style.position = 'absolute';
+        bl.style.top = `${Number(bl.getAttribute("data-start")) *
+                          cnsts.PX_PER_MIN}px` // Why was it + 1 px before?
+        const length = Number(bl.getAttribute("data-length"));
+        bl.style.height = `${length * cnsts.PX_PER_MIN}px`;
         bl.style.visibility = "visible";
     }
 }
 
-function openDialog(x, y, type, id=null){
-    if (document.getElementsByTagName("dialog").length > 0){
-        document.getElementsByTagName("dialog")[0].remove();
+function cleanUp(){
+    let dialog = document.getElementById("form-dialog");
+    let shift = document.getElementById("unsaved-shift");
+
+    if (dialog){
+        dialog.remove();
     }
 
+    if (shift){
+        shift.remove();
+    }
+}
+
+function createNewShiftBox(e){
+    // e.target is the shifts column
+    const rect = e.target.getBoundingClientRect();
+    const y = e.clientY - rect.top;
+    const roundedY = Math.round(y - y % cnsts.NEW_SHIFT_MINS);
+
+    const shiftBox = document.createElement("div");
+    shiftBox.id = "unsaved-shift";
+    shiftBox.classList.add("shift", "block");
+    shiftBox.style.position = "absolute";
+    shiftBox.style.top = `${roundedY}px`;
+    shiftBox.style.height = `${cnsts.NEW_SHIFT_MINS * cnsts.PX_PER_MIN}px`
+
+    e.target.appendChild(shiftBox);
+    return shiftBox;
+}
+
+function createDialog(x, y, type, el=null){
     const dialog = document.createElement("dialog");
-    let inner = "";
-    if (type === "addShiftFromRun"){
-        inner = ('<button autofocus id="closeButton">Cancel</button>'
-                 + "<p>Adding Shift from Run dialog</p>"
-                 + "</dialog>")
-    }
-    else if (type === "editShift"){
-        inner = ('<button autofocus id="closeButton">Cancel</button>'
-                 + "<p>Editing Shift</p>"
-                 + "</dialog>")
-    }
-    else if (type === "removeShift"){
-        inner = ('<button autofocus id="closeButton">Cancel</button>'
-                 + "<p>Are you sure?</p>"
-                 + `<button id="remove-button">Remove</button>`)
-        dialog.classList.add("remove-shift");
-        dialog.dataset.shiftId = id;
-    }
-    else if (type === "addShift"){
+    let inner = '<button autofocus id="close-button">Cancel</button>'
+
+    if (type === "add-shift"){
         /*
+
+        tl;dr: ignore stuff like adding "Z" to timezone-aware strings, I know
+        what I'm doing for this temporary hack
+
         A short intro to what's going to happen here. Currently, the event is
         operating in UTC and I plan to always have the event stored internally
         in UTC (with inputs / output in local timezones).
@@ -47,188 +117,181 @@ function openDialog(x, y, type, id=null){
         in UTC in a sense that it starts at the same time no matter where you
         view the page. This isn't an issue by itself BUT the datetime-local
         input obviously has timezones. So FOR NOW I'm going to hack around it
-        by turning the UTC into local (as 1:1 the same time) and vice versa
-        for actual place on the event timeline <-> the input field. This will
+        by simply ignoring the timezone and taking the time as UTC. This will
         be fixed once I get around to viewing the events in local timezones
         properly, since the lack of this feature is what's causing the issue.
 
-        Personally, I think there should be a choice to see the event and times
-        in the event's timezone (so the internal UTC value + event's offset)
-        for on-site events aside from the local tz.
-        */
+        Also personally, I think there should be a choice to see the event
+        and times in the event's timezone (so the internal UTC value
+        + event's offset) for on-site events aside from the local tz.
 
-        shift_pos_top = Number(document.getElementById("unsaved-shift").style.top.slice(0, -2));
-        inner = (`<button autofocus id="closeButton">Cancel</button>`
-                 + '<label for="start-time" style="display: block">Start time:</label>'
-                 + `<input type="datetime-local" id="start-time" value="${(new Date(TABLE_START_TIME.getTime() + shift_pos_top * 30 * 1000)).toISOString().replace("Z", "")}" name="start-time" style="display: block">`
-                 + '<label for="end-time" style="display: block">End time:</label>'
-                 + `<input type="datetime-local" id="end-time" value="${(new Date(TABLE_START_TIME.getTime() + (shift_pos_top + 60) * 30 * 1000)).toISOString().replace("Z", "")}" name="end-time" style="display: block">`
-                 + `<button id="add-button">Add</button>`)
-        dialog.classList.add("add-shift");
+        */
+        let shift = el;
+        let shift_pos_top = Number(shift.style.top.slice(0, -2));
+        let initial_start = (new Date(cnsts.TABLE_START_TIME.getTime()
+                             + shift_pos_top * (60 / cnsts.PX_PER_MIN) * 1000))
+                             .toISOString().replace("Z", "");
+        let initial_end = (new Date(cnsts.TABLE_START_TIME.getTime()
+                           + (shift_pos_top + cnsts.NEW_SHIFT_MINS
+                           * cnsts.PX_PER_MIN) * (60 / cnsts.PX_PER_MIN)
+                           * 1000).toISOString().replace("Z", ""))
+
+        inner += ('<label for="start-time" style="display: block">'
+                  + 'Start time:</label>'
+
+                  + '<input type="datetime-local" id="start-time" '
+                  + `value=${initial_start} name="start-time" `
+                  + 'style="display: block">'
+
+                  + '<label for="end-time" style="display:block">'
+                  + 'End time:</label>'
+
+                  + '<input type="datetime-local" id="end-time" '
+                  + `value=${initial_end} name="end-time" `
+                  + `style="display: block">`
+
+                  + '<button id="add-button">Add</button>')
+
+        dialog.classList.add("add-shift"); // switch to dataset?
+    }
+    else if (type === "remove-shift"){
+        inner += ("<p>Are you sure?</p>"
+                  + '<button id="remove-button">Remove</button>');
+        dialog.classList.add("remove-shift");
+        dialog.dataset.shiftId = el.dataset.shiftId;
     }
 
     dialog.innerHTML = inner;
-    dialog.id = "form-dialog"
-    dialog.classList.add("form-dialog");
-    dialog.style = `position: absolute; left: ${x}px; top: ${y}px; margin: 0`
-    document.body.appendChild(dialog);
+    dialog.id = "form-dialog";
+    // dialog.classList.add("form-dialog"); this seems pointless with the id
+    dialog.style = `position: absolute; left: ${x}px; top: ${y}px; margin: 0`;
 
-    const closeButton = document.getElementById("closeButton");
-    closeButton.addEventListener("click", () => {
-        if (document.getElementById("unsaved-shift")){
-            document.getElementById("unsaved-shift").remove();
-            }
-        dialog.close();
-        dialog.remove();
+    return dialog;
+}
+
+function addDialogListeners(dialog, type){
+    console.log(type);
+    const closeButton = dialog.querySelector('#close-button');
+
+    closeButton.addEventListener("click", cleanUp);
+
+    // Clicking outside the dialog should close it...
+    document.body.addEventListener("click", () => {
+        cleanUp();
+        document.body.removeEventListener("click", () => {}, false);
+    });
+
+    // ...but not clicking on the dialog itself
+    dialog.addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        e.stopImmediatePropagation();
     })
 
-    if (type === "addShift"){
+    if (type === "add-shift"){
         const startTime = document.getElementById("start-time");
         const endTime = document.getElementById("end-time");
         const addButton = document.getElementById("add-button");
 
-        addButton.addEventListener("click", sendRequest, false);
-        document.body.addEventListener("click", () => {
-            // This is so a click outside the dialog "cleans up"
-            if (document.getElementById("unsaved-shift")){
-            document.getElementById("unsaved-shift").remove();
-            }
-            dialog.close();
-            dialog.remove();
-            document.body.removeEventListener("click", () => {}, false);
-        })
-        dialog.addEventListener("click", (e) => {
-            // So that clicking inside the dialog doesn't "clean up"
-            e.preventDefault();
-            e.stopPropagation();
-            e.stopImmediatePropagation();
-        })
-
-        startTime.addEventListener("focusout", () => {
-            // This should be done in a function counting the positions btw
-            const shift = document.getElementById("unsaved-shift");
-            let mins_since_start = ((new Date(startTime.value + "Z")
-                                    - TABLE_START_TIME) / 1000 / 60);
-            console.log(`${new Date(startTime.value)} - ${TABLE_START_TIME} is ${mins_since_start}`)
-            let diff_mins = ((new Date(endTime.value + "Z")
-                               - new Date(startTime.value + "Z"))
-                               / 1000 / 60);
-            console.log(`${new Date(endTime.value)} - ${new Date(startTime.value)} is ${diff_mins}`)
-            if (diff_mins > 0 && mins_since_start >= 0){
-                shift.style.height = `${diff_mins * 2}px`
-                shift.style.top = `${mins_since_start * 2}px`;
-            }
-        })
-        endTime.addEventListener("focusout", () => {
-            const shift = document.getElementById("unsaved-shift");
-            let mins_since_start = ((new Date(startTime.value + "Z")
-                                    - TABLE_START_TIME) / 1000 / 60);
-            console.log(`${new Date(startTime.value)} - ${TABLE_START_TIME} is ${mins_since_start}`)
-            let diff_mins = ((new Date(endTime.value + "Z")
-                               - new Date(startTime.value + "Z"))
-                               / 1000 / 60);
-            console.log(`${new Date(endTime.value)} - ${new Date(startTime.value)} is ${diff_mins}`)
-            if (diff_mins > 0 && mins_since_start >= 0){
-                shift.style.height = `${diff_mins * 2}px`
-                shift.style.top = `${mins_since_start * 2}px`;
-            }
-        })
+        addButton.addEventListener("click", sendRequest);
+        startTime.addEventListener("focusout", setNewTopHeight);
+        endTime.addEventListener("focusout", setNewTopHeight);
     }
-    else if (type === "removeShift"){
+    else if (type === "remove-shift"){
         const removeButton = document.getElementById("remove-button");
-        removeButton.addEventListener("click", sendRequest, false);
-        document.body.addEventListener("click", () => {
-            dialog.close();
-            dialog.remove();
-            document.body.removeEventListener("click", () => {}, false);
-        })
-        dialog.addEventListener("click", (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            e.stopImmediatePropagation();
-        })
+
+        removeButton.addEventListener("click", sendRequest);
     }
-
-    dialog.show();
-}
-
-function createShiftBox(e){
-    let rect = e.target.getBoundingClientRect();
-    let y = e.clientY - rect.top;
-    let rounded_pos = Math.round(y - y % 30);
-
-    let shiftBox = document.createElement("div");
-    shiftBox.id = "unsaved-shift";
-    shiftBox.classList.add("shift", "block");
-    shiftBox.style.position = "absolute";
-    shiftBox.style.top = `${rounded_pos}px`;
-    shiftBox.style.height = `${60}px`;
-    shiftBox.style.visibility = "visible";
-
-    e.target.appendChild(shiftBox);
 }
 
 function sendRequest(e){
-    const dialog = e.target.parentElement;
-    const classes = dialog.classList;
-
-    if (classes.contains("add-shift")){
-        const shift = document.getElementById("unsaved-shift");
-        const roleId = Number(shift.parentElement.dataset.roleId);
-        const eventId = 21; // TODO: replace hardcoded values
-        const roomId = 2;
-
-        // TODO: unhack the timezone shenanigans
-        const start_time = document.getElementById("start-time").value + "Z"
-        const end_time = document.getElementById("end-time").value + "Z"
-
-        fetch("https://sinpp-dev.pokerfacowaty.com/add_shift/", {
-            method: "POST",
-            credentials: "same-origin",
-            headers: {
-                "X-Requested-With": "XMLHttpRequest",
-                "X-CSRFToken": getCookie("csrftoken"),
-            },
-            body: JSON.stringify({payload: {ROLE: roleId,
-                                            EVENT: eventId,
-                                            ROOM: roomId,
-                                            START_DATE_TIME: start_time,
-                                            END_DATE_TIME: end_time}})})
-            .then(response => {
-                if (response.ok){
-                    return new Promise(resolve => {resolve(response.json())})
-                }
-                // response.json()
-            })
-            .then(data => {
-                shift.id = "";
-                shift.classList.add("shift", "block");
-                shift.innerHTML = `<button class="editShift">Edit Shift</button>
-                <button class="removeShift">Remove Shift</button>`;
-                dialog.close();
-                dialog.remove();
-            })
-            // .then(data => {
-            //     console.log(data);
-            // })
+    const types = ["add-shift-from-run", "remove-shift",
+                   "edit-shift", "add-shift"];
+    let type = "";
+    for (const cl of e.target.parentElement.classList){
+        if (types.indexOf(cl) > -1){
+            type = types[types.indexOf(cl)];
+        }
     }
-    else if (classes.contains("remove-shift")){
-        const shiftId = Number(e.target.parentElement.dataset.shiftId);
-        fetch(`https://sinpp-dev.pokerfacowaty.com/remove_shift/${shiftId}`, {
-            method: "DELETE",
-            credentials: "same-origin",
-            headers: {
-                "X-Requested-With": "XMLHttpRequest",
-                "X-CSRFToken": getCookie("csrftoken"),
-            },
-        })
-        .then(response => response.json())
-        .then(data => {
-            document.querySelector(`[data-shift-id="${shiftId}"].shift`).remove();
-            let dialog = document.querySelector("dialog.remove-shift")
-            dialog.close();
-            dialog.remove();
-        })
+
+    let url;
+    let method;
+    let body;
+    let shift;
+    let shiftId;
+
+    console.log(type);
+    if (type === "add-shift"){
+        method = "POST";
+        url = "https://sinpp-dev.pokerfacowaty.com/add_shift/";
+        shift = document.getElementById("unsaved-shift");
+        const roleId = Number(shift.parentElement.dataset.roleId);
+        const scheduleTable = document.getElementById("schedule-table");
+        const eventId = Number(scheduleTable.dataset.eventId);
+        const roomId = Number(scheduleTable.dataset.roomId);
+        // TODO: unhack the timezones once the rest works properly
+        const startTime = document.getElementById("start-time").value + "Z";
+        const endTime = document.getElementById("end-time").value + "Z";
+        body = JSON.stringify({payload: {ROLE: roleId,
+                                         EVENT: eventId,
+                                         ROOM: roomId,
+                                         START_DATE_TIME: startTime,
+                                         END_DATE_TIME: endTime}})
+    }
+    else if (type === "remove-shift"){
+        method = "DELETE";
+        shiftId = Number(e.target.parentElement.dataset.shiftId);
+        url = ('https://sinpp-dev.pokerfacowaty.com/remove_shift/'
+                     + shiftId);
+    }
+
+    console.log(url);
+    fetch(url, {
+        method: method,
+        credentials: "same-origin",
+        headers: {
+            "X-Requested-With": "XMLHttpRequest",
+            "X-CSRFToken": cnsts.CSRFTOKEN,
+        },
+        body: body,
+    })
+    .then(response => {
+        if (response.ok){
+            return new Promise(resolve => {resolve(response.json())});
+        }
+    })
+    .then(data => {
+        console.log(data);
+        if (type === "add-shift"){
+            shift.id = "";
+            shift.innerHTML = ('<button class="edit-shift">Edit Shift</button>'
+                               + '<button class="remove-shift">Remove Shift'
+                               + '</button>')
+            cleanUp();
+        }
+        else if (type === "remove-shift"){
+            document.querySelector(`[data-shift-id="${shiftId}"].shift`)
+            .remove();
+            cleanUp();
+        }
+    })
+}
+
+function setNewTopHeight(){
+    const shift = document.getElementById("unsaved-shift");
+    const startTime = document.getElementById("start-time");
+    const endTime = document.getElementById("end-time");
+
+                                // aforementioned timezone hacking again
+    const mins_since_start = ((new Date(startTime.value + "Z")
+                               - cnsts.TABLE_START_TIME) / 1000 / 60);
+    const diff_mins = ((new Date(endTime.value + "Z")
+                        - new Date(startTime.value + "Z"))
+                        / 1000 / 60);
+
+    if (diff_mins > 0 && mins_since_start >= 0){
+        shift.style.height = `${diff_mins * cnsts.PX_PER_MIN}px`;
+        shift.style.top = `${mins_since_start * cnsts.PX_PER_MIN}px`;
     }
 }
 
@@ -248,42 +311,6 @@ function getCookie(name) {
     }
     return cookieValue;
 }
-const csrftoken = getCookie('csrftoken');
+cnsts.CSRFTOKEN = getCookie('csrftoken');
 
-document.addEventListener('click', function(e){
-    if (e.target.classList.contains("addShiftFromRun")){
-        console.log("addShiftFromRun");
-        openDialog(e.pageX, e.pageY, "addShiftFromRun")
-    }
-    else if (e.target.classList.contains("editShift")){
-        console.log("editShift");
-        openDialog(e.pageX, e.pageY, "editShift")
-    }
-    else if (e.target.classList.contains("removeShift")){
-        const shiftId = Number(e.target.parentElement.dataset.shiftId);
-        openDialog(e.pageX, e.pageY, "removeShift", shiftId);
-    }
-    else if (e.target.classList.contains("shifts-column")){
-        // close Dialog if it's open
-        if (document.getElementById("form-dialog")){
-            document.getElementById("form-dialog").close();
-            document.getElementById("form-dialog").remove();
-        }
-        if (document.getElementById("unsaved-shift")){
-            document.getElementById("unsaved-shift").remove();
-        }
-        createShiftBox(e);
-        openDialog(e.pageX, e.pageY, "addShift");
-    }
-})
-
-const waitLoad = setInterval(() => {
-    // TODO: needs changing, this won't work with an empty schedule
-    if (document.getElementsByClassName("block") !== null){
-        clearInterval(waitLoad);
-        TABLE_START_TIME = new Date(document.getElementById("schedule-table").dataset.startTs);
-        TABLE_END_TIME = new Date(document.getElementById("schedule-table").dataset.endTs);
-        console.log(TABLE_START_TIME, TABLE_END_TIME)
-        main();
-    }
-}, 100)
+window.onload = main;
