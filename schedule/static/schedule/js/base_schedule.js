@@ -15,7 +15,11 @@ function main(){
         }
         else if (e.target.classList.contains("edit-shift")){
             cleanUp();
-            const dialog = createDialog(e.pageX, e.pageY, "edit-shift");
+            const dialog = createDialog(e.pageX, e.pageY, "edit-shift",
+                                        e.target.parentElement);
+            document.body.appendChild(dialog);
+            addDialogListeners(dialog, "edit-shift");
+            dialog.show();
         }
         else if (e.target.classList.contains("remove-shift")){
             cleanUp();
@@ -71,14 +75,20 @@ function setBlocksPosHeight(){
 
 function cleanUp(){
     let dialog = document.getElementById("form-dialog");
-    let shift = document.getElementById("unsaved-shift");
+    let unsaved_shift = document.getElementById("unsaved-shift");
+    let edited_shift = document.getElementById("edited-shift");
 
     if (dialog){
         dialog.remove();
     }
 
-    if (shift){
-        shift.remove();
+    if (unsaved_shift){
+        unsaved_shift.remove();
+    }
+
+    if (edited_shift){
+        setDefaultTopHeight(edited_shift);
+        edited_shift.removeAttribute("id");
     }
 }
 
@@ -105,6 +115,7 @@ function createDialog(x, y, type, el=null){
     let inner = '<button autofocus id="close-button">Cancel</button>'
 
     if (type === "add-shift"){
+        // el is unsaved shift
         /*
 
         tl;dr: ignore stuff like adding "Z" to timezone-aware strings, I know
@@ -153,14 +164,42 @@ function createDialog(x, y, type, el=null){
 
                   + '<button id="add-button">Add</button>')
 
-        dialog.classList.add("add-shift"); // switch to dataset?
+        dialog.classList.add(type); // switch to dataset?
     }
     else if (type === "remove-shift"){
+        // el is the shift to be removed
         inner += ("<p>Are you sure?</p>"
                   + '<button id="remove-button">Remove</button>');
         dialog.classList.add("remove-shift");
-        // el is the shift in this case
         dialog.dataset.shiftId = el.dataset.shiftId;
+    }
+    else if (type === "edit-shift"){
+        // el is the shift being edited
+        let shift = el;
+                                     // timezone hackery for now
+        let initial_start = shift.dataset.startTs.slice(0, -6);
+        let initial_end = shift.dataset.endTs.slice(0, -6);
+        console.log(initial_start, initial_end)
+
+        inner += ('<label for="start-time" style="display: block">'
+          + 'Start time:</label>'
+
+          + '<input type="datetime-local" id="start-time" '
+          + `value="${initial_start}" name="start-time" `
+          + 'style="display: block">'
+
+          + '<label for="end-time" style="display:block">'
+          + 'End time:</label>'
+
+          + '<input type="datetime-local" id="end-time" '
+          + `value="${initial_end}" name="end-time" `
+          + 'style="display: block">'
+
+          + '<button id="edit-button">Edit</button>')
+
+        dialog.classList.add("edit-shift");
+        dialog.dataset.shiftId = el.dataset.shiftId;
+        shift.id = "edited-shift";
     }
 
     dialog.innerHTML = inner;
@@ -189,14 +228,21 @@ function addDialogListeners(dialog, type){
         e.stopImmediatePropagation();
     })
 
-    if (type === "add-shift"){
+    if (type === "add-shift" || type === "edit-shift"){
         const startTime = document.getElementById("start-time");
         const endTime = document.getElementById("end-time");
-        const addButton = document.getElementById("add-button");
 
-        addButton.addEventListener("click", sendRequest);
         startTime.addEventListener("focusout", setNewTopHeight);
         endTime.addEventListener("focusout", setNewTopHeight);
+
+        if (type === "add-shift"){
+            const addButton = document.getElementById("add-button");
+            addButton.addEventListener("click", sendRequest);
+        }
+        else if (type === "edit-shift"){
+            const editButton = document.getElementById("edit-button");
+            editButton.addEventListener("click", sendRequest);
+        }
     }
     else if (type === "remove-shift"){
         const removeButton = document.getElementById("remove-button");
@@ -206,6 +252,8 @@ function addDialogListeners(dialog, type){
 }
 
 function sendRequest(e){
+    // e.target is the button that sends the request
+    // TODO: change url from hardcoded ones
     const types = ["add-shift-from-run", "remove-shift",
                    "edit-shift", "add-shift"];
     let type = "";
@@ -245,6 +293,15 @@ function sendRequest(e){
         url = ('https://sinpp-dev.pokerfacowaty.com/remove_shift/'
                      + shiftId);
     }
+    else if (type === "edit-shift"){
+        method = "PUT";
+        shiftId = Number(e.target.parentElement.dataset.shiftId);
+        url = `https://sinpp-dev.pokerfacowaty.com/remove_shift/${shiftId}`;
+        const startTime = document.getElementById("start-time").value + "Z";
+        const endTime = document.getElementById("end-time").value + "Z";
+        body = JSON.stringify({payload: {START_DATE_TIME: startTime,
+                                         END_DATE_TIME: endTime}});
+    }
 
     fetch(url, {
         method: method,
@@ -276,8 +333,16 @@ function sendRequest(e){
     })
 }
 
-function setNewTopHeight(){
-    const shift = document.getElementById("unsaved-shift");
+function setNewTopHeight(e){
+    // e.target are the datetime fields
+    let shift;
+    if (e.target.parentElement.classList.contains("add-shift")){
+        shift = document.getElementById("unsaved-shift");
+    }
+    else if (e.target.parentElement.classList.contains("edit-shift")){
+        const shiftId = Number(e.target.parentElement.dataset.shiftId);
+        shift = document.querySelector(`[data-shift-id="${shiftId}"].shift`)
+    }
     const startTime = document.getElementById("start-time");
     const endTime = document.getElementById("end-time");
 
@@ -292,6 +357,20 @@ function setNewTopHeight(){
         shift.style.height = `${diff_mins * cnsts.PX_PER_MIN}px`;
         shift.style.top = `${mins_since_start * cnsts.PX_PER_MIN}px`;
     }
+}
+
+function setDefaultTopHeight(shift){
+    // for edited shifts only
+    const shift_start_ts = shift.dataset.startTs.slice(0, -6);
+    const shift_end_ts = shift.dataset.endTs.slice(0, -6);
+    const mins_since_start = ((new Date(shift_start_ts + "Z")
+                              - cnsts.TABLE_START_TIME) / 1000 / 60);
+    const diff_mins = ((new Date(shift_end_ts)
+                        - new Date(shift_start_ts)) / 1000 / 60);
+    console.log(shift_end_ts, shift_start_ts, diff_mins)
+
+    shift.style.height = `${diff_mins * cnsts.PX_PER_MIN}px`;
+    shift.style.top = `${mins_since_start * cnsts.PX_PER_MIN}px`;
 }
 
 // https://docs.djangoproject.com/en/4.2/howto/csrf/#acquiring-the-token-if-csrf-use-sessions-and-csrf-cookie-httponly-are-false
