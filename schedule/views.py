@@ -132,25 +132,19 @@ def schedule(request, event_id, room_id):
 
 @login_required
 def shift(request, shift_id):
-    shift = Shift.objects.filter(pk=shift_id)
-    if not shift:
-        return JsonResponse({'context': "Shift not found"}, status=404)
-
-    usr = User.objects.get(username=request.user)
     ev = Shift.objects.get(pk=shift_id).EVENT
-    if not usr.has_perm('shift.view_shift', ev):
-        JsonResponse({'context': 'Permission denied'}, status=403)
-
-    is_ajax = request.headers.get("X-Requested-With") == "XMLHttpRequest"
-
-    if is_ajax:
-        if request.method == "GET":
-            data = serializers.serialize('json', shift)
-            return JsonResponse({'context': data})
-
-        return JsonResponse({'context': 'Invalid request.'}, status=400)
-    else:
-        return HttpResponseBadRequest('Invalid request')
+    usr = User.objects.get(username=request.user)
+    if usr.has_perm('shift.view_shift', ev):
+        shift = Shift.objects.filter(pk=shift_id)
+        if shift:
+            is_ajax = (request.headers.get("X-Requested-With")
+                       == "XMLHttpRequest")
+            if is_ajax and request.method == "GET":
+                data = serializers.serialize('json', shift)
+                return JsonResponse({'context': data})
+            return JsonResponse({'context': 'Invalid request.'}, status=400)
+        return JsonResponse({'context': "Shift not found"}, status=404)
+    return JsonResponse({'context': 'Permission denied'}, status=403)
 
 
 @login_required
@@ -158,7 +152,8 @@ def add_shift(request):
     # TODO: people
     usr = User.objects.get(username=request.user)
     if usr.has_perm('shift.add_shift'):
-        if request.method == "POST":
+        is_ajax = request.headers.get("X-Requested-With") == "XMLHttpRequest"
+        if is_ajax and request.method == "POST":
             data = json.load(request)
             shift = data.get('payload')
             new_shift = Shift.objects.create(
@@ -170,8 +165,8 @@ def add_shift(request):
             new_shift.save()
             return JsonResponse({'status': 'Shift added!',
                                  'context': {'id': new_shift.id}})
-    else:
-        return JsonResponse({'context': 'Permission denied'}, status=403)
+        return JsonResponse({'context': 'Ivalid request'}, status=400)
+    return JsonResponse({'context': 'Permission denied'}, status=403)
 
 
 @login_required
@@ -179,15 +174,11 @@ def remove_shift(request, shift_id):
     usr = User.objects.get(username=request.user)
     if usr.has_perm('shift.delete_shift'):
         is_ajax = request.headers.get("X-Requested-With") == "XMLHttpRequest"
-        if is_ajax:
+        if is_ajax and request.method == "DELETE":
             shift = Shift.objects.filter(pk=shift_id)
-            if not shift:
-                return JsonResponse({'context': 'Shift not found'}, status=404)
-            if request.method == "DELETE":
+            if shift:
                 shift.delete()
                 return JsonResponse({'context': 'Shift deleted'})
-            return JsonResponse({'context': 'Invalid request'}, status=400)
-        else:
-            return JsonResponse({'context': 'Invalid request'}, status=400)
-    else:
-        return JsonResponse({'context': 'Permission denied'}, status=403)
+            return JsonResponse({'context': 'Shift not found'}, status=404)
+        return JsonResponse({'context': 'Invalid request'}, status=400)
+    return JsonResponse({'context': 'Permission denied'}, status=403)
