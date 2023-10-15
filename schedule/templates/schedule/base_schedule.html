@@ -14,7 +14,7 @@
         <div class="role-name"> {{ role.0 }} </div>
     {% endfor %}
 </div>
-<div id="schedule-table" data-start-ts="{{ table_start }}" data-end-ts="{{ table_end }}">
+<div id="schedule-table" data-start-ts="{{ table_start }}" data-end-ts="{{ table_end }}" data-event-id="{{ event.id }}" data-room-id="{{ room.id }}">
         <div id="time-column">
             {% for t in times %}
                 <div class="time-marker">{{ t }}</div>
