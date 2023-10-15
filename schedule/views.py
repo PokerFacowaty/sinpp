@@ -7,7 +7,7 @@ from django.contrib.auth.models import Group, User
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
 import math
-from datetime import timedelta
+from datetime import timedelta, datetime
 import json
 from django.core import serializers
 from django.views.decorators.csrf import ensure_csrf_cookie
@@ -191,7 +191,7 @@ def remove_shift(request, shift_id):
 @login_required
 def edit_shift(request, shift_id):
     usr = User.objects.get(username=request.user)
-    if usr.has_perm('shift.delete_shift'):
+    if usr.has_perm('shift.edit_shift'):
         is_ajax = request.headers.get("X-Requested-With") == "XMLHttpRequest"
         if is_ajax and request.method == "PUT":
             shifts = Shift.objects.filter(pk=shift_id)
@@ -200,8 +200,9 @@ def edit_shift(request, shift_id):
                 payload = data.get('payload')
                 shift = shifts[0]
                 for k, v in payload.items():
-                    shift[k] = v
+                    setattr(shift, k, v)
                 shift.save()
+                return JsonResponse({'context': 'Shift updated'})
             return JsonResponse({'context': 'Shift not found'}, status=404)
         return JsonResponse({'context': 'Invalid request'}, status=400)
     return JsonResponse({'context': 'Permission denied'}, status=403)
