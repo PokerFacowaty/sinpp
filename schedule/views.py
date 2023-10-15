@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from django.http import JsonResponse, HttpResponseBadRequest
+from django.http import JsonResponse
 from .forms import UploadCSVForm
 from schedule.parse_schedule_csv import parse_oengus, handle_uploaded_file
 from .models import EventForm, Event, Room, Speedrun, Shift, Intermission, Role
