@@ -8,16 +8,16 @@ function main(){
     document.addEventListener("click", (e) => {
         // TODO: change it so I'm not repeating myself? I should probably wait
         // for all cases first
-        if (e.target.classList.contains("add-shift-from-run")){ // TODO: change class in HTML
+        if (e.target.classList.contains("add-shift-from-run")){
             cleanUp();
             const dialog = createDialog(e.pageX, e.pageY,
                                         "add-shift-from-run");
         }
-        else if (e.target.classList.contains("edit-shift")){ // TODO: change class in HTML
+        else if (e.target.classList.contains("edit-shift")){
             cleanUp();
             const dialog = createDialog(e.pageX, e.pageY, "edit-shift");
         }
-        else if (e.target.classList.contains("remove-shift")){ // TODO: change class in HTML
+        else if (e.target.classList.contains("remove-shift")){
             cleanUp();
             const dialog = createDialog(e.pageX, e.pageY, "remove-shift",
                                         e.target.parentElement);
@@ -100,6 +100,7 @@ function createNewShiftBox(e){
 }
 
 function createDialog(x, y, type, el=null){
+    // el is an optional element that may make creating the dialog easier
     const dialog = document.createElement("dialog");
     let inner = '<button autofocus id="close-button">Cancel</button>'
 
@@ -158,12 +159,12 @@ function createDialog(x, y, type, el=null){
         inner += ("<p>Are you sure?</p>"
                   + '<button id="remove-button">Remove</button>');
         dialog.classList.add("remove-shift");
+        // el is the shift in this case
         dialog.dataset.shiftId = el.dataset.shiftId;
     }
 
     dialog.innerHTML = inner;
     dialog.id = "form-dialog";
-    // dialog.classList.add("form-dialog"); this seems pointless with the id
     dialog.style = `position: absolute; left: ${x}px; top: ${y}px; margin: 0`;
 
     return dialog;
@@ -245,7 +246,6 @@ function sendRequest(e){
                      + shiftId);
     }
 
-    console.log(url);
     fetch(url, {
         method: method,
         credentials: "same-origin",
@@ -261,7 +261,6 @@ function sendRequest(e){
         }
     })
     .then(data => {
-        console.log(data);
         if (type === "add-shift"){
             shift.id = "";
             shift.innerHTML = ('<button class="edit-shift">Edit Shift</button>'
