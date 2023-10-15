@@ -330,6 +330,11 @@ function sendRequest(e){
             .remove();
             cleanUp();
         }
+        else if (type === "edit-shift"){
+            const shift = document.getElementById("edited-shift");
+            shift.removeAttribute("id");
+            cleanUp();
+        }
     })
 }
 
