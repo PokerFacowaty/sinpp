@@ -1,12 +1,10 @@
 from django.shortcuts import render
-from django.http import (HttpResponseRedirect, JsonResponse,
-                         HttpResponseBadRequest)
+from django.http import JsonResponse, HttpResponseBadRequest
 from .forms import UploadCSVForm
 from schedule.parse_schedule_csv import parse_oengus, handle_uploaded_file
 from .models import EventForm, Event, Room, Speedrun, Shift, Intermission, Role
 from django.contrib.auth.models import Group, User
 from django.contrib.auth.decorators import login_required
-from rules import has_perm
 from django.core.exceptions import PermissionDenied
 import math
 from datetime import timedelta
@@ -124,7 +122,8 @@ def schedule(request, event_id, room_id):
         # TODO: move this to the beginning so that no resources are wasted
         # when someone is not permitted
         content = {'room': rm, 'runs_interms': runs_interms, 'times': times,
-                   'shifts': role_shifts, 'table_start': table_start.isoformat(),
+                   'shifts': role_shifts,
+                   'table_start': table_start.isoformat(),
                    'table_end': (table_end + timedelta(hours=1)).isoformat()}
         return render(request, 'schedule/base_schedule.html', content)
     else:
