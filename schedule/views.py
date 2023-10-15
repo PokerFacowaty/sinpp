@@ -7,7 +7,7 @@ from django.contrib.auth.models import Group, User
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
 import math
-from datetime import timedelta, datetime
+from datetime import timedelta
 import json
 from django.core import serializers
 from django.views.decorators.csrf import ensure_csrf_cookie
