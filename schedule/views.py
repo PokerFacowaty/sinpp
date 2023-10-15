@@ -177,6 +177,9 @@ def remove_shift(request, shift_id):
         if is_ajax and request.method == "DELETE":
             shift = Shift.objects.filter(pk=shift_id)
             if shift:
+                # technically the [0] isn't needed since as long as you don't
+                # retrieve all the objects .delete() works on every item in
+                # the query, but I wanted to be precise
                 shift[0].delete()
                 return JsonResponse({'context': 'Shift deleted'})
             return JsonResponse({'context': 'Shift not found'}, status=404)
