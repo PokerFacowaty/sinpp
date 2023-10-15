@@ -131,7 +131,6 @@ def schedule(request, event_id, room_id):
         raise PermissionDenied()
 
 
-# NOTE: @login_required is HTML, so throws an error with JSON
 @login_required
 def shift(request, shift_id):
     shift = Shift.objects.filter(pk=shift_id)
@@ -150,38 +149,46 @@ def shift(request, shift_id):
             data = serializers.serialize('json', shift)
             return JsonResponse({'context': data})
 
-        return JsonResponse({'status': 'Invalid request.'}, status=400)
+        return JsonResponse({'context': 'Invalid request.'}, status=400)
     else:
         return HttpResponseBadRequest('Invalid request')
 
 
+@login_required
 def add_shift(request):
-    if request.method == "POST":
-        data = json.load(request)
-        print(data)
-        shift = data.get('payload')
-        print(shift)
-        new_shift = Shift.objects.create(
-                                ROLE=Role.objects.get(pk=int(shift['ROLE'])),
-                                EVENT=Event.objects.get(pk=int(shift['EVENT'])),
-                                ROOM=Room.objects.get(pk=int(shift['ROOM'])),
-                                START_DATE_TIME=shift['START_DATE_TIME'],
-                                END_DATE_TIME=shift['END_DATE_TIME'])
-        new_shift.save()
-        return JsonResponse({'status': 'Shift added!',
-                                'context': {'id': new_shift.id}})
-
-
-# TODO: add authorization for both this and add_shift
-def remove_shift(request, shift_id):
-    is_ajax = request.headers.get("X-Requested-With") == "XMLHttpRequest"
-    if is_ajax:
-        shift = Shift.objects.filter(pk=shift_id)
-        if not shift:
-            return JsonResponse({'context': 'Shift not found'}, status=404)
-        if request.method == "DELETE":
-            shift.delete()
-            return JsonResponse({'status': 'Shift deleted'})
-        return JsonResponse({'status': 'Invalid request'}, status=400)
+    # TODO: people
+    usr = User.objects.get(username=request.user)
+    if usr.has_perm('shift.add_shift'):
+        if request.method == "POST":
+            data = json.load(request)
+            shift = data.get('payload')
+            new_shift = Shift.objects.create(
+                            ROLE=Role.objects.get(pk=int(shift['ROLE'])),
+                            EVENT=Event.objects.get(pk=int(shift['EVENT'])),
+                            ROOM=Room.objects.get(pk=int(shift['ROOM'])),
+                            START_DATE_TIME=shift['START_DATE_TIME'],
+                            END_DATE_TIME=shift['END_DATE_TIME'])
+            new_shift.save()
+            return JsonResponse({'status': 'Shift added!',
+                                 'context': {'id': new_shift.id}})
     else:
-        return JsonResponse({'status': 'Invalid request'}, status=400)
+        return JsonResponse({'context': 'Permission denied'}, status=403)
+
+
+@login_required
+def remove_shift(request, shift_id):
+    usr = User.objects.get(username=request.user)
+    if usr.has_perm('shift.delete_shift'):
+        is_ajax = request.headers.get("X-Requested-With") == "XMLHttpRequest"
+        if is_ajax:
+            shift = Shift.objects.filter(pk=shift_id)
+            if not shift:
+                return JsonResponse({'context': 'Shift not found'}, status=404)
+            if request.method == "DELETE":
+                shift.delete()
+                return JsonResponse({'context': 'Shift deleted'})
+            return JsonResponse({'context': 'Invalid request'}, status=400)
+        else:
+            return JsonResponse({'context': 'Invalid request'}, status=400)
+    else:
+        return JsonResponse({'context': 'Permission denied'}, status=403)
