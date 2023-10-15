@@ -296,7 +296,7 @@ function sendRequest(e){
     else if (type === "edit-shift"){
         method = "PUT";
         shiftId = Number(e.target.parentElement.dataset.shiftId);
-        url = `https://sinpp-dev.pokerfacowaty.com/remove_shift/${shiftId}`;
+        url = `https://sinpp-dev.pokerfacowaty.com/edit_shift/${shiftId}`;
         const startTime = document.getElementById("start-time").value + "Z";
         const endTime = document.getElementById("end-time").value + "Z";
         body = JSON.stringify({payload: {START_DATE_TIME: startTime,
