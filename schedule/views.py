@@ -182,3 +182,22 @@ def remove_shift(request, shift_id):
             return JsonResponse({'context': 'Shift not found'}, status=404)
         return JsonResponse({'context': 'Invalid request'}, status=400)
     return JsonResponse({'context': 'Permission denied'}, status=403)
+
+
+@login_required
+def edit_shift(request, shift_id):
+    usr = User.objects.get(username=request.user)
+    if usr.has_perm('shift.delete_shift'):
+        is_ajax = request.headers.get("X-Requested-With") == "XMLHttpRequest"
+        if is_ajax and request.method == "PUT":
+            shifts = Shift.objects.filter(pk=shift_id)
+            if shifts:
+                data = json.load(request)
+                payload = data.get('payload')
+                shift = shifts[0]
+                for k, v in payload.items():
+                    shift[k] = v
+                shift.save()
+            return JsonResponse({'context': 'Shift not found'}, status=404)
+        return JsonResponse({'context': 'Invalid request'}, status=400)
+    return JsonResponse({'context': 'Permission denied'}, status=403)
