@@ -288,12 +288,17 @@ function sendRequest(e: MouseEvent){
         const startTime = (document.getElementById(
                             "start-time") as HTMLInputElement).value + "Z";
         const endTime = (document.getElementById(
-                         "end-time") as HTMLInputElement).value + "Z";
+                         "start-time") as HTMLInputElement).value + "Z";
         body = JSON.stringify({payload: {ROLE: roleId,
                                          EVENT: eventId,
                                          ROOM: roomId,
                                          START_DATE_TIME: startTime,
                                          END_DATE_TIME: endTime}});
+    }
+    else if (type === "remove-shift"){
+        method = "DELETE";
+        shiftId = Number(target.parentElement.dataset.shiftId);
+        url = `https://sinpp-dev.pokerfacowaty.com/remove_shift/${shiftId}/`
     }
     else if (type === "edit-shift"){
         method = "PUT";
