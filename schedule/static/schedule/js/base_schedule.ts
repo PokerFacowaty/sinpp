@@ -1,14 +1,16 @@
-interface Constants {
-    "--timeHeight": string;
-    "--timeTopBorder": string;
-    PX_PER_MIN: number;
-    TABLE_START_TIME: Date;
-    TABLE_END_TIME: Date;
-    NEW_SHIFT_MINS: number;
-    CSRFTOKEN: string;
+/* Switched the initial interface to a class as advised here:
+   https://stackoverflow.com/a/49750752/22485799 */
+class Constants {
+    "--timeHeight": string = '';
+    "--timeTopBorder": string = '';
+    PX_PER_MIN: number = Number();
+    TABLE_START_TIME: Date = new Date();
+    TABLE_END_TIME: Date = new Date();
+    NEW_SHIFT_MINS: number = Number();
+    CSRFTOKEN: string = '';
 }
 
-let cnsts: Constants;
+let cnsts: Constants = new Constants();
 
 function main(){
     loadCSSRoot();
