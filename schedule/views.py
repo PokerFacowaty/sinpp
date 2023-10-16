@@ -176,6 +176,8 @@ def remove_shift(request, shift_id):
     if usr.has_perm('shift.delete_shift'):
         is_ajax = request.headers.get("X-Requested-With") == "XMLHttpRequest"
         if is_ajax and request.method == "DELETE":
+            # using filter instead of get since filter will just return
+            # an empty query that I have a check for, get would throw an error
             shift = Shift.objects.filter(pk=shift_id)
             if shift:
                 # technically the [0] isn't needed since as long as you don't
