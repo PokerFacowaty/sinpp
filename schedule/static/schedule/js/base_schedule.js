@@ -34,7 +34,6 @@ function main(){
             const unsaved_shift = createNewShiftBox(e);
             const dialog = createDialog(e.pageX, e.pageY, "add-shift",
                                       unsaved_shift);
-            console.log(dialog);
             document.body.appendChild(dialog);
             addDialogListeners(dialog, "add-shift");
             dialog.show();
@@ -45,7 +44,7 @@ function main(){
 function loadCSSRoot(){
     const propsToGet = ["--timeHeight",
                         "--timeTopBorder"];
-    for (prop of propsToGet){
+    for (const prop of propsToGet){
         cnsts[prop] = getComputedStyle(document.documentElement, null)
                       .getPropertyValue(prop);
     }
@@ -179,7 +178,6 @@ function createDialog(x, y, type, el=null){
                                      // timezone hackery for now
         let initial_start = shift.dataset.startTs.slice(0, -6);
         let initial_end = shift.dataset.endTs.slice(0, -6);
-        console.log(initial_start, initial_end)
 
         inner += ('<label for="start-time" style="display: block">'
           + 'Start time:</label>'
@@ -210,7 +208,6 @@ function createDialog(x, y, type, el=null){
 }
 
 function addDialogListeners(dialog, type){
-    console.log(type);
     const closeButton = dialog.querySelector('#close-button');
 
     closeButton.addEventListener("click", cleanUp);
@@ -246,7 +243,6 @@ function addDialogListeners(dialog, type){
     }
     else if (type === "remove-shift"){
         const removeButton = document.getElementById("remove-button");
-
         removeButton.addEventListener("click", sendRequest);
     }
 }
@@ -269,7 +265,6 @@ function sendRequest(e){
     let shift;
     let shiftId;
 
-    console.log(type);
     if (type === "add-shift"){
         method = "POST";
         url = "https://sinpp-dev.pokerfacowaty.com/add_shift/";
@@ -285,7 +280,7 @@ function sendRequest(e){
                                          EVENT: eventId,
                                          ROOM: roomId,
                                          START_DATE_TIME: startTime,
-                                         END_DATE_TIME: endTime}})
+                                         END_DATE_TIME: endTime}});
     }
     else if (type === "remove-shift"){
         method = "DELETE";
@@ -346,7 +341,7 @@ function setNewTopHeight(e){
     }
     else if (e.target.parentElement.classList.contains("edit-shift")){
         const shiftId = Number(e.target.parentElement.dataset.shiftId);
-        shift = document.querySelector(`[data-shift-id="${shiftId}"].shift`)
+        shift = document.querySelector(`[data-shift-id="${shiftId}"].shift`);
     }
     const startTime = document.getElementById("start-time");
     const endTime = document.getElementById("end-time");
@@ -372,7 +367,6 @@ function setDefaultTopHeight(shift){
                               - cnsts.TABLE_START_TIME) / 1000 / 60);
     const diff_mins = ((new Date(shift_end_ts)
                         - new Date(shift_start_ts)) / 1000 / 60);
-    console.log(shift_end_ts, shift_start_ts, diff_mins)
 
     shift.style.height = `${diff_mins * cnsts.PX_PER_MIN}px`;
     shift.style.top = `${mins_since_start * cnsts.PX_PER_MIN}px`;
