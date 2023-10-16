@@ -278,8 +278,8 @@ function sendRequest(e: MouseEvent){
 
     if (type === "add-shift"){
         method = "POST";
-        url = "https://sinpp-dev.pokerfacowaty.com/add_shift";
-        shift = document.getElementById("schedule-table");
+        url = "https://sinpp-dev.pokerfacowaty.com/add_shift/";
+        shift = document.getElementById("unsaved-shift");
         const roleId = Number(shift.parentElement.dataset.roleId);
         const scheduleTable = document.getElementById("schedule-table");
         const eventId = Number(scheduleTable.dataset.eventId);
@@ -288,7 +288,7 @@ function sendRequest(e: MouseEvent){
         const startTime = (document.getElementById(
                             "start-time") as HTMLInputElement).value + "Z";
         const endTime = (document.getElementById(
-                         "start-time") as HTMLInputElement).value + "Z";
+                         "end-time") as HTMLInputElement).value + "Z";
         body = JSON.stringify({payload: {ROLE: roleId,
                                          EVENT: eventId,
                                          ROOM: roomId,
@@ -307,7 +307,7 @@ function sendRequest(e: MouseEvent){
         const startTime = (document.getElementById(
                            "start-time") as HTMLInputElement).value + "Z";
         const endTime = (document.getElementById(
-                         "start-time") as HTMLInputElement).value + "Z";
+                         "end-time") as HTMLInputElement).value + "Z";
         body = JSON.stringify({payload: {START_DATE_TIME: startTime,
                                          END_DATE_TIME: endTime}});
     }
