@@ -80,6 +80,7 @@ function setBlockPosHeight(){
                           * cnsts.PX_PER_MIN}px`
         const length = Number(bl.getAttribute("data-length"));
         bl.style.height = `${length * cnsts.PX_PER_MIN}px`;
+        bl.style.visibility = "visible";
     }
 }
 
