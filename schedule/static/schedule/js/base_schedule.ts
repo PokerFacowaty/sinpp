@@ -288,7 +288,7 @@ function sendRequest(e: MouseEvent){
         const startTime = (document.getElementById(
                             "start-time") as HTMLInputElement).value + "Z";
         const endTime = (document.getElementById(
-                         "start-time") as HTMLInputElement).value + "Z";
+                         "end-time") as HTMLInputElement).value + "Z";
         body = JSON.stringify({payload: {ROLE: roleId,
                                          EVENT: eventId,
                                          ROOM: roomId,
