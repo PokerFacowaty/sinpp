@@ -1,0 +1,21 @@
+services:
+  db-dev:
+    image: postgres
+    volumes:
+      - ../data-dev/db:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+  web-dev:
+    build:
+      context: .
+      dockerfile: Dockerfile-dev
+    container_name: sinpp-dev
+    command: sh -c "poetry install --no-root && tsc && . .venv/bin/activate && python3 manage.py migrate && python3 manage.py runserver 0.0.0.0:8000"
+    volumes:
+      - "../sinpp:/sinpp"
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db-dev
