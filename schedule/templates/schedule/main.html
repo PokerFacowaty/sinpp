@@ -1,4 +1,5 @@
 {% extends 'schedule/base.html' %}
+{% block title %}Schedule-i-nator++{% endblock %}
 {% load static %}
 {% block content %}
         <ul>
@@ -9,5 +10,5 @@
                 <li><a href="{% url 'login' %}?next={{ request.path }}">Login</a></li>
             {% endif %}
         </ul>
-        <h1>Schedhule-i-nator++</h1>
+        <h1>Schedule-i-nator++</h1>
 {% endblock %}
