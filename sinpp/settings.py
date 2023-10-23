@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 from pathlib import Path
 import os
 from dotenv import load_dotenv, find_dotenv
+import json
 
 load_dotenv(find_dotenv())
 
@@ -29,10 +30,10 @@ SECRET_KEY = os.environ['SECRET_KEY']
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ['DEBUG'] == 'True'
 
-ALLOWED_HOSTS = ['.pokerfacowaty.com']
-CSRF_TRUSTED_ORIGINS = ['https://*.pokerfacowaty.com']
-CSRF_COOKIE_SECURE = True
-SESSION_COOKIE_SECURE = True
+ALLOWED_HOSTS = json.loads(os.environ['ALLOWED_HOSTS'])
+CSRF_TRUSTED_ORIGINS = json.loads(os.environ['CSRF_TRUSTED_ORIGINS'])
+CSRF_COOKIE_SECURE = os.environ['CSRF_COOKIE_SECURE'] == 'True'
+SESSION_COOKIE_SECURE = os.environ['SESSION_COOKIE_SECURE'] == 'True'
 
 # Application definition
 

@@ -15,5 +15,20 @@ services:
     command: sh -c "tsc && . .venv/bin/activate && python3 manage.py migrate && python3 manage.py runserver 0.0.0.0:8000"
     ports:
       - "8000:8000"
+    environment:
+      - ALLOWED_HOSTS=[""]
+      - CSRF_TRUSTED_ORIGINS=[""]
+      - CSRF_COOKIE_SECURE=True
+      - SESSION_COOKIE_SECURE=True
+      - DEBUG=False
+      - SECRET_KEY
+      - STATIC=
+      - STATIC_ROOT=
+      - DB_USER=postgres
+      - DB_TABLE=postgres
+      - DB_PASSWORD=postgres
+      - DB_HOST=db
+      - DB_PORT=5432
     depends_on:
       - db
+    # Don't forget about volumes if needed
