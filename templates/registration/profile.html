@@ -3,11 +3,25 @@
 {% block content %}
 <h1>{{ user.username }}</h1>
 <h1>Your events:</h1>
-{% for event, rooms in events_rooms.items %}
-<h2>{{ event }}</h2>
-<h3>Rooms:</h3>
-{% for room in rooms %}
-<h4>{{ room.NAME }}</h4>
-{% endfor %}
+{% for event in events %}
+    <h2>{{ event.NAME }}</h2>
+    <h3>Room schedules:</h3>
+    <ul>
+        {% for room in event.rooms %}
+        <li><a href="/schedule/{{ event.id }}/{{ room.id }}">{{ room.NAME }}</a></li>
+        {% endfor %}
+    </ul>
+    <h3>Roles:</h3>
+    <ul>
+        {% for role in event.roles %}
+            <li>{{ role }}</li>
+        {% endfor %}
+    </ul>
+    <h3>Staff:</h3>
+    <ul>
+        {% for person in event.staff %}
+            <li>{{ person.username }}</li>
+        {% endfor %}
+    </ul>
 {% endfor %}
 {% endblock %}
