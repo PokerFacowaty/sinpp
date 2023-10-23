@@ -13,3 +13,5 @@ media
 dist/
 venv/
 *.js
+docker-compose-custom.yml
+docker-compose-dev-custom.yml
