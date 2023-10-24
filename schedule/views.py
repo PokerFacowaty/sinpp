@@ -228,10 +228,11 @@ def remove_shift(request, shift_id):
     if shifts:
         usr = User.objects.get(username=request.user)
         shift = shifts[0]
+        ev = shift.EVENT
         if usr.has_perm('event.delete_shifts', ev):
             is_ajax = request.headers.get("X-Requested-With") == "XMLHttpRequest"
             if is_ajax and request.method == "DELETE":
-                    shift[0].delete()
+                shift[0].delete()
                 return JsonResponse({'context': 'Shift not found'}, status=404)
             return JsonResponse({'context': 'Invalid request'}, status=400)
         return JsonResponse({'context': 'Permission denied'}, status=403)
@@ -242,7 +243,7 @@ def remove_shift(request, shift_id):
 def edit_shift(request, shift_id):
     shifts = Shift.objects.filter(pk=shift_id)
     if shifts:
-        shift = shift[0]
+        shift = shifts[0]
         ev = shift.EVENT
         usr = User.objects.get(username=request.user)
         if usr.has_perm('event.edit_shifts', ev):
