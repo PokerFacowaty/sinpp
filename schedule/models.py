@@ -30,13 +30,20 @@ class Event(RulesModel):
     def is_event_staff(user, event):
         return user.groups.filter(name=event.STAFF).exists()
 
+    # Anyone can add events
     add_perm('event.view_event', is_event_staff)
     add_perm('event.change_event', is_event_staff)
     add_perm('event.delete_event', is_event_staff)
-    add_perm('event.view_shifts', is_event_staff)
+
     add_perm('event.add_shifts', is_event_staff)
+    add_perm('event.view_shifts', is_event_staff)
     add_perm('event.change_shifts', is_event_staff)
     add_perm('event.delete_shifts', is_event_staff)
+
+    add_perm('event.add_roles', is_event_staff)
+    add_perm('event.view_roles', is_event_staff)
+    add_perm('event.update_roles', is_event_staff)
+    add_perm('event.delete_roles', is_event_staff)
 
     def __str__(self) -> str:
         return self.NAME
