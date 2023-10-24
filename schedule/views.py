@@ -62,16 +62,20 @@ def add_event(request):
 
 
 @login_required
-def remove_event(request):
+def remove_event(request, event_id):
     '''The confirmation page for a GET request and actual removal for POST'''
     usr = User.objects.get(username=request.user)
-    ev = Event.objects.get()
-    if usr.has_perm('event.delete_event', ev):
-        if request.method == "GET":
-            pass
-        elif request.method == "POST":
-            pass
-    return HttpResponseForbidden()
+    events = Event.objects.filter(pk=int(event_id))
+    if events:
+        ev = events[0]
+        if usr.has_perm('event.delete_event', ev):
+            if request.method == "GET":
+                return render('remove_event.html', {'event': ev})
+            elif request.method == "POST":
+                ev.delete()
+            return redirect("/accounts/profile")
+        return HttpResponseForbidden()
+    return HttpResponseNotFound()
 
 
 @login_required
