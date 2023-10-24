@@ -1,2 +1,23 @@
 {% extends 'schedule/base.html' %}
-{% block title %}My events{% endblock %}
+{% block title %}{{ event.NAME }} - Schedule-i-nator++{% endblock %}
+{% block content %}
+        <h1>{{ event.NAME }}</h1>
+        <h2>Rooms:</h2>
+        <ul>
+        {% for room in event.rooms %}
+            <li><a href="/schedule/{{ event.id }}/{{ room.id }}/">{{ room.NAME }}</a></li>
+        {% endfor %}
+        </ul>
+        <h2>Staff:</h2>
+        <ul>
+        {% for person in event.staff %}
+            <li>{{ person.username }}</li>
+        {% endfor %}
+        </ul>
+        <h2>Roles:</h2>
+        <ul>
+        {% for role in event.roles %}
+            <li>{{ role.NAME }}</li>
+        {% endfor %}
+        </ul>
+{% endblock %}
