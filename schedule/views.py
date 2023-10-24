@@ -13,6 +13,11 @@ import json
 from django.core import serializers
 from django.views.decorators.csrf import ensure_csrf_cookie
 
+# NOTE TO SELF ON THE ORDER OF OPERATIONS:
+# if object exists (NotFound / 404)
+# if user has permissions for object (Forbidden / 403)
+# if the request is right (BadRequest, 400)
+
 
 def index(request):
     return render(request, 'schedule/main.html')
@@ -54,6 +59,19 @@ def add_event(request):
     else:
         form = EventForm()
     return render(request, "schedule/add_event.html", {"form": form})
+
+
+@login_required
+def remove_event(request):
+    '''The confirmation page for a GET request and actual removal for POST'''
+    usr = User.objects.get(username=request.user)
+    ev = Event.objects.get()
+    if usr.has_perm('event.delete_event', ev):
+        if request.method == "GET":
+            pass
+        elif request.method == "POST":
+            pass
+    return HttpResponseForbidden()
 
 
 @login_required
@@ -135,10 +153,10 @@ def schedule(request, event_id, room_id):
 
 @login_required
 def event(request, event_id):
-    usr = User.objects.get(username=request.user)
     ev = Event.objects.filter(pk=event_id)[0]
-    if usr.has_perm('event.view_event', ev):
-        if ev:
+    if ev:
+        usr = User.objects.get(username=request.user)
+        if usr.has_perm('event.view_event', ev):
             if request.method == "GET":
                 ev.roles = Role.objects.filter(EVENT=ev)
                 ev.staff = User.objects.filter(groups__name=ev.STAFF)
@@ -146,84 +164,90 @@ def event(request, event_id):
                 content = {'event': ev}
                 return render(request, 'schedule/event.html', content)
             return HttpResponseBadRequest()
-        return HttpResponseNotFound()
-    return HttpResponseForbidden()
+        return HttpResponseForbidden()
+    return HttpResponseNotFound()
 
 
 @login_required
 def shift(request, shift_id):
-    ev = Shift.objects.get(pk=shift_id).EVENT
-    usr = User.objects.get(username=request.user)
-    if usr.has_perm('shift.view_shift', ev):
-        shift = Shift.objects.filter(pk=shift_id)
-        if shift:
+    shifts = Shift.objects.filter(pk=shift_id)
+    if shifts:
+        shift = shifts[0]
+        ev = shift.EVENT
+        usr = User.objects.get(username=request.user)
+        if usr.has_perm('event.view_shifts', ev):
             is_ajax = (request.headers.get("X-Requested-With")
                        == "XMLHttpRequest")
             if is_ajax and request.method == "GET":
                 data = serializers.serialize('json', shift)
                 return JsonResponse({'context': data})
             return JsonResponse({'context': 'Invalid request.'}, status=400)
-        return JsonResponse({'context': "Shift not found"}, status=404)
-    return JsonResponse({'context': 'Permission denied'}, status=403)
+        return JsonResponse({'context': 'Permission denied'}, status=403)
+    return JsonResponse({'context': "Shift not found"}, status=404)
 
 
 @login_required
 def add_shift(request):
     # TODO: people
-    usr = User.objects.get(username=request.user)
-    if usr.has_perm('shift.add_shift'):
-        is_ajax = request.headers.get("X-Requested-With") == "XMLHttpRequest"
-        if is_ajax and request.method == "POST":
-            data = json.load(request)
-            shift = data.get('payload')
-            new_shift = Shift.objects.create(
-                            ROLE=Role.objects.get(pk=int(shift['ROLE'])),
-                            EVENT=Event.objects.get(pk=int(shift['EVENT'])),
-                            ROOM=Room.objects.get(pk=int(shift['ROOM'])),
-                            START_DATE_TIME=shift['START_DATE_TIME'],
-                            END_DATE_TIME=shift['END_DATE_TIME'])
-            new_shift.save()
-            return JsonResponse({'status': 'Shift added!',
-                                 'context': {'id': new_shift.id}})
-        return JsonResponse({'context': 'Ivalid request'}, status=400)
-    return JsonResponse({'context': 'Permission denied'}, status=403)
+    data = json.load(request)
+    shift = data.get('payload')
+    ev = Event.objects.filter(pk=int(shift['EVENT']))
+    if ev:
+        usr = User.objects.get(username=request.user)
+        if usr.has_perm('event.add_shifts', ev):
+            is_ajax = request.headers.get("X-Requested-With") == "XMLHttpRequest"
+            if is_ajax and request.method == "POST":
+                new_shift = Shift.objects.create(
+                                ROLE=Role.objects.get(pk=int(shift['ROLE'])),
+                                EVENT=Event.objects.get(pk=int(shift['EVENT'])),
+                                ROOM=Room.objects.get(pk=int(shift['ROOM'])),
+                                START_DATE_TIME=shift['START_DATE_TIME'],
+                                END_DATE_TIME=shift['END_DATE_TIME'])
+                new_shift.save()
+                return JsonResponse({'status': 'Shift added!',
+                                     'context': {'id': new_shift.id}})
+            return JsonResponse({'context': 'Ivalid request'}, status=400)
+        return JsonResponse({'context': 'Permission denied'}, status=403)
+    return JsonResponse({'context': 'Event not found'}, status=404)
 
 
 @login_required
 def remove_shift(request, shift_id):
-    usr = User.objects.get(username=request.user)
-    if usr.has_perm('shift.delete_shift'):
-        is_ajax = request.headers.get("X-Requested-With") == "XMLHttpRequest"
-        if is_ajax and request.method == "DELETE":
-            # using filter instead of get since filter will just return
-            # an empty query that I have a check for, get would throw an error
-            shift = Shift.objects.filter(pk=shift_id)
-            if shift:
-                # technically the [0] isn't needed since as long as you don't
-                # retrieve all the objects .delete() works on every item in
-                # the query, but I wanted to be precise
-                shift[0].delete()
-                return JsonResponse({'context': 'Shift deleted'})
-            return JsonResponse({'context': 'Shift not found'}, status=404)
-        return JsonResponse({'context': 'Invalid request'}, status=400)
-    return JsonResponse({'context': 'Permission denied'}, status=403)
+    # using filter instead of get since filter will just return an empty query
+    # I have a check for, get would throw an error
+
+    # technically the [0] isn't needed since as long as you don't retrieve all
+    # the objects .delete() works on every item in the query, but I wanted to
+    # be precise (refuses to work for .all() as a safety measure)
+    shift = Shift.objects.filter(pk=shift_id)
+    if shift:
+        usr = User.objects.get(username=request.user)
+        if usr.has_perm('event.delete_shifts', ev):
+            is_ajax = request.headers.get("X-Requested-With") == "XMLHttpRequest"
+            if is_ajax and request.method == "DELETE":
+                    shift[0].delete()
+                return JsonResponse({'context': 'Shift not found'}, status=404)
+            return JsonResponse({'context': 'Invalid request'}, status=400)
+        return JsonResponse({'context': 'Permission denied'}, status=403)
+    return JsonResponse({'context': 'Shift deleted'})
 
 
 @login_required
 def edit_shift(request, shift_id):
-    usr = User.objects.get(username=request.user)
-    if usr.has_perm('shift.edit_shift'):
-        is_ajax = request.headers.get("X-Requested-With") == "XMLHttpRequest"
-        if is_ajax and request.method == "PUT":
-            shifts = Shift.objects.filter(pk=shift_id)
-            if shifts:
+    shifts = Shift.objects.filter(pk=shift_id)
+    if shifts:
+        shift = shift[0]
+        ev = shift.EVENT
+        usr = User.objects.get(username=request.user)
+        if usr.has_perm('event.edit_shifts', ev):
+            is_ajax = request.headers.get("X-Requested-With") == "XMLHttpRequest"
+            if is_ajax and request.method == "PUT":
                 data = json.load(request)
                 payload = data.get('payload')
-                shift = shifts[0]
                 for k, v in payload.items():
                     setattr(shift, k, v)
                 shift.save()
                 return JsonResponse({'context': 'Shift updated'})
-            return JsonResponse({'context': 'Shift not found'}, status=404)
-        return JsonResponse({'context': 'Invalid request'}, status=400)
-    return JsonResponse({'context': 'Permission denied'}, status=403)
+            return JsonResponse({'context': 'Invalid request'}, status=400)
+        return JsonResponse({'context': 'Permission denied'}, status=403)
+    return JsonResponse({'context': 'Shift not found'}, status=404)
