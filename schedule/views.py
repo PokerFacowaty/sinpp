@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http import (JsonResponse, HttpResponseNotFound,
                          HttpResponseForbidden, HttpResponseBadRequest)
 from .forms import UploadCSVForm
@@ -50,6 +50,7 @@ def add_event(request):
             grp = Group.objects.get(name=cl["SHORT_TITLE"] + " Staff")
             usr = User.objects.get(username=request.user)
             grp.user_set.add(usr)
+            return redirect('/accounts/profile')
     else:
         form = EventForm()
     return render(request, "schedule/add_event.html", {"form": form})
