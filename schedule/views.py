@@ -70,10 +70,11 @@ def remove_event(request, event_id):
         ev = events[0]
         if usr.has_perm('event.delete_event', ev):
             if request.method == "GET":
-                return render('remove_event.html', {'event': ev})
+                return render(request, 'schedule/remove_event.html',
+                              {'event': ev})
             elif request.method == "POST":
                 ev.delete()
-            return redirect("/accounts/profile")
+                return redirect("/accounts/profile")
         return HttpResponseForbidden()
     return HttpResponseNotFound()
 
