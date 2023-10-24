@@ -1,5 +1,6 @@
 from django.shortcuts import render
-from django.http import JsonResponse
+from django.http import (JsonResponse, HttpResponseNotFound,
+                         HttpResponseForbidden, HttpResponseBadRequest)
 from .forms import UploadCSVForm
 from schedule.parse_schedule_csv import parse_oengus, handle_uploaded_file
 from .models import EventForm, Event, Room, Speedrun, Shift, Intermission, Role
@@ -129,6 +130,23 @@ def schedule(request, event_id, room_id):
         return render(request, 'schedule/base_schedule.html', content)
     else:
         raise PermissionDenied()
+
+
+@login_required
+def event(request, event_id):
+    usr = User.objects.get(username=request.user)
+    ev = Event.objects.filter(pk=event_id)[0]
+    if usr.has_perm('event.view_event', ev):
+        if ev:
+            if request.method == "GET":
+                ev.roles = Role.objects.filter(EVENT=ev)
+                ev.staff = User.objects.filter(groups__name=ev.STAFF)
+                ev.rooms = Room.objects.filter(EVENT=ev)
+                content = {'event': ev}
+                return render(request, 'schedule/event.html', content)
+            return HttpResponseBadRequest()
+        return HttpResponseNotFound()
+    return HttpResponseForbidden()
 
 
 @login_required
