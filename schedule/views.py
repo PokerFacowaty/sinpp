@@ -80,6 +80,27 @@ def remove_event(request, event_id):
 
 
 @login_required
+def edit_event(request, event_id):
+    events = Event.objects.filter(pk=event_id)
+    if events:
+        usr = User.objects.get(username=request.user)
+        ev = events[0]
+        if usr.has_perm('event.edit_event', ev):
+            if request.method == "POST":
+                form = EventForm(request.POST, instance=ev)
+                if form.is_valid():
+                    form.save()
+                    return redirect("user_profile")
+            elif request.method == "GET":
+                form = EventForm(instance=ev)
+                return render(request, "",
+                              {'form': form})
+            return HttpResponseBadRequest()
+        return HttpResponseForbidden()
+    return HttpResponseNotFound()
+
+
+@login_required
 @ensure_csrf_cookie
 def schedule(request, event_id, room_id):
     # TODO: clean this mess up a bit
