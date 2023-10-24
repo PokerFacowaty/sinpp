@@ -4,6 +4,7 @@ from . import views
 urlpatterns = [
     path('upload_csv/', views.upload_csv, name="upload_csv"),
     path('add_event/', views.add_event, name="add_event"),
+    path('remove_event/<int:event_id>/', views.remove_event),
     path('schedule/<int:event_id>/<int:room_id>/', views.schedule,
          name='schedule'),
     path('shift/<int:shift_id>/', views.shift),
