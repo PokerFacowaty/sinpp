@@ -55,7 +55,7 @@ def add_event(request):
             grp = Group.objects.get(name=cl["SHORT_TITLE"] + " Staff")
             usr = User.objects.get(username=request.user)
             grp.user_set.add(usr)
-            return redirect('/accounts/profile')
+            return redirect('user_profile')
     else:
         form = EventForm()
     return render(request, "schedule/add_event.html", {"form": form})
@@ -74,7 +74,7 @@ def remove_event(request, event_id):
                               {'event': ev})
             elif request.method == "POST":
                 ev.delete()
-                return redirect("/accounts/profile")
+                return redirect("user_profile")
         return HttpResponseForbidden()
     return HttpResponseNotFound()
 
