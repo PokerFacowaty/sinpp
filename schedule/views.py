@@ -90,7 +90,7 @@ def edit_event(request, event_id):
                 form = EventForm(request.POST, instance=ev)
                 if form.is_valid():
                     form.save()
-                    return redirect("user_profile")
+                    return redirect("event", event_id=event_id)
             elif request.method == "GET":
                 form = EventForm(instance=ev)
                 return render(request, "schedule/edit_event.html",
