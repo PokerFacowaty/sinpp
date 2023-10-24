@@ -1,0 +1,10 @@
+{% extends 'schedule/base.html' %}
+{% block title %}Remove {{ event.NAME }} - Schedule-i-nator++{% endblock %}
+{% load static %}
+{% block content %}
+<form method="post">
+    {% csrf_token %}
+    <div>Do you wish to remove {{ event.NAME }}?</div>
+    <input type="submit" value="Remove"></input>
+</form>
+{% endblock %}
