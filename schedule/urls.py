@@ -10,5 +10,6 @@ urlpatterns = [
     path('add_shift/', views.add_shift),
     path('remove_shift/<int:shift_id>/', views.remove_shift),
     path('edit_shift/<int:shift_id>/', views.edit_shift),
+    path('event/<int:event_id>/', views.event),
     path('', views.index, name='main')
 ]
