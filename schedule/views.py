@@ -200,11 +200,12 @@ def add_shift(request):
     if ev:
         usr = User.objects.get(username=request.user)
         if usr.has_perm('event.add_shifts', ev):
-            is_ajax = request.headers.get("X-Requested-With") == "XMLHttpRequest"
+            is_ajax = (request.headers.get("X-Requested-With")
+                       == "XMLHttpRequest")
             if is_ajax and request.method == "POST":
                 new_shift = Shift.objects.create(
                                 ROLE=Role.objects.get(pk=int(shift['ROLE'])),
-                                EVENT=Event.objects.get(pk=int(shift['EVENT'])),
+                                EVENT=ev,
                                 ROOM=Room.objects.get(pk=int(shift['ROOM'])),
                                 START_DATE_TIME=shift['START_DATE_TIME'],
                                 END_DATE_TIME=shift['END_DATE_TIME'])
@@ -230,7 +231,8 @@ def remove_shift(request, shift_id):
         shift = shifts[0]
         ev = shift.EVENT
         if usr.has_perm('event.delete_shifts', ev):
-            is_ajax = request.headers.get("X-Requested-With") == "XMLHttpRequest"
+            is_ajax = (request.headers.get("X-Requested-With")
+                       == "XMLHttpRequest")
             if is_ajax and request.method == "DELETE":
                 shift[0].delete()
                 return JsonResponse({'context': 'Shift not found'}, status=404)
@@ -247,7 +249,8 @@ def edit_shift(request, shift_id):
         ev = shift.EVENT
         usr = User.objects.get(username=request.user)
         if usr.has_perm('event.edit_shifts', ev):
-            is_ajax = request.headers.get("X-Requested-With") == "XMLHttpRequest"
+            is_ajax = (request.headers.get("X-Requested-With")
+                       == "XMLHttpRequest")
             if is_ajax and request.method == "PUT":
                 data = json.load(request)
                 payload = data.get('payload')
