@@ -157,8 +157,9 @@ def schedule(request, event_id, room_id):
 
 @login_required
 def event(request, event_id):
-    ev = Event.objects.filter(pk=event_id)[0]
-    if ev:
+    events = Event.objects.filter(pk=event_id)
+    if events:
+        ev = events[0]
         usr = User.objects.get(username=request.user)
         if usr.has_perm('event.view_event', ev):
             if request.method == "GET":
@@ -223,9 +224,10 @@ def remove_shift(request, shift_id):
     # technically the [0] isn't needed since as long as you don't retrieve all
     # the objects .delete() works on every item in the query, but I wanted to
     # be precise (refuses to work for .all() as a safety measure)
-    shift = Shift.objects.filter(pk=shift_id)
-    if shift:
+    shifts = Shift.objects.filter(pk=shift_id)
+    if shifts:
         usr = User.objects.get(username=request.user)
+        shift = shifts[0]
         if usr.has_perm('event.delete_shifts', ev):
             is_ajax = request.headers.get("X-Requested-With") == "XMLHttpRequest"
             if is_ajax and request.method == "DELETE":
