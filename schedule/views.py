@@ -76,6 +76,7 @@ def remove_event(request, event_id):
             elif request.method == "POST":
                 ev.delete()
                 return redirect("user_profile")
+            return HttpResponseBadRequest()
         return HttpResponseForbidden()
     return HttpResponseNotFound()
 
