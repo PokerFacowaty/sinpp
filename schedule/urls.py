@@ -13,5 +13,6 @@ urlpatterns = [
     path('edit_shift/<int:shift_id>/', views.edit_shift),
     path('event/<int:event_id>/', views.event, name='event'),
     path('edit_event/<int:event_id>/', views.edit_event),
+    path('add_role/<int:event_id>/', views.add_role, name='add_role'),
     path('', views.index, name='main')
 ]
