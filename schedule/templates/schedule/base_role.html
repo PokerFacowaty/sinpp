@@ -9,4 +9,5 @@
             <li>{{ person.NICKNAME }}</li>
         {% endfor %}
     </ul>
+<a href="{% url 'edit_role' role.id %}">Edit role</a>
 {% endblock %}
