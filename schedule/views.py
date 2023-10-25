@@ -23,8 +23,6 @@ from django.views.decorators.csrf import ensure_csrf_cookie
 def index(request):
     return render(request, 'schedule/base_main.html')
 
-# TODO: forms need a success / failure screen
-
 
 @login_required
 def upload_csv(request):
