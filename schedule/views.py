@@ -115,6 +115,7 @@ def add_role(request, event_id):
                     rl = Role.objects.create(NAME=cl['NAME'],
                                              TIME_SAFETY_MARGIN=cl['TIME_SAFETY_MARGIN'],
                                              EVENT=ev)
+                    rl.save()
                     return redirect('user_profile')
             elif request.method == "GET":
                 form = RoleForm()
