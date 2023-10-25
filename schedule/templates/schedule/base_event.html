@@ -21,6 +21,7 @@
             <li>{{ role.NAME }}</li>
         {% endfor %}
         </ul>
+        <a href="/add_role/{{ event.id }}/">Add Role</a>
         <a href="/edit_event/{{ event.id }}/">Edit event</a>
         <a href="/remove_event/{{ event.id }}/">Remove event</a>
 {% endblock %}
