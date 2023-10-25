@@ -18,7 +18,7 @@
         <h2>Roles:</h2>
         <ul>
         {% for role in event.roles %}
-            <li>{{ role.NAME }}<a href="{% url 'remove_role' role.id %}">Remove role</a></li>
+            <li><a href="{% url 'role' role.id %}">{{ role.NAME }}</a></li>
         {% endfor %}
         </ul>
         <a href="/add_role/{{ event.id }}/">Add Role</a>
