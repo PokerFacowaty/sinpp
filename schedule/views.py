@@ -20,7 +20,7 @@ from django.views.decorators.csrf import ensure_csrf_cookie
 
 
 def index(request):
-    return render(request, 'schedule/main.html')
+    return render(request, 'schedule/base_main.html')
 
 # TODO: forms need a success / failure screen
 
@@ -40,7 +40,7 @@ def upload_csv(request):
             parse_oengus(filepath, event, room)
     else:
         form = UploadCSVForm(data={'groups': groups})
-    return render(request, "schedule/parse_csv.html", {"form": form})
+    return render(request, "schedule/base_parse_csv.html", {"form": form})
 
 
 @login_required
@@ -58,7 +58,7 @@ def add_event(request):
             return redirect('user_profile')
     else:
         form = EventForm()
-    return render(request, "schedule/add_event.html", {"form": form})
+    return render(request, "schedule/base_add_event.html", {"form": form})
 
 
 @login_required
@@ -70,7 +70,7 @@ def remove_event(request, event_id):
         ev = events[0]
         if usr.has_perm('event.delete_event', ev):
             if request.method == "GET":
-                return render(request, 'schedule/remove_event.html',
+                return render(request, 'schedule/base_remove_event.html',
                               {'event': ev})
             elif request.method == "POST":
                 ev.delete()
@@ -93,7 +93,7 @@ def edit_event(request, event_id):
                     return redirect("event", event_id=event_id)
             elif request.method == "GET":
                 form = EventForm(instance=ev)
-                return render(request, "schedule/edit_event.html",
+                return render(request, "schedule/base_edit_event.html",
                               {'form': form})
             return HttpResponseBadRequest()
         return HttpResponseForbidden()
@@ -189,7 +189,7 @@ def event(request, event_id):
                 ev.staff = User.objects.filter(groups__name=ev.STAFF)
                 ev.rooms = Room.objects.filter(EVENT=ev)
                 content = {'event': ev}
-                return render(request, 'schedule/event.html', content)
+                return render(request, 'schedule/base_event.html', content)
             return HttpResponseBadRequest()
         return HttpResponseForbidden()
     return HttpResponseNotFound()
