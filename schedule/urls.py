@@ -16,5 +16,6 @@ urlpatterns = [
     path('add_role/<int:event_id>/', views.add_role, name='add_role'),
     path('remove_role/<int:role_id>', views.remove_role, name='remove_role'),
     path('role/<int:role_id>/', views.role, name='role'),
+    path('edit_role/<int:role_id>/', views.edit_role, name='edit_role'),
     path('', views.index, name='main')
 ]
