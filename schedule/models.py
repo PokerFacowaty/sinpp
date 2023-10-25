@@ -240,3 +240,11 @@ class Role(models.Model):
 
     def __str__(self) -> str:
         return f"{self.NAME} ({self.EVENT})"
+
+
+class RoleForm(ModelForm):
+    class Meta:
+        model = Role
+        # I can already say TYPE and probably VISIBILITY will be depracated
+        # soon, so ignoring them  for now - they have defaults anyway
+        fields = ['NAME', 'TIME_SAFETY_MARGIN']
