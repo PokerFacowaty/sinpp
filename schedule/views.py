@@ -96,7 +96,7 @@ def edit_event(request, event_id):
             elif request.method == "GET":
                 form = EventForm(instance=ev)
                 return render(request, "schedule/base_edit_event.html",
-                              {'form': form})
+                              {'form': form, 'event': ev})
             return HttpResponseBadRequest()
         return HttpResponseForbidden()
     return HttpResponseNotFound()
