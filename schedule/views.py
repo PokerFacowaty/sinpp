@@ -66,7 +66,7 @@ def add_event(request):
 def remove_event(request, event_id):
     '''The confirmation page for a GET request and actual removal for POST'''
     usr = User.objects.get(username=request.user)
-    events = Event.objects.filter(pk=int(event_id))
+    events = Event.objects.filter(pk=event_id)
     if events:
         ev = events[0]
         if usr.has_perm('event.delete_event', ev):
