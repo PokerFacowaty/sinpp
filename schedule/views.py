@@ -128,6 +128,26 @@ def add_role(request, event_id):
 
 
 @login_required
+def remove_role(request, role_id):
+    '''The confirmation page for a GET request and actual removal for DELETE'''
+    roles = Role.objects.filter(pk=role_id)
+    if roles:
+        rl = roles[0]
+        usr = User.objects.get(username=request.user)
+        ev = rl.EVENT
+        if usr.has_perm('event.delete_roles', ev):
+            if request.method == "GET":
+                return render(request, 'schedule/base_remove_role.html',
+                              {'role': rl})
+            elif request.method == "POST":
+                rl.delete()
+                return redirect('event', event_id=ev.id)
+            return HttpResponseBadRequest()
+        return HttpResponseForbidden()
+    return HttpResponseNotFound()
+
+
+@login_required
 @ensure_csrf_cookie
 def schedule(request, event_id, room_id):
     # TODO: clean this mess up a bit
