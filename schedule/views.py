@@ -146,6 +146,27 @@ def add_role(request, event_id):
 
 
 @login_required
+def edit_role(request, role_id):
+    roles = Role.objects.filter(pk=role_id)
+    if roles:
+        usr = User.objects.get(username=request.user)
+        rl = roles[0]
+        if usr.has_perm('event.edit_roles', rl):
+            if request.method == "POST":
+                form = RoleForm(request.POST, instance=rl)
+                if form.is_valid():
+                    form.save()
+                    return redirect("role", role_id=rl.id)
+            elif request.method == "GET":
+                form = RoleForm(instance=rl)
+                return render(request, "schedule/base_edit_role.html",
+                              {'form': form, 'role': rl})
+            return HttpResponseBadRequest()
+        return HttpResponseForbidden()
+    return HttpResponseNotFound()
+
+
+@login_required
 def remove_role(request, role_id):
     '''The confirmation page for a GET request and actual removal for DELETE'''
     roles = Role.objects.filter(pk=role_id)
