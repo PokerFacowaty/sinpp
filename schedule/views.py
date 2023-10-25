@@ -118,7 +118,7 @@ def add_role(request, event_id):
                                              TIME_SAFETY_MARGIN=tsm,
                                              EVENT=ev)
                     rl.save()
-                    return redirect('user_profile')
+                    return redirect('event', event_id=ev.id)
             elif request.method == "GET":
                 form = RoleForm()
                 return render(request, 'schedule/base_add_role.html',
