@@ -4,7 +4,7 @@ from django.http import (JsonResponse, HttpResponseNotFound,
 from .forms import UploadCSVForm
 from schedule.parse_schedule_csv import parse_oengus, handle_uploaded_file
 from .models import (EventForm, Event, Room, Speedrun, Shift, Intermission,
-                     Role, RoleForm)
+                     Role, RoleForm, Person)
 from django.contrib.auth.models import Group, User
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
@@ -97,6 +97,23 @@ def edit_event(request, event_id):
                 form = EventForm(instance=ev)
                 return render(request, "schedule/base_edit_event.html",
                               {'form': form})
+            return HttpResponseBadRequest()
+        return HttpResponseForbidden()
+    return HttpResponseNotFound()
+
+
+@login_required
+def role(request, role_id):
+    roles = Role.objects.filter(pk=role_id)
+    if roles:
+        rl = roles[0]
+        ev = rl.EVENT
+        usr = User.objects.get(username=request.user)
+        if usr.has_perm('event.view_roles', ev):
+            if request.method == "GET":
+                rl.volunteers = Person.objects.filter(ROLES__in=[rl])
+                content = {'role': rl}
+                return render(request, 'schedule/base_role.html', content)
             return HttpResponseBadRequest()
         return HttpResponseForbidden()
     return HttpResponseNotFound()
