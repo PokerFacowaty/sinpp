@@ -112,14 +112,16 @@ def add_role(request, event_id):
                 form = RoleForm(request.POST)
                 if form.is_valid():
                     cl = form.cleaned_data
+                    tsm = cl['TIME_SAFETY_MARGIN']
                     rl = Role.objects.create(NAME=cl['NAME'],
-                                             TIME_SAFETY_MARGIN=cl['TIME_SAFETY_MARGIN'],
+                                             TIME_SAFETY_MARGIN=tsm,
                                              EVENT=ev)
                     rl.save()
                     return redirect('user_profile')
             elif request.method == "GET":
                 form = RoleForm()
-                return render(request, 'schedule/base_add_role.html', {'form': form})
+                return render(request, 'schedule/base_add_role.html',
+                              {'form': form})
             return HttpResponseBadRequest()
         return HttpResponseForbidden()
     return HttpResponseNotFound()
