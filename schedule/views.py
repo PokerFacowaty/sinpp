@@ -3,7 +3,8 @@ from django.http import (JsonResponse, HttpResponseNotFound,
                          HttpResponseForbidden, HttpResponseBadRequest)
 from .forms import UploadCSVForm
 from schedule.parse_schedule_csv import parse_oengus, handle_uploaded_file
-from .models import EventForm, Event, Room, Speedrun, Shift, Intermission, Role
+from .models import (EventForm, Event, Room, Speedrun, Shift, Intermission,
+                     Role, RoleForm)
 from django.contrib.auth.models import Group, User
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
@@ -95,6 +96,29 @@ def edit_event(request, event_id):
                 form = EventForm(instance=ev)
                 return render(request, "schedule/base_edit_event.html",
                               {'form': form})
+            return HttpResponseBadRequest()
+        return HttpResponseForbidden()
+    return HttpResponseNotFound()
+
+
+@login_required
+def add_role(request, event_id):
+    usr = User.objects.get(username=request.user)
+    events = Event.objects.filter(pk=event_id)
+    if events:
+        ev = events[0]
+        if usr.has_perm('event.add_roles', ev):
+            if request.method == "POST":
+                form = RoleForm(request.POST)
+                if form.is_valid():
+                    cl = form.cleaned_data
+                    rl = Role.objects.create(NAME=cl['NAME'],
+                                             TIME_SAFETY_MARGIN=cl['TIME_SAFETY_MARGIN'],
+                                             EVENT=ev)
+                    return redirect('user_profile')
+            elif request.method == "GET":
+                form = RoleForm()
+                return render(request, 'schedule/base_add_role.html', {'form': form})
             return HttpResponseBadRequest()
         return HttpResponseForbidden()
     return HttpResponseNotFound()
