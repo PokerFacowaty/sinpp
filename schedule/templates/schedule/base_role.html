@@ -1,0 +1,12 @@
+{% extends 'schedule/base.html' %}
+{% load static %}
+{% block title %}{{ role.NAME }} - Schedule-i-nator++{% endblock %}
+{% block content %}
+    <h1>{{ role }}</h1>
+    <h2>Volunteers:</h2>
+    <ul>
+        {% for person in role.volunteers %}
+            <li>{{ person.NICKNAME }}</li>
+        {% endfor %}
+    </ul>
+{% endblock %}
