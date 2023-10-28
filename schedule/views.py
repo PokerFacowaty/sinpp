@@ -261,6 +261,7 @@ def schedule(request, event_id, room_id):
         raise PermissionDenied()
 
 
+@ensure_csrf_cookie
 @login_required
 def event(request, event_id):
     events = Event.objects.filter(pk=event_id)
