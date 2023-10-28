@@ -413,3 +413,32 @@ def add_staff(request, event_id):
             return JsonResponse(status=400)
         return JsonResponse({'context': 'Permission denied'}, status=403)
     return JsonResponse({'context': 'Event not found'}, status=404)
+
+
+@login_required
+def remove_staff(request, event_id):
+    staff_member_username = json.load('payload')
+    staff_members = User.objects.filter(username=staff_member_username)
+    if staff_members:
+        staff_member = staff_members[0]
+        ev = Event.objects.filter(pk=event_id)
+        if ev:
+            usr = User.objects.get(username=request.user)
+            if usr.has_perm('event.remove_staff', ev):
+                staff_group = ev.STAFF
+                is_ajax = (request.headers.get("X-Requested-With")
+                           == "XMLHttpRequest")
+                if is_ajax and request.method == "DELETE":
+                    if staff_member.groups.filter(
+                         name=staff_group.name).exists():
+                        staff_group.user_set.remove(staff_member)
+                        return JsonResponse({'context': ('User succesfully'
+                                            + 'removed from staff')})
+                    return JsonResponse({'context': ('The user requested to be'
+                                        + 'removed from staff is not its'
+                                        + 'member')}, status=409)
+                return JsonResponse({'context': 'Invalid request'}, status=400)
+            return JsonResponse({'context': 'Permission denied'}, status=403)
+        return JsonResponse({'context': 'Event not found'}, status=404)
+    return JsonResponse({'context': 'Staff member not found in users'},
+                        status=404)
