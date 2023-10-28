@@ -8,6 +8,15 @@ function main_(){
         document.body.appendChild(dialog);
         dialog.show();
     });
+
+    document.body.addEventListener('click', (e: MouseEvent) => {
+        const target = e.target as HTMLButtonElement;
+
+        if (target.classList.contains('remove-staff')){
+            const username: string = target.parentElement.dataset.username;
+            sendRemoveStaffRequest(username);
+        }
+    });
 }
 
 function eventCleanUp(): void {
@@ -117,6 +126,40 @@ function addUserToStaffList(username: string): void {
     const newUser = document.createElement('li');
     newUser.innerHTML = username;
     staffList.appendChild(newUser);
+}
+
+async function sendRemoveStaffRequest(username: string){
+    // repeating myself quite a bit here
+    const currentURL = window.location.href;
+    const URLsegments = new URL(currentURL).pathname.split('/');
+
+    // this takes care of possible trailing slashes making '' the last element
+    const eventId = URLsegments.pop() || URLsegments.pop()
+    const url = window.location.origin + `/remove_staff/${eventId}/`;
+
+    const response = await fetch(url, {
+        method: "DELETE",
+        credentials: "same-origin",
+        headers: {
+            "X-Requested-With": "XMLHttpRequest",
+            "X-CSRFToken": CSRFTOKEN
+        },
+        body: JSON.stringify({payload: username})
+    });
+
+    if (response.ok){
+        removeUserFromStaffList(username);
+    }
+}
+
+function removeUserFromStaffList(username: string){
+    const staffList = document.getElementById('staff-list').children;
+    for (const member of staffList){
+        if ((member as HTMLLIElement).dataset.username === username){
+            member.remove();
+            break;
+        }
+    }
 }
 
 function getEventCookie(name: string) {
