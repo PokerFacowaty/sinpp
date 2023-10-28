@@ -15,7 +15,7 @@
         <h2>Staff:</h2>
         <ul id='staff-list'>
         {% for person in event.staff %}
-            <li>{{ person.username }}</li>
+            <li data-username={{ person.username }}>{{ person.username }}<button class='remove-staff'>Remove</button></li>
         {% endfor %}
         </ul>
         <button id="get-users-button">Add staff</button>
