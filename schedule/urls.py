@@ -19,5 +19,7 @@ urlpatterns = [
     path('edit_role/<int:role_id>/', views.edit_role, name='edit_role'),
     path('all_usernames/', views.all_usernames),
     path('add_staff/<int:event_id>/', views.add_staff, name='add_staff'),
+    path('remove_staff/<int:event_id>/', views.remove_staff,
+         name='remove_staff'),
     path('', views.index, name='main')
 ]
