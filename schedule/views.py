@@ -417,12 +417,14 @@ def add_staff(request, event_id):
 
 @login_required
 def remove_staff(request, event_id):
-    staff_member_username = json.load('payload')
+    data = json.load(request)
+    staff_member_username = data.get('payload')
     staff_members = User.objects.filter(username=staff_member_username)
     if staff_members:
         staff_member = staff_members[0]
-        ev = Event.objects.filter(pk=event_id)
-        if ev:
+        events = Event.objects.filter(pk=event_id)
+        if events:
+            ev = events[0]
             usr = User.objects.get(username=request.user)
             if usr.has_perm('event.remove_staff', ev):
                 staff_group = ev.STAFF
