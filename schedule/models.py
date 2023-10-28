@@ -45,6 +45,9 @@ class Event(RulesModel):
     add_perm('event.update_roles', is_event_staff)
     add_perm('event.delete_roles', is_event_staff)
 
+    add_perm('event.add_staff', is_event_staff)
+    add_perm('event.remove_staff', is_event_staff)
+
     def __str__(self) -> str:
         return self.NAME
 
