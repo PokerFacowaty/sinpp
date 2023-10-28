@@ -342,10 +342,10 @@ def remove_shift(request, shift_id):
                        == "XMLHttpRequest")
             if is_ajax and request.method == "DELETE":
                 shift.delete()
-                return JsonResponse({'context': 'Shift not found'}, status=404)
+                return JsonResponse({'context': 'Shift deleted'})
             return JsonResponse({'context': 'Invalid request'}, status=400)
         return JsonResponse({'context': 'Permission denied'}, status=403)
-    return JsonResponse({'context': 'Shift deleted'})
+    return JsonResponse({'context': 'Shift not found'}, status=404)
 
 
 @login_required
