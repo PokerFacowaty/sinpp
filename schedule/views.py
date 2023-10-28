@@ -368,3 +368,48 @@ def edit_shift(request, shift_id):
             return JsonResponse({'context': 'Invalid request'}, status=400)
         return JsonResponse({'context': 'Permission denied'}, status=403)
     return JsonResponse({'context': 'Shift not found'}, status=404)
+
+
+@login_required
+def all_usernames(request):
+    users = User.objects.all()
+    if users:
+        is_ajax = (request.headers.get("X-Requested-With")
+                   == "XMLHttpRequest")
+        if is_ajax and request.method == "GET":
+            pks_names = [[user.id, user.username] for user in users]
+            data = json.dumps(pks_names)
+            return JsonResponse({'context': data})
+        return JsonResponse({'context': 'Invalid request.'}, status=400)
+    return JsonResponse({'context': "Shift not found"}, status=404)
+
+
+@login_required
+def add_staff(request, event_id):
+    events = Event.objects.filter(pk=event_id)
+    if events:
+        ev = events[0]
+        usr = User.objects.get(username=request.user)
+        if usr.has_perm('event.add_staff', ev):
+            is_ajax = (request.headers.get("X-Requested-With")
+                       == "XMLHttpRequest")
+            if is_ajax and request.method == "POST":
+                data = json.load(request)
+                username = data.get('payload')
+                new_staff_member = User.objects.filter(username=username)
+                if new_staff_member:
+                    new_staff_member = new_staff_member[0]
+                    staff_group = ev.STAFF
+                    if not new_staff_member.groups.filter(
+                            name=ev.STAFF.name).exists():
+                        staff_group.user_set.add(new_staff_member)
+                        return JsonResponse({'context': 'Staff member added'})
+                    return JsonResponse({'context':
+                                        'User is already a staff member'},
+                                        status=409)
+                return JsonResponse({'context':
+                                    f"The user {username} doesn't exist"},
+                                    status=404)
+            return JsonResponse(status=400)
+        return JsonResponse({'context': 'Permission denied'}, status=403)
+    return JsonResponse({'context': 'Event not found'}, status=404)
