@@ -20,30 +20,30 @@ function main(){
     document.addEventListener("click", (e: MouseEvent) => {
         const target = e.target as HTMLElement;
         if (target.classList.contains("add-shift-from-run")){
-            cleanUp();
-            const dialog = createDialog(e.pageX, e.pageY,
+            scheduleCleanUp();
+            const dialog = createShiftDialog(e.pageX, e.pageY,
                                         "add-shift-from-run");
         }
         else if (target.classList.contains("edit-shift")){
-            cleanUp();
-            const dialog = createDialog(e.pageX, e.pageY, "edit-shift",
+            scheduleCleanUp();
+            const dialog = createShiftDialog(e.pageX, e.pageY, "edit-shift",
                                         target.parentElement);
             document.body.appendChild(dialog);
             addDialogListeners(dialog, "edit-shift");
             dialog.show();
         }
         else if (target.classList.contains("remove-shift")){
-            cleanUp();
-            const dialog = createDialog(e.pageX, e.pageY, "remove-shift",
+            scheduleCleanUp();
+            const dialog = createShiftDialog(e.pageX, e.pageY, "remove-shift",
                                         target.parentElement);
             document.body.appendChild(dialog);
             addDialogListeners(dialog, "remove-shift");
             dialog.show();
         }
         else if (target.classList.contains("shifts-column")){
-            cleanUp();
+            scheduleCleanUp();
             const unsaved_shift = createNewShiftBox(e);
-            const dialog = createDialog(e.pageX, e.pageY, "add-shift",
+            const dialog = createShiftDialog(e.pageX, e.pageY, "add-shift",
                                         unsaved_shift);
             document.body.appendChild(dialog);
             addDialogListeners(dialog, "add-shift");
@@ -84,7 +84,7 @@ function setBlockPosHeight(){
     }
 }
 
-function cleanUp(){
+function scheduleCleanUp(){
     let dialog = document.getElementById("form-dialog");
     let unsaved_shift = document.getElementById("unsaved-shift");
     let edited_shift = document.getElementById("edited-shift");
@@ -116,7 +116,7 @@ function createNewShiftBox(e: MouseEvent){
     return shiftBox;
 }
 
-function createDialog(x: number, y: number, type: string,
+function createShiftDialog(x: number, y: number, type: string,
                       el: HTMLElement=null){
     // el is an optional element that may make creating the dialog easier
     const dialog = document.createElement("dialog");
@@ -220,11 +220,11 @@ function createDialog(x: number, y: number, type: string,
 function addDialogListeners(dialog: HTMLElement, type: string){
     const closeButton: HTMLElement = dialog.querySelector('#close-button');
 
-    closeButton.addEventListener("click", cleanUp);
+    closeButton.addEventListener("click", scheduleCleanUp);
 
     // Clicking outside the dialog should close it...
     document.body.addEventListener("click", () => {
-        cleanUp();
+        scheduleCleanUp();
         document.body.removeEventListener("click", () => {}, false);
     })
 
@@ -332,17 +332,17 @@ function sendRequest(e: MouseEvent){
             shift.innerHTML = ('<button class="edit-shift">Edit Shift</button>'
                                + '<button class="remove-shift">Remove Shift'
                                + '</button>');
-            cleanUp();
+            scheduleCleanUp();
         }
         else if (type === "remove-shift"){
             document.querySelector(`[data-shift-id="${shiftId}"].shift`)
             .remove();
-            cleanUp();
+            scheduleCleanUp();
         }
         else if (type === "edit-shift"){
             const shift = document.getElementById("edited-shift");
             shift.removeAttribute("id");
-            cleanUp();
+            scheduleCleanUp();
         }
     })
 }
@@ -392,7 +392,7 @@ function setDefaultTopHeight(shift: HTMLElement){
 }
 
 // https://docs.djangoproject.com/en/4.2/howto/csrf/#acquiring-the-token-if-csrf-use-sessions-and-csrf-cookie-httponly-are-false
-function getCookie(name: string) {
+function getScheduleCookie(name: string) {
     let cookieValue = null;
     if (document.cookie && document.cookie !== '') {
         const cookies = document.cookie.split(';');
@@ -408,6 +408,6 @@ function getCookie(name: string) {
     }
     return cookieValue;
 }
-cnsts.CSRFTOKEN = getCookie('csrftoken');
+cnsts.CSRFTOKEN = getScheduleCookie('csrftoken');
 
 window.onload = main;
