@@ -1,6 +1,9 @@
 {% extends 'schedule/base.html' %}
 {% load static %}
 {% block title %}{{ event.NAME }} - Schedule-i-nator++{% endblock %}
+{% block head %}
+<script src="{% static "schedule/js/base_event.js" %}"></script>
+{% endblock %}
 {% block content %}
         <h1>{{ event.NAME }}</h1>
         <h2>Rooms:</h2>
@@ -10,11 +13,12 @@
         {% endfor %}
         </ul>
         <h2>Staff:</h2>
-        <ul>
+        <ul id='staff-list'>
         {% for person in event.staff %}
             <li>{{ person.username }}</li>
         {% endfor %}
         </ul>
+        <button id="get-users-button">Add staff</button>
         <h2>Roles:</h2>
         <ul>
         {% for role in event.roles %}
