@@ -78,7 +78,7 @@ function createAddStaffDialog(x: number, y: number,
     const sendBtn = document.createElement("button");
     sendBtn.id = 'send-button';
     sendBtn.innerHTML = 'Add';
-    sendBtn.addEventListener('click', sendStaffRequest);
+    sendBtn.addEventListener('click', sendAddStaffRequest);
     dialog.appendChild(sendBtn);
 
     dialog.setAttribute('style', `position: absolute; left: ${x}px;`
@@ -86,7 +86,7 @@ function createAddStaffDialog(x: number, y: number,
     return dialog;
 };
 
-async function sendStaffRequest(){
+async function sendAddStaffRequest(){
     const currentURL = window.location.href;
     const URLsegments = new URL(currentURL).pathname.split('/');
 
