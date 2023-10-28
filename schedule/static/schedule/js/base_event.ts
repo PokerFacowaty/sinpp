@@ -125,6 +125,11 @@ function addUserToStaffList(username: string): void {
     const staffList = document.getElementById('staff-list');
     const newUser = document.createElement('li');
     newUser.innerHTML = username;
+    newUser.dataset.username = username;
+    const removeBtn = document.createElement('button');
+    removeBtn.innerHTML = 'Remove';
+    removeBtn.classList.add('remove-staff');
+    newUser.appendChild(removeBtn);
     staffList.appendChild(newUser);
 }
 
