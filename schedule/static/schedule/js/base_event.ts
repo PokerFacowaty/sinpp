@@ -14,7 +14,10 @@ function main_(){
 
         if (target.classList.contains('remove-staff')){
             const username: string = target.parentElement.dataset.username;
-            sendRemoveStaffRequest(username);
+            if (window.confirm(`Do you really wish to remove ${username} from`
+                               + ' the event staff?')){
+                sendRemoveStaffRequest(username);
+            }
         }
     });
 }
