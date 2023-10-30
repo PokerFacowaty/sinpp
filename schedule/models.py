@@ -1,7 +1,7 @@
 from django.db import models
 from datetime import timedelta, datetime
 from django.db.models import Q
-from django.forms import ModelForm, DateTimeInput, DateTimeField
+from django.forms import ModelForm, DateTimeInput
 from rules.contrib.models import RulesModel
 from rules import predicate, add_perm
 from django.contrib.auth.models import Group
