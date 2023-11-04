@@ -296,7 +296,7 @@ def add_shift(request):
     ev = Event.objects.filter(pk=int(shift['EVENT']))
     if ev:
         usr = User.objects.get(username=request.user)
-        if usr.has_perm('event.add_shifts', ev):
+        if usr.has_perm('event.add_shift', ev):
             is_ajax = (request.headers.get("X-Requested-With")
                        == "XMLHttpRequest")
             if is_ajax and request.method == "POST":
