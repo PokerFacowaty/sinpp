@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.http import (JsonResponse, HttpResponseNotFound,
                          HttpResponseForbidden, HttpResponseBadRequest)
 from .forms import UploadCSVForm
@@ -211,8 +211,8 @@ def remove_role(request, role_id):
 def room_schedule(request, event_slug, room_slug):
     '''Show the schedule for a particular Room of the Event.'''
     # TODO: clean this mess up a bit
-    ev = Event.objects.get(pk=event_id)
-    rm = Room.objects.get(pk=room_id)
+    ev = get_object_or_404(Event, SLUG=event_slug)
+    rm = get_object_or_404(Room, EVENT=ev, SLUG=room_slug)
     usr = User.objects.get(username=request.user)
 
     # experimenting with [("run" or "interm", thing,
