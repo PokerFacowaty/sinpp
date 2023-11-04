@@ -9,7 +9,7 @@ from django.contrib.auth.models import Group
 
 class Event(RulesModel):
     '''The SLUG is unique and non-nullable to make it possible to reference
-    events by it'''
+       events by it'''
 
     NAME = models.CharField(max_length=100)
     SLUG = models.SlugField(max_length=25, unique=True, null=False)
@@ -32,7 +32,7 @@ class Event(RulesModel):
         return user.groups.filter(name=event.STAFF).exists()
 
     '''The naming convention for CRUD in perms is: add_thing, view_thing,
-    edit_thing, remove_thing.'''
+       edit_thing, remove_thing.'''
 
     # Anyone can add events
     add_perm('event.view_event', is_event_staff)
@@ -209,42 +209,19 @@ class AvailabilityBlock(models.Model):
 
 
 class Role(models.Model):
-    '''Roles are made unique for every event (at least for now), since that
-       allows for easier implementation of things like hour-based vs run-based,
-       time safety margin etc'''
-
-    # Visibility options for role (so the role's event schedule effectively)
-    # Each level contains the previous; the levels also assume volunteers
-    # don't have accounts, so everything outside of stuff is simply public
-    PUBLIC = "PU"  # Everyone can see the role's schedule
-    PRIVATE = "PR"  # Only event staff can see the role's schedule
-
-    VISIBILITY_CHOICES = [(PRIVATE, "Private"),
-                          (PUBLIC, "Public")]
-    VISIBILITY = models.CharField(max_length=25, choices=VISIBILITY_CHOICES,
-                                  default=PRIVATE)
+    '''Roles are made unique for every event (at least for now). Ideally there
+       would be templates allowing for making the same roles as a previous
+       event, but that's a minor optimization.'''
 
     NAME = models.CharField(max_length=25)
     EVENT = models.ForeignKey("Event", on_delete=models.CASCADE)
 
-    # Aka whether the particular role is assinged hour-based shifts,
-    # speedrun-based shifts or intermission-based shifts
+    '''How many minutes are added to each block before considering someone
+       available, setting this to 0 means that if a person's availability
+       starts at 15:00 and an activity starts at the same time, they're
+       considered available. Setting this to 15 means they have to be available
+       since at least 14:45 to be considered available for the activity.'''
 
-    HOUR_BASED = "HB"
-    SPEEDRUN_BASED = "SB"
-    INTERMISSION_BASED = "IB"
-
-    TYPE_CHOICES = [(HOUR_BASED, "Hour-based"),
-                    (SPEEDRUN_BASED, "Speedrun-based"),
-                    (INTERMISSION_BASED, "Intermission-based")]
-    TYPE = models.CharField(max_length=25, choices=TYPE_CHOICES,
-                            default=HOUR_BASED)
-
-    # How many minutes are added to each block before considering someone
-    # available, setting this to 0 means that if a person's availability
-    # starts at 15:00 and an activity starts at the same time, they're
-    # considered available. Setting this to 15 means they have to be available
-    # since at least 14:45 to be considered available for the activity.
     TIME_SAFETY_MARGIN = models.DurationField(default=timedelta(minutes=15))
 
     def __str__(self) -> str:
