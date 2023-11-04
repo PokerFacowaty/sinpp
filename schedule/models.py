@@ -74,7 +74,12 @@ class Room(models.Model):
 
        Room's SLUG is not needed to be unique (since that'd mean 'Stream 1' can
        only be used once globally), but because of that Rooms need to be
-       referenced by their SLUG AND their parent event.'''
+       referenced by their SLUG AND their parent event.
+
+       Rooms are optional since they are not needed by a majority of events.
+       Any views showing the schedule should always verify that there are no
+       Rooms attached to an Event whenever the schedule for the Event (and not
+       a Room) is requested.'''
 
     EVENT = models.ForeignKey(Event, on_delete=models.CASCADE)
     NAME = models.CharField(max_length=100)
