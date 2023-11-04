@@ -197,10 +197,10 @@ def schedule(request, event_id, room_id):
     runs = Speedrun.objects.filter(EVENT=ev, ROOM=rm)
     interms = Intermission.objects.filter(EVENT=ev, ROOM=rm)
     ev_roles = Role.objects.filter(EVENT=ev)
-    if runs[0].START_TIME < interms[0].START_TIME:
-        start_time = runs[0].START_TIME
+    if runs[0].START_DATE_TIME < interms[0].START_TIME:
+        start_time = runs[0].START_DATE_TIME
     else:
-        start_time = interms[0].START_TIME
+        start_time = interms[0].START_DATE_TIME
     role_shifts = {(x.NAME, x.id):
                    [y for y in Shift.objects.filter(EVENT=ev, ROOM=rm, ROLE=x)]
                    for x in ev_roles}
@@ -217,22 +217,22 @@ def schedule(request, event_id, room_id):
 
     timed_runs = [{'type': 'run',
                    'obj': x,
-                   'start': (x.START_TIME - start_time).total_seconds() // 60,
+                   'start': (x.START_DATE_TIME - start_time).total_seconds() // 60,
                    'length': math.ceil(x.ESTIMATE.total_seconds() // 60)}
                   for x in runs]
     timed_interms = [{'type': 'interm',
                       'obj': x,
                       'start': (
-                          x.START_TIME - start_time).total_seconds() // 60,
+                          x.START_DATE_TIME - start_time).total_seconds() // 60,
                       'length': math.ceil(x.DURATION.total_seconds() // 60)}
                      for x in interms]
 
     runs_interms = []
     runs_interms = [x for x in timed_runs]
     runs_interms.extend(timed_interms)
-    runs_interms.sort(key=lambda x: x["obj"].START_TIME)
+    runs_interms.sort(key=lambda x: x["obj"].START_DATE_TIME)
 
-    first_el_start = runs_interms[0]["obj"].START_TIME
+    first_el_start = runs_interms[0]["obj"].START_DATE_TIME
     last_el_end = runs_interms[-1]["obj"].END_TIME
     table_start = (first_el_start
                    - timedelta(minutes=first_el_start.minute,
