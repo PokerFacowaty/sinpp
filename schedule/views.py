@@ -208,7 +208,8 @@ def remove_role(request, role_id):
 
 @login_required
 @ensure_csrf_cookie
-def schedule(request, event_id, room_id):
+def room_schedule(request, event_slug, room_slug):
+    '''Show the schedule for a particular Room of the Event.'''
     # TODO: clean this mess up a bit
     ev = Event.objects.get(pk=event_id)
     rm = Room.objects.get(pk=room_id)
