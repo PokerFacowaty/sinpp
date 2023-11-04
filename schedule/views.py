@@ -219,7 +219,7 @@ def schedule(request, event_id, room_id):
     runs = Speedrun.objects.filter(EVENT=ev, ROOM=rm)
     interms = Intermission.objects.filter(EVENT=ev, ROOM=rm)
     ev_roles = Role.objects.filter(EVENT=ev)
-    if runs[0].START_DATE_TIME < interms[0].START_TIME:
+    if runs[0].START_DATE_TIME < interms[0].START_DATE_TIME:
         start_time = runs[0].START_DATE_TIME
     else:
         start_time = interms[0].START_DATE_TIME
