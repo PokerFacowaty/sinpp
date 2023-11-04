@@ -257,22 +257,24 @@ def room_schedule(request, event_slug, room_slug):
         runs_interms.extend(timed_interms)
         runs_interms.sort(key=lambda x: x["obj"].START_DATE_TIME)
 
-        first_el_start = runs_interms[0]["obj"].START_DATE_TIME
-        last_el_end = runs_interms[-1]["obj"].END_DATE_TIME
-        table_start = (first_el_start
-                       - timedelta(minutes=first_el_start.minute,
-                                   seconds=first_el_start.second,
-                                   microseconds=first_el_start.microsecond))
-        table_end = (last_el_end
-                     + timedelta(hours=1)
-                     - timedelta(minutes=last_el_end.minute,
-                                 seconds=last_el_end.second,
-                                 microseconds=last_el_end.microsecond))
+        ev_start = ev.START_DATE_TIME
+        ev_end = ev.END_DATE_TIME
+
+        # This means you can technically start a shift before the event starts,
+        # but validation should take care of that.
+        table_start = (ev_start - timedelta(minutes=ev_start.minute,
+                                            seconds=ev_start.second,
+                                            microseconds=ev_start.microsecond))
+        table_end = (ev_end + timedelta(hours=1)
+                     - timedelta(minutes=ev_end.minute,
+                                 seconds=ev_end.second,
+                                 microseconds=ev_end.microsecond))
         times = []
         t = table_start
         while t <= table_end:
             times.append(t.isoformat(sep="\n").split("+")[0])
             t += timedelta(hours=1)
+
         content = {'room': rm, 'runs_interms': runs_interms, 'times': times,
                    'shifts': role_shifts,
                    'table_start': table_start.isoformat(),
