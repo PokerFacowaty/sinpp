@@ -94,7 +94,6 @@ class Speedrun(models.Model):
                                         "Person",
                                         related_name="SPEEDRUNS_ENGAGED_IN")
 
-    VOLUNTEER_SHIFTS = models.ManyToManyField("Shift", blank=True)
     START_DATE_TIME = models.DateTimeField()
     ESTIMATE = models.DurationField()
     END_DATE_TIME = models.DateTimeField()
@@ -118,8 +117,6 @@ class Intermission(models.Model):
 
     EVENT = models.ForeignKey(Event, on_delete=models.CASCADE)
     ROOM = models.ForeignKey(Room, on_delete=models.SET_NULL, null=True)
-    VOLUNTEER_SHIFTS = models.ManyToManyField(
-                       "Person", related_name="INTERMISSIONS_ENGAGED_IN")
     START_DATE_TIME = models.DateTimeField()
     DURATION = models.DurationField()
     END_DATE_TIME = models.DateTimeField()
