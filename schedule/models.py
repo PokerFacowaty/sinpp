@@ -92,8 +92,6 @@ class Room(models.Model):
 class Speedrun(models.Model):
 
     EVENT = models.ForeignKey(Event, on_delete=models.CASCADE)
-    # The room functionality should be optional, so that it's not a pain
-    # for anyone who doesn't need it
     ROOM = models.ForeignKey(Room, on_delete=models.SET_NULL, null=True)
     GAME = models.CharField(max_length=100)
     CATEGORY = models.CharField(max_length=100, blank=True)
