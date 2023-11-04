@@ -229,7 +229,7 @@ def schedule(request, event_id, room_id):
     for role in role_shifts.values():
         for sh in role:
             # Lower case for things added here and not in the model
-            sh.volunteer_names = sh.VOLUNTEER.all()
+            sh.volunteer_names = sh.VOLUNTEERS.all()
             sh.start = ((sh.START_DATE_TIME
                          - start_time).total_seconds() // 60)
             sh.length = math.ceil((sh.END_DATE_TIME

@@ -144,7 +144,7 @@ class Intermission(models.Model):
 class Shift(models.Model):
     '''A single shift of one or more volunteers'''
 
-    VOLUNTEER = models.ManyToManyField("Person")
+    VOLUNTEERS = models.ManyToManyField("Person")
     ROLE = models.ForeignKey("Role", on_delete=models.CASCADE)
     EVENT = models.ForeignKey("Event", on_delete=models.CASCADE)
     ROOM = models.ForeignKey(Room, on_delete=models.SET_NULL, null=True)
