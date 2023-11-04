@@ -60,20 +60,20 @@ def add_event(request):
     return render(request, "schedule/base_add_event.html", {"form": form})
 
 
+@ensure_csrf_cookie
 @login_required
-def remove_event(request, event_id):
-    '''The confirmation page for a GET request and actual removal for POST'''
-    usr = User.objects.get(username=request.user)
+def event(request, event_id):
     events = Event.objects.filter(pk=event_id)
     if events:
         ev = events[0]
-        if usr.has_perm('event.delete_event', ev):
+        usr = User.objects.get(username=request.user)
+        if usr.has_perm('event.view_event', ev):
             if request.method == "GET":
-                return render(request, 'schedule/base_remove_event.html',
-                              {'event': ev})
-            elif request.method == "POST":
-                ev.delete()
-                return redirect("user_profile")
+                ev.roles = Role.objects.filter(EVENT=ev)
+                ev.staff = User.objects.filter(groups__name=ev.STAFF)
+                ev.rooms = Room.objects.filter(EVENT=ev)
+                content = {'event': ev}
+                return render(request, 'schedule/base_event.html', content)
             return HttpResponseBadRequest()
         return HttpResponseForbidden()
     return HttpResponseNotFound()
@@ -101,17 +101,19 @@ def edit_event(request, event_id):
 
 
 @login_required
-def role(request, role_id):
-    roles = Role.objects.filter(pk=role_id)
-    if roles:
-        rl = roles[0]
-        ev = rl.EVENT
-        usr = User.objects.get(username=request.user)
-        if usr.has_perm('event.view_roles', ev):
+def remove_event(request, event_id):
+    '''The confirmation page for a GET request and actual removal for POST'''
+    usr = User.objects.get(username=request.user)
+    events = Event.objects.filter(pk=event_id)
+    if events:
+        ev = events[0]
+        if usr.has_perm('event.delete_event', ev):
             if request.method == "GET":
-                rl.volunteers = Person.objects.filter(ROLES__in=[rl])
-                content = {'role': rl}
-                return render(request, 'schedule/base_role.html', content)
+                return render(request, 'schedule/base_remove_event.html',
+                              {'event': ev})
+            elif request.method == "POST":
+                ev.delete()
+                return redirect("user_profile")
             return HttpResponseBadRequest()
         return HttpResponseForbidden()
     return HttpResponseNotFound()
@@ -138,6 +140,23 @@ def add_role(request, event_id):
                 form = RoleForm()
                 return render(request, 'schedule/base_add_role.html',
                               {'form': form})
+            return HttpResponseBadRequest()
+        return HttpResponseForbidden()
+    return HttpResponseNotFound()
+
+
+@login_required
+def role(request, role_id):
+    roles = Role.objects.filter(pk=role_id)
+    if roles:
+        rl = roles[0]
+        ev = rl.EVENT
+        usr = User.objects.get(username=request.user)
+        if usr.has_perm('event.view_roles', ev):
+            if request.method == "GET":
+                rl.volunteers = Person.objects.filter(ROLES__in=[rl])
+                content = {'role': rl}
+                return render(request, 'schedule/base_role.html', content)
             return HttpResponseBadRequest()
         return HttpResponseForbidden()
     return HttpResponseNotFound()
@@ -261,42 +280,9 @@ def schedule(request, event_id, room_id):
     else:
         raise PermissionDenied()
 
-
-@ensure_csrf_cookie
-@login_required
-def event(request, event_id):
-    events = Event.objects.filter(pk=event_id)
-    if events:
-        ev = events[0]
-        usr = User.objects.get(username=request.user)
-        if usr.has_perm('event.view_event', ev):
-            if request.method == "GET":
-                ev.roles = Role.objects.filter(EVENT=ev)
-                ev.staff = User.objects.filter(groups__name=ev.STAFF)
-                ev.rooms = Room.objects.filter(EVENT=ev)
-                content = {'event': ev}
-                return render(request, 'schedule/base_event.html', content)
-            return HttpResponseBadRequest()
-        return HttpResponseForbidden()
-    return HttpResponseNotFound()
-
-
-@login_required
-def shift(request, shift_id):
-    shifts = Shift.objects.filter(pk=shift_id)
-    if shifts:
-        shift = shifts[0]
-        ev = shift.EVENT
-        usr = User.objects.get(username=request.user)
-        if usr.has_perm('event.view_shifts', ev):
-            is_ajax = (request.headers.get("X-Requested-With")
-                       == "XMLHttpRequest")
-            if is_ajax and request.method == "GET":
-                data = serializers.serialize('json', shift)
-                return JsonResponse({'context': data})
-            return JsonResponse({'context': 'Invalid request.'}, status=400)
-        return JsonResponse({'context': 'Permission denied'}, status=403)
-    return JsonResponse({'context': "Shift not found"}, status=404)
+# # # # # # # #
+# AJAX views  #
+# # # # # # # #
 
 
 @login_required
@@ -326,27 +312,21 @@ def add_shift(request):
 
 
 @login_required
-def remove_shift(request, shift_id):
-    # using filter instead of get since filter will just return an empty query
-    # I have a check for, get would throw an error
-
-    # technically the [0] isn't needed since as long as you don't retrieve all
-    # the objects .delete() works on every item in the query, but I wanted to
-    # be precise (refuses to work for .all() as a safety measure)
+def shift(request, shift_id):
     shifts = Shift.objects.filter(pk=shift_id)
     if shifts:
-        usr = User.objects.get(username=request.user)
         shift = shifts[0]
         ev = shift.EVENT
-        if usr.has_perm('event.delete_shifts', ev):
+        usr = User.objects.get(username=request.user)
+        if usr.has_perm('event.view_shifts', ev):
             is_ajax = (request.headers.get("X-Requested-With")
                        == "XMLHttpRequest")
-            if is_ajax and request.method == "DELETE":
-                shift.delete()
-                return JsonResponse({'context': 'Shift deleted'})
-            return JsonResponse({'context': 'Invalid request'}, status=400)
+            if is_ajax and request.method == "GET":
+                data = serializers.serialize('json', shift)
+                return JsonResponse({'context': data})
+            return JsonResponse({'context': 'Invalid request.'}, status=400)
         return JsonResponse({'context': 'Permission denied'}, status=403)
-    return JsonResponse({'context': 'Shift not found'}, status=404)
+    return JsonResponse({'context': "Shift not found"}, status=404)
 
 
 @login_required
@@ -372,17 +352,27 @@ def edit_shift(request, shift_id):
 
 
 @login_required
-def all_usernames(request):
-    users = User.objects.all()
-    if users:
-        is_ajax = (request.headers.get("X-Requested-With")
-                   == "XMLHttpRequest")
-        if is_ajax and request.method == "GET":
-            pks_names = [[user.id, user.username] for user in users]
-            data = json.dumps(pks_names)
-            return JsonResponse({'context': data})
-        return JsonResponse({'context': 'Invalid request.'}, status=400)
-    return JsonResponse({'context': "Shift not found"}, status=404)
+def remove_shift(request, shift_id):
+    # using filter instead of get since filter will just return an empty query
+    # I have a check for, get would throw an error
+
+    # technically the [0] isn't needed since as long as you don't retrieve all
+    # the objects .delete() works on every item in the query, but I wanted to
+    # be precise (refuses to work for .all() as a safety measure)
+    shifts = Shift.objects.filter(pk=shift_id)
+    if shifts:
+        usr = User.objects.get(username=request.user)
+        shift = shifts[0]
+        ev = shift.EVENT
+        if usr.has_perm('event.delete_shifts', ev):
+            is_ajax = (request.headers.get("X-Requested-With")
+                       == "XMLHttpRequest")
+            if is_ajax and request.method == "DELETE":
+                shift.delete()
+                return JsonResponse({'context': 'Shift deleted'})
+            return JsonResponse({'context': 'Invalid request'}, status=400)
+        return JsonResponse({'context': 'Permission denied'}, status=403)
+    return JsonResponse({'context': 'Shift not found'}, status=404)
 
 
 @login_required
@@ -445,3 +435,17 @@ def remove_staff(request, event_id):
         return JsonResponse({'context': 'Event not found'}, status=404)
     return JsonResponse({'context': 'Staff member not found in users'},
                         status=404)
+
+
+@login_required
+def all_usernames(request):
+    users = User.objects.all()
+    if users:
+        is_ajax = (request.headers.get("X-Requested-With")
+                   == "XMLHttpRequest")
+        if is_ajax and request.method == "GET":
+            pks_names = [[user.id, user.username] for user in users]
+            data = json.dumps(pks_names)
+            return JsonResponse({'context': data})
+        return JsonResponse({'context': 'Invalid request.'}, status=400)
+    return JsonResponse({'context': "Shift not found"}, status=404)
