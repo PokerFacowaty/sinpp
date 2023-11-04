@@ -321,7 +321,7 @@ def shift(request, shift_id):
         shift = shifts[0]
         ev = shift.EVENT
         usr = User.objects.get(username=request.user)
-        if usr.has_perm('event.view_shifts', ev):
+        if usr.has_perm('event.view_shift', ev):
             is_ajax = (request.headers.get("X-Requested-With")
                        == "XMLHttpRequest")
             if is_ajax and request.method == "GET":
@@ -339,7 +339,7 @@ def edit_shift(request, shift_id):
         shift = shifts[0]
         ev = shift.EVENT
         usr = User.objects.get(username=request.user)
-        if usr.has_perm('event.edit_shifts', ev):
+        if usr.has_perm('event.edit_shift', ev):
             is_ajax = (request.headers.get("X-Requested-With")
                        == "XMLHttpRequest")
             if is_ajax and request.method == "PUT":
@@ -367,7 +367,7 @@ def remove_shift(request, shift_id):
         usr = User.objects.get(username=request.user)
         shift = shifts[0]
         ev = shift.EVENT
-        if usr.has_perm('event.delete_shifts', ev):
+        if usr.has_perm('event.remove_shift', ev):
             is_ajax = (request.headers.get("X-Requested-With")
                        == "XMLHttpRequest")
             if is_ajax and request.method == "DELETE":
