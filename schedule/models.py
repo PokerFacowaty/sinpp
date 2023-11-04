@@ -92,10 +92,8 @@ class Room(models.Model):
 class Speedrun(models.Model):
 
     EVENT = models.ForeignKey(Event, on_delete=models.CASCADE)
-    # The room functionality should be optional, so that it's not a pain
-    # for anyone who doesn't need it
     ROOM = models.ForeignKey(Room, on_delete=models.SET_NULL, null=True)
-    GAME = models.CharField(max_length=100)
+    GAME = models.CharField(max_length=100, blank=True)
     CATEGORY = models.CharField(max_length=100, blank=True)
 
     # any volunteers taking part as runners, commentators
@@ -156,8 +154,6 @@ class Shift(models.Model):
     START_DATE_TIME = models.DateTimeField()
     END_DATE_TIME = models.DateTimeField()
 
-    SPEEDRUNS = models.ManyToManyField("Speedrun", blank=True)
-
     def __str__(self) -> str:
         result = (f'{", ".join([x.NICKNAME for x in self.VOLUNTEER.all()])}'
                   + f'@ {self.START_DATE_TIME}')
@@ -176,7 +172,7 @@ class Person(models.Model):
     def is_available(self, start_time: datetime, end_time: datetime,
                      role) -> bool:
         '''Whether the current start_time and end_time are within a Person's
-           availability block. Not to be confused with is_free(), which checks
+           availability block. Not to be confused with is_busy(), which checks
            if a Person is already doing a shift at the event at that time.'''
 
         blocks = AvailabilityBlock.objects.filter(PERSON=self)
@@ -195,9 +191,9 @@ class Person(models.Model):
         # TODO: add also checking against all the speedruns the volunteer is
         # engaged in
         shifts = Shift.objects.filter(Q(VOLUNTEER__in=[self]),
-        return True if shifts else False
+                                      Q(END_DATE_TIME__gt=start_time)
                                       | Q(START_DATE_TIME__lt=end_time))
-        return False if shifts else True
+        return True if shifts else False
 
     def __str__(self) -> str:
         return self.NICKNAME
