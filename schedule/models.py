@@ -8,6 +8,8 @@ from django.contrib.auth.models import Group
 
 
 class Event(RulesModel):
+    '''The SLUG is unique and non-nullable to make it possible to reference
+    events by it'''
 
     NAME = models.CharField(max_length=100)
     SLUG = models.SlugField(max_length=25, unique=True, null=False)
