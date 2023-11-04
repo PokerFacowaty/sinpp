@@ -30,10 +30,13 @@ class Event(RulesModel):
     def is_event_staff(user, event):
         return user.groups.filter(name=event.STAFF).exists()
 
+    '''The naming convention for CRUD in perms is: add_thing, view_thing,
+    edit_thing, remove_thing.'''
+
     # Anyone can add events
     add_perm('event.view_event', is_event_staff)
-    add_perm('event.change_event', is_event_staff)
-    add_perm('event.delete_event', is_event_staff)
+    add_perm('event.edit_event', is_event_staff)
+    add_perm('event.remove_event', is_event_staff)
 
     add_perm('event.add_shifts', is_event_staff)
     add_perm('event.view_shifts', is_event_staff)

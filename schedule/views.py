@@ -110,7 +110,7 @@ def remove_event(request, event_id):
     events = Event.objects.filter(pk=event_id)
     if events:
         ev = events[0]
-        if usr.has_perm('event.delete_event', ev):
+        if usr.has_perm('event.remove_event', ev):
             if request.method == "GET":
                 return render(request, 'schedule/base_remove_event.html',
                               {'event': ev})
