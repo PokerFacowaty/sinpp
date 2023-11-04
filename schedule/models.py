@@ -166,7 +166,6 @@ class Shift(models.Model):
 class Person(models.Model):
     NICKNAME = models.CharField(max_length=25)
     PRONOUNS = models.CharField(max_length=25, blank=True)
-    # PROFILES = models.ManyToManyField(SocialMediaProfile)
     ROLES = models.ManyToManyField("Role", blank=True)
 
     def is_available(self, start_time: datetime, end_time: datetime,
