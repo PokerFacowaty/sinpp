@@ -131,8 +131,9 @@ class Intermission(models.Model):
         def __str__(self) -> str:
             result = f'Intermission @ {self.START_DATE_TIME}'
             if self.ROOM:
-                result += f' ({self.ROOm})'
-            result += f' ({self.EVENT})'
+                result += f' ({self.ROOM})'
+            else:
+                result += f' ({self.EVENT})'
             return result
 
 
