@@ -19,6 +19,11 @@ from django.views.decorators.csrf import ensure_csrf_cookie
 # if user has permissions for object (Forbidden / 403)
 # if the request is right (BadRequest, 400)
 
+'''
+The naming convention for CRUD operations is: add_thing, thing, edit_thing,
+remove_thing.
+'''
+
 
 def index(request):
     return render(request, 'schedule/base_main.html')
