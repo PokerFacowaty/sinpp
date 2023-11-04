@@ -93,7 +93,7 @@ class Speedrun(models.Model):
 
     EVENT = models.ForeignKey(Event, on_delete=models.CASCADE)
     # The room functionality should be optional, so that it's not a pain
-    GAME = models.CharField(max_length=100, blank=True)
+    # for anyone who doesn't need it
     ROOM = models.ForeignKey(Room, on_delete=models.SET_NULL, null=True)
     GAME = models.CharField(max_length=100)
     CATEGORY = models.CharField(max_length=100, blank=True)
@@ -155,8 +155,6 @@ class Shift(models.Model):
     ROOM = models.ForeignKey(Room, on_delete=models.SET_NULL, null=True)
     START_DATE_TIME = models.DateTimeField()
     END_DATE_TIME = models.DateTimeField()
-
-    SPEEDRUNS = models.ManyToManyField("Speedrun", blank=True)
 
     def __str__(self) -> str:
         result = (f'{", ".join([x.NICKNAME for x in self.VOLUNTEER.all()])}'
