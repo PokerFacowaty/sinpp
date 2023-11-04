@@ -70,11 +70,15 @@ class Room(models.Model):
     '''Basically a stream in case of a traditional speedrunning marathon.
        The idea of rooms makes it more general and also probably easier to
        understand - a volunteer cannot be in two separate rooms at the same
-       time, be it physical rooms, streams or voice chats.'''
+       time, be it physical rooms, streams or voice chats.
+
+       Room's SLUG is not needed to be unique (since that'd mean 'Stream 1' can
+       only be used once globally), but because of that Rooms need to be
+       referenced by their SLUG AND their parent event.'''
 
     EVENT = models.ForeignKey(Event, on_delete=models.CASCADE)
     NAME = models.CharField(max_length=100)
-    SLUG = models.SlugField(max_length=25, unique=True, null=False)
+    SLUG = models.SlugField(max_length=25, null=False)
 
     def __str__(self) -> str:
         return self.NAME + f' ({self.EVENT})'
