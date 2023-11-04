@@ -43,10 +43,10 @@ class Event(RulesModel):
     add_perm('event.edit_shift', is_event_staff)
     add_perm('event.remove_shift', is_event_staff)
 
-    add_perm('event.add_roles', is_event_staff)
-    add_perm('event.view_roles', is_event_staff)
-    add_perm('event.update_roles', is_event_staff)
-    add_perm('event.delete_roles', is_event_staff)
+    add_perm('event.add_role', is_event_staff)
+    add_perm('event.view_role', is_event_staff)
+    add_perm('event.edit_role', is_event_staff)
+    add_perm('event.remove_role', is_event_staff)
 
     add_perm('event.add_staff', is_event_staff)
     add_perm('event.remove_staff', is_event_staff)

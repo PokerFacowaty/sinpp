@@ -128,7 +128,7 @@ def add_role(request, event_id):
     events = Event.objects.filter(pk=event_id)
     if events:
         ev = events[0]
-        if usr.has_perm('event.add_roles', ev):
+        if usr.has_perm('event.add_role', ev):
             if request.method == "POST":
                 form = RoleForm(request.POST)
                 if form.is_valid():
@@ -155,7 +155,7 @@ def role(request, role_id):
         rl = roles[0]
         ev = rl.EVENT
         usr = User.objects.get(username=request.user)
-        if usr.has_perm('event.view_roles', ev):
+        if usr.has_perm('event.view_role', ev):
             if request.method == "GET":
                 rl.volunteers = Person.objects.filter(ROLES__in=[rl])
                 content = {'role': rl}
@@ -171,7 +171,7 @@ def edit_role(request, role_id):
     if roles:
         usr = User.objects.get(username=request.user)
         rl = roles[0]
-        if usr.has_perm('event.edit_roles', rl):
+        if usr.has_perm('event.edit_role', rl):
             if request.method == "POST":
                 form = RoleForm(request.POST, instance=rl)
                 if form.is_valid():
@@ -194,7 +194,7 @@ def remove_role(request, role_id):
         rl = roles[0]
         usr = User.objects.get(username=request.user)
         ev = rl.EVENT
-        if usr.has_perm('event.delete_roles', ev):
+        if usr.has_perm('event.remove_role', ev):
             if request.method == "GET":
                 return render(request, 'schedule/base_remove_role.html',
                               {'role': rl})
