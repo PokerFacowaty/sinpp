@@ -51,10 +51,10 @@ def add_event(request):
         form = EventForm(request.POST)
         if form.is_valid():
             cl = form.cleaned_data
-            ev = Event.create(cl["NAME"], cl["SHORT_TITLE"],
+            ev = Event.create(cl["NAME"], cl["SLUG"],
                               cl["START_DATE_TIME"], cl["END_DATE_TIME"])
             ev.save()
-            grp = Group.objects.get(name=cl["SHORT_TITLE"] + " Staff")
+            grp = Group.objects.get(name=cl["SLUG"] + " Staff")
             usr = User.objects.get(username=request.user)
             grp.user_set.add(usr)
             return redirect('user_profile')

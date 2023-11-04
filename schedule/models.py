@@ -10,18 +10,17 @@ from django.contrib.auth.models import Group
 class Event(RulesModel):
 
     NAME = models.CharField(max_length=100)
-    # TODO: change this to SLUG, but check where it's referenced first
-    SHORT_TITLE = models.SlugField(max_length=25, unique=True, null=False)
+    SLUG = models.SlugField(max_length=25, unique=True, null=False)
     START_DATE_TIME = models.DateTimeField()
     END_DATE_TIME = models.DateTimeField()
     STAFF = models.ForeignKey(Group, related_name="staff_of",
                               on_delete=models.CASCADE)
 
     @classmethod
-    def create(cls, NAME, SHORT_TITLE, START_DATE_TIME, END_DATE_TIME):
-        Group.objects.create(name=SHORT_TITLE + " Staff")
-        staff_group = Group.objects.get(name=SHORT_TITLE + " Staff")
-        event = cls(NAME=NAME, SHORT_TITLE=SHORT_TITLE,
+    def create(cls, NAME, SLUG, START_DATE_TIME, END_DATE_TIME):
+        Group.objects.create(name=SLUG + " Staff")
+        staff_group = Group.objects.get(name=SLUG + " Staff")
+        event = cls(NAME=NAME, SLUG=SLUG,
                     START_DATE_TIME=START_DATE_TIME,
                     END_DATE_TIME=END_DATE_TIME, STAFF=staff_group)
         return event
@@ -58,7 +57,7 @@ class Event(RulesModel):
 class EventForm(ModelForm):
     class Meta:
         model = Event
-        fields = ['NAME', 'SHORT_TITLE', 'START_DATE_TIME', 'END_DATE_TIME']
+        fields = ['NAME', 'SLUG', 'START_DATE_TIME', 'END_DATE_TIME']
         widgets = {"START_DATE_TIME": DateTimeInput(
                                       attrs={'type': 'datetime-local'}),
                    "END_DATE_TIME": DateTimeInput(
