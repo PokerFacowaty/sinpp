@@ -176,7 +176,7 @@ class Person(models.Model):
                 return True
         return False
 
-    def is_free(self, start_time: datetime, end_time: datetime) -> bool:
+    def is_busy(self, start_time: datetime, end_time: datetime) -> bool:
         '''Returns whether the person is already on shift at the specified
            time.'''
         # Get all shifts of that person where its end is later than the
