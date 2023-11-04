@@ -215,74 +215,71 @@ def room_schedule(request, event_slug, room_slug):
     rm = get_object_or_404(Room, EVENT=ev, SLUG=room_slug)
     usr = User.objects.get(username=request.user)
 
-    # experimenting with [("run" or "interm", thing,
-    # start in minutes since the start time, duration in minutes)]
-    runs = Speedrun.objects.filter(EVENT=ev, ROOM=rm)
-    interms = Intermission.objects.filter(EVENT=ev, ROOM=rm)
-    ev_roles = Role.objects.filter(EVENT=ev)
-    if runs[0].START_DATE_TIME < interms[0].START_DATE_TIME:
-        start_time = runs[0].START_DATE_TIME
-    else:
-        start_time = interms[0].START_DATE_TIME
-    role_shifts = {(x.NAME, x.id):
-                   [y for y in Shift.objects.filter(EVENT=ev, ROOM=rm, ROLE=x)]
-                   for x in ev_roles}
-    for role in role_shifts.values():
-        for sh in role:
-            # Lower case for things added here and not in the model
-            sh.volunteer_names = sh.VOLUNTEERS.all()
-            sh.start = ((sh.START_DATE_TIME
-                         - start_time).total_seconds() // 60)
-            sh.length = math.ceil((sh.END_DATE_TIME
-                                   - sh.START_DATE_TIME).total_seconds() // 60)
-            sh.start_iso = sh.START_DATE_TIME.isoformat()
-            sh.end_iso = sh.END_DATE_TIME.isoformat()
-
-    timed_runs = [{'type': 'run',
-                   'obj': x,
-                   'start': (x.START_DATE_TIME
-                             - start_time).total_seconds() // 60,
-                   'length': math.ceil(x.ESTIMATE.total_seconds() // 60)}
-                  for x in runs]
-    timed_interms = [{'type': 'interm',
-                      'obj': x,
-                      'start': (x.START_DATE_TIME
-                                - start_time).total_seconds() // 60,
-                      'length': math.ceil(x.DURATION.total_seconds() // 60)}
-                     for x in interms]
-
-    runs_interms = []
-    runs_interms = [x for x in timed_runs]
-    runs_interms.extend(timed_interms)
-    runs_interms.sort(key=lambda x: x["obj"].START_DATE_TIME)
-
-    first_el_start = runs_interms[0]["obj"].START_DATE_TIME
-    last_el_end = runs_interms[-1]["obj"].END_DATE_TIME
-    table_start = (first_el_start
-                   - timedelta(minutes=first_el_start.minute,
-                               seconds=first_el_start.second,
-                               microseconds=first_el_start.microsecond))
-    table_end = (last_el_end
-                 + timedelta(hours=1)
-                 - timedelta(minutes=last_el_end.minute,
-                             seconds=last_el_end.second,
-                             microseconds=last_el_end.microsecond))
-    times = []
-    t = table_start
-    while t <= table_end:
-        times.append(t.isoformat(sep="\n").split("+")[0])
-        t += timedelta(hours=1)
-
     if usr.has_perm('event.view_event', ev):
-        # TODO: move this to the beginning so that no resources are wasted
-        # when someone is not permitted
+        # experimenting with [("run" or "interm", thing,
+        # start in minutes since the start time, duration in minutes)]
+        runs = Speedrun.objects.filter(EVENT=ev, ROOM=rm)
+        interms = Intermission.objects.filter(EVENT=ev, ROOM=rm)
+        ev_roles = Role.objects.filter(EVENT=ev)
+        if runs[0].START_DATE_TIME < interms[0].START_DATE_TIME:
+            start_time = runs[0].START_DATE_TIME
+        else:
+            start_time = interms[0].START_DATE_TIME
+        role_shifts = {(x.NAME, x.id):
+                       [y for y in Shift.objects.filter(EVENT=ev, ROOM=rm, ROLE=x)]
+                       for x in ev_roles}
+        for role in role_shifts.values():
+            for sh in role:
+                # Lower case for things added here and not in the model
+                sh.volunteer_names = sh.VOLUNTEERS.all()
+                sh.start = ((sh.START_DATE_TIME
+                             - start_time).total_seconds() // 60)
+                sh.length = math.ceil((sh.END_DATE_TIME
+                                       - sh.START_DATE_TIME).total_seconds() // 60)
+                sh.start_iso = sh.START_DATE_TIME.isoformat()
+                sh.end_iso = sh.END_DATE_TIME.isoformat()
+
+        timed_runs = [{'type': 'run',
+                       'obj': x,
+                       'start': (x.START_DATE_TIME
+                                 - start_time).total_seconds() // 60,
+                       'length': math.ceil(x.ESTIMATE.total_seconds() // 60)}
+                      for x in runs]
+        timed_interms = [{'type': 'interm',
+                          'obj': x,
+                          'start': (x.START_DATE_TIME
+                                    - start_time).total_seconds() // 60,
+                          'length': math.ceil(x.DURATION.total_seconds() // 60)}
+                         for x in interms]
+
+        runs_interms = []
+        runs_interms = [x for x in timed_runs]
+        runs_interms.extend(timed_interms)
+        runs_interms.sort(key=lambda x: x["obj"].START_DATE_TIME)
+
+        first_el_start = runs_interms[0]["obj"].START_DATE_TIME
+        last_el_end = runs_interms[-1]["obj"].END_DATE_TIME
+        table_start = (first_el_start
+                       - timedelta(minutes=first_el_start.minute,
+                                   seconds=first_el_start.second,
+                                   microseconds=first_el_start.microsecond))
+        table_end = (last_el_end
+                     + timedelta(hours=1)
+                     - timedelta(minutes=last_el_end.minute,
+                                 seconds=last_el_end.second,
+                                 microseconds=last_el_end.microsecond))
+        times = []
+        t = table_start
+        while t <= table_end:
+            times.append(t.isoformat(sep="\n").split("+")[0])
+            t += timedelta(hours=1)
         content = {'room': rm, 'runs_interms': runs_interms, 'times': times,
                    'shifts': role_shifts,
                    'table_start': table_start.isoformat(),
                    'table_end': (table_end + timedelta(hours=1)).isoformat()}
         return render(request, 'schedule/base_schedule.html', content)
-    else:
-        raise PermissionDenied()
+    return HttpResponseForbidden()
+
 
 # # # # # # # #
 # AJAX views  #
