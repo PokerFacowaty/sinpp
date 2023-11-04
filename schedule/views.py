@@ -233,7 +233,7 @@ def schedule(request, event_id, room_id):
     runs_interms.sort(key=lambda x: x["obj"].START_DATE_TIME)
 
     first_el_start = runs_interms[0]["obj"].START_DATE_TIME
-    last_el_end = runs_interms[-1]["obj"].END_TIME
+    last_el_end = runs_interms[-1]["obj"].END_DATE_TIME
     table_start = (first_el_start
                    - timedelta(minutes=first_el_start.minute,
                                seconds=first_el_start.second,
