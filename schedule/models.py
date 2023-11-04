@@ -148,7 +148,8 @@ class Shift(models.Model):
     SPEEDRUNS = models.ManyToManyField("Speedrun", blank=True)
 
     def __str__(self) -> str:
-        result = f'{", ".join([x.NICKNAME for x in self.VOLUNTEER.all()])} @ {self.START_DATE_TIME}'
+        result = (f'{", ".join([x.NICKNAME for x in self.VOLUNTEER.all()])}'
+                  + f'@ {self.START_DATE_TIME}')
         if self.ROOM:
             result += f' ({self.ROOM})'
         else:
