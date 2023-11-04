@@ -156,6 +156,8 @@ class Shift(models.Model):
     START_DATE_TIME = models.DateTimeField()
     END_DATE_TIME = models.DateTimeField()
 
+    SPEEDRUNS = models.ManyToManyField("Speedrun", blank=True)
+
     def __str__(self) -> str:
         result = (f'{", ".join([x.NICKNAME for x in self.VOLUNTEER.all()])}'
                   + f'@ {self.START_DATE_TIME}')
@@ -193,7 +195,7 @@ class Person(models.Model):
         # TODO: add also checking against all the speedruns the volunteer is
         # engaged in
         shifts = Shift.objects.filter(Q(VOLUNTEER__in=[self]),
-                                      Q(END_DATE_TIME__gt=start_time)
+        return True if shifts else False
                                       | Q(START_DATE_TIME__lt=end_time))
         return False if shifts else True
 
