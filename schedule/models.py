@@ -93,13 +93,13 @@ class Speedrun(models.Model):
     VOLUNTEER_SHIFTS = models.ManyToManyField("Shift", blank=True)
     START_DATE_TIME = models.DateTimeField()
     ESTIMATE = models.DurationField()
-    END_TIME = models.DateTimeField()
+    END_DATE_TIME = models.DateTimeField()
 
     def save(self, *args, **kwargs):
-        if self.END_TIME is None and self.ESTIMATE is not None:
-            self.END_TIME = self.START_DATE_TIME + self.ESTIMATE
-        elif self.END_TIME is not None and self.ESTIMATE is None:
-            self.ESTIMATE = self.END_TIME - self.START_DATE_TIME
+        if self.END_DATE_TIME is None and self.ESTIMATE is not None:
+            self.END_DATE_TIME = self.START_DATE_TIME + self.ESTIMATE
+        elif self.END_DATE_TIME is not None and self.ESTIMATE is None:
+            self.ESTIMATE = self.END_DATE_TIME - self.START_DATE_TIME
         super(Speedrun, self).save(*args, **kwargs)
 
     def __str__(self) -> str:
@@ -118,13 +118,13 @@ class Intermission(models.Model):
                        "Person", related_name="INTERMISSIONS_ENGAGED_IN")
     START_DATE_TIME = models.DateTimeField()
     DURATION = models.DurationField()
-    END_TIME = models.DateTimeField()
+    END_DATE_TIME = models.DateTimeField()
 
     def save(self, *args, **kwargs):
-        if self.END_TIME is None and self.DURATION is not None:
-            self.END_TIME = self.START_DATE_TIME + self.DURATION
-        elif self.END_TIME is not None and self.DURATION is None:
-            self.DURATION = self.END_TIME - self.START_DATE_TIME
+        if self.END_DATE_TIME is None and self.DURATION is not None:
+            self.END_DATE_TIME = self.START_DATE_TIME + self.DURATION
+        elif self.END_DATE_TIME is not None and self.DURATION is None:
+            self.DURATION = self.END_DATE_TIME - self.START_DATE_TIME
         super(Intermission, self).save(*args, **kwargs)
 
         def __str__(self) -> str:
