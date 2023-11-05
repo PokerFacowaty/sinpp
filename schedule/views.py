@@ -293,8 +293,9 @@ def add_shift(request):
     # TODO: people
     data = json.load(request)
     shift = data.get('payload')
-    ev = Event.objects.filter(pk=int(shift['EVENT']))
-    if ev:
+    events = Event.objects.filter(pk=int(shift['EVENT']))
+    if events:
+        ev = events[0]
         usr = User.objects.get(username=request.user)
         if usr.has_perm('event.add_shift', ev):
             is_ajax = (request.headers.get("X-Requested-With")
