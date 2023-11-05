@@ -10,9 +10,9 @@ class AvailabilityBlockTestCase(TestCase):
         event_start_date = timezone.now()
         event_end_date = timezone.now() + timedelta(days=1)
         esaa = Event.create(NAME="ESA Autumn 2028",
-                                    SLUG="ESAA2028",
-                                    START_DATE_TIME=event_start_date,
-                                    END_DATE_TIME=event_end_date)
+                            SLUG="ESAA2028",
+                            START_DATE_TIME=event_start_date,
+                            END_DATE_TIME=event_end_date)
         esaa.save()
         role = Role.objects.create(NAME="Social Media",
                                    EVENT=esaa)
@@ -25,29 +25,29 @@ class AvailabilityBlockTestCase(TestCase):
         person2.ROLES.set([role])
         avail_start = event_start_date + timedelta(minutes=30)
         avail_end = event_start_date + timedelta(hours=2)
-        avail = AvailabilityBlock.objects.create(PERSON=person,
-                                                 EVENT=esaa,
-                                                 START_DATE_TIME=avail_start,
-                                                 END_DATE_TIME=avail_end)
+        AvailabilityBlock.objects.create(PERSON=person,
+                                         EVENT=esaa,
+                                         START_DATE_TIME=avail_start,
+                                         END_DATE_TIME=avail_end)
         avail2_start = event_start_date + timedelta(hours=4)
         avail2_end = event_start_date + timedelta(hours=5)
-        avail2 = AvailabilityBlock.objects.create(PERSON=person,
-                                                  EVENT=esaa,
-                                                  START_DATE_TIME=avail2_start,
-                                                  END_DATE_TIME=avail2_end)
+        AvailabilityBlock.objects.create(PERSON=person,
+                                         EVENT=esaa,
+                                         START_DATE_TIME=avail2_start,
+                                         END_DATE_TIME=avail2_end)
         p2_av_start = event_start_date + timedelta(hours=5)
         p2_av_end = event_start_date + timedelta(hours=6)
-        p2_avail = AvailabilityBlock.objects.create(
-                                        PERSON=person2,
-                                        EVENT=esaa,
-                                        START_DATE_TIME=p2_av_start,
-                                        END_DATE_TIME=p2_av_end)
+        AvailabilityBlock.objects.create(
+                                         PERSON=person2,
+                                         EVENT=esaa,
+                                         START_DATE_TIME=p2_av_start,
+                                         END_DATE_TIME=p2_av_end)
         run_start = event_start_date + timedelta(hours=1)
         run_end = event_start_date + timedelta(hours=1, minutes=30)
-        run = Speedrun.objects.create(EVENT=esaa,
-                                      GAME="GTA: Vice City",
-                                      START_DATE_TIME=run_start,
-                                      END_DATE_TIME=run_end)
+        Speedrun.objects.create(EVENT=esaa,
+                                GAME="GTA: Vice City",
+                                START_DATE_TIME=run_start,
+                                END_DATE_TIME=run_end)
 
     def test_check_if_available_manually(self):
         run = Speedrun.objects.get(GAME="GTA: Vice City")
@@ -70,7 +70,8 @@ class AvailabilityBlockTestCase(TestCase):
         role = Role.objects.get(NAME="Social Media")
         # Not 100% about this since it assumes a single block but this can
         # be changed later
-        self.assertTrue(person.is_available(run.START_DATE_TIME, run.END_DATE_TIME,
+        self.assertTrue(person.is_available(run.START_DATE_TIME,
+                                            run.END_DATE_TIME,
                                             role))
 
     def test_check_if_not_available_manually(self):
@@ -89,5 +90,6 @@ class AvailabilityBlockTestCase(TestCase):
         run = Speedrun.objects.get(GAME="GTA: Vice City")
         person = Person.objects.get(NICKNAME="Elaine")
         role = Role.objects.get(NAME="Social Media")
-        self.assertFalse(person.is_available(run.START_DATE_TIME, run.END_DATE_TIME,
+        self.assertFalse(person.is_available(run.START_DATE_TIME,
+                                             run.END_DATE_TIME,
                                              role))
