@@ -1,22 +1,20 @@
 from django.test import TestCase
 from django.utils import timezone
 from schedule.models import Event, Speedrun, Person
-from datetime import timedelta
+from datetime import timedelta, datetime
 
 
 class SpeedrunTestCase(TestCase):
-    # TODO:
-    # - Check for listing volunteer shifts, both run based and hour based
-    # - Add an option to provide START + END and calculate ESTIMATE?
-    # (add + test)
 
     def setUp(self):
-        event_start_date = timezone.now()
-        event_end_date = timezone.now() + timedelta(days=1)
-        Event.objects.create(NAME="GSPS 2026",
-                             SHORT_TITLE="GSPS26",
-                             START_DATE_TIME=event_start_date,
-                             END_DATE_TIME=event_end_date)
+        event_start_date = datetime(year=2020, month=4, day=7, hour=11,
+                                    tzinfo=timezone.utc)
+        event_end_date = event_start_date + timedelta(days=1)
+        ev = Event.create(NAME="GSPS 2026",
+                          SLUG="GSPS26",
+                          START_DATE_TIME=event_start_date,
+                          END_DATE_TIME=event_end_date)
+        ev.save()
 
         peoples_names = ["Alice", "Bob", "Candy"]
         peoples_pronouns = ["", "She/They", ""]
@@ -30,8 +28,8 @@ class SpeedrunTestCase(TestCase):
         estimate = timedelta(minutes=5)
         alice = Person.objects.get(NICKNAME="Alice")
         candy = Person.objects.get(NICKNAME="Candy")
-        Speedrun.objects.create(EVENT=Event.objects.get(NAME="GSPS 2026"),
-                                GAME="GTA IV", START_TIME=run_start_time,
+        Speedrun.objects.create(EVENT=Event.objects.get(SLUG="GSPS26"),
+                                GAME="GTA IV", START_DATE_TIME=run_start_time,
                                 ESTIMATE=estimate)
         iv = Speedrun.objects.get(GAME="GTA IV")
         iv.VOLUNTEERS_ENGAGED.add(alice)
@@ -42,7 +40,7 @@ class SpeedrunTestCase(TestCase):
         # NOTE: the only way to ensure proper time arithmetic is by using
         # PostgresSQL as the database
         # https://docs.djangoproject.com/en/4.2/ref/models/fields/#durationfield
-        self.assertEqual(run.END_TIME, run.START_TIME + run.ESTIMATE)
+        self.assertEqual(run.END_DATE_TIME, run.START_DATE_TIME + run.ESTIMATE)
 
     def test_speedrun_has_volunteer_one_engaged(self):
         run = Speedrun.objects.get(GAME="GTA IV")
