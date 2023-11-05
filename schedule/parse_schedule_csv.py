@@ -1,8 +1,8 @@
 import csv
 from pathlib import Path
-from schedule.models import Event, Speedrun, Intermission, Room
+from schedule.models import Event, Speedrun, Intermission
 from datetime import datetime as dt
-from datetime import time, timedelta
+from datetime import timedelta
 from django.conf import settings
 import uuid
 
