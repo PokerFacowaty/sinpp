@@ -76,9 +76,9 @@ function setBlockPosHeight(){
     const blocks = document.querySelectorAll<HTMLElement>(".block");
     for (const bl of blocks){
         bl.style.position = 'absolute';
-        bl.style.top = `${Number(bl.getAttribute("data-start"))
+        bl.style.top = `${Number(bl.dataset.startSecsRel)
                           * cnsts.PX_PER_MIN}px`
-        const length = Number(bl.getAttribute("data-length"));
+        const length = Number(bl.dataset.lengthSecsRel);
         bl.style.height = `${length * cnsts.PX_PER_MIN}px`;
         bl.style.visibility = "visible";
     }
