@@ -45,10 +45,10 @@ def parse_oengus(filepath: Path, event: Event, room=None):
                                     ROOM=room,
                                     GAME=row["game"],
                                     CATEGORY=row["category"],
-                                    START_TIME=run_start,
+                                    START_DATE_TIME=run_start,
                                     ESTIMATE=estimate)
 
             Intermission.objects.create(EVENT=event,
                                         ROOM=room,
-                                        START_TIME=run_start + estimate,
+                                        START_DATE_TIME=run_start + estimate,
                                         DURATION=inter_dur)
