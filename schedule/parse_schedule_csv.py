@@ -20,7 +20,6 @@ def handle_uploaded_file(f, type: str):
 
 
 def parse_oengus(filepath: Path, event: Event, room=None):
-    print(filepath, event)
     with open(filepath) as cf:
         rdr = csv.DictReader(cf)
 
