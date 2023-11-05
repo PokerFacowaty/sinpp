@@ -13,9 +13,9 @@ class CSVParsingTestCase(TestCase):
         ev_end = datetime(year=2022, month=2, day=20, hour=3,
                           tzinfo=timezone.utc)
         ev = Event.create(NAME="ESA Winter 2022",
-                                  SLUG="ESAW22",
-                                  START_DATE_TIME=ev_start,
-                                  END_DATE_TIME=ev_end)
+                          SLUG="ESAW22",
+                          START_DATE_TIME=ev_start,
+                          END_DATE_TIME=ev_end)
         ev.save()
 
         parse_oengus(Path(__file__).parent.resolve()
