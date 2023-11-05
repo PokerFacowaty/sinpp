@@ -1,47 +1,43 @@
 from django.test import TestCase
-from schedule.models import Shift, Event, Role, Speedrun, Person
+from schedule.models import Shift, Event, Role, Person
 from datetime import datetime, timedelta, timezone
 
 
 class ShiftTestCase(TestCase):
-    # TODO:
-    # - Check for proper VOLUNTEER, ROLE, EVENT
-    # - Intermissions for run-based roles?
 
     def setUp(self):
         ev_start = datetime(year=2022, month=2, day=3, hour=14,
                             tzinfo=timezone.utc)
         ev_end = ev_start + timedelta(days=1)
-        ev = Event.objects.create(NAME="GDQ2",
-                                  SHORT_TITLE="GDQ2",
-                                  START_DATE_TIME=ev_start,
-                                  END_DATE_TIME=ev_end)
+        ev = Event.create(NAME="GDQ2",
+                          SLUG="GDQ2",
+                          START_DATE_TIME=ev_start,
+                          END_DATE_TIME=ev_end)
+        ev.save()
         tech = Role.objects.create(NAME="Tech",
-                                   EVENT=ev,
-                                   TYPE="HB")
+                                   EVENT=ev)
         media = Role.objects.create(NAME="Social Media",
-                                    EVENT=ev,
-                                    TYPE="HB")
+                                    EVENT=ev)
         prsn = Person.objects.create(NICKNAME="MyPerson")
         prsn.ROLES.set([tech, media])
         tech_shift = Shift.objects.create(
                      ROLE=tech, EVENT=ev,
                      START_DATE_TIME=ev_start + timedelta(hours=1),
                      END_DATE_TIME=ev_start + timedelta(hours=2))
-        tech_shift.VOLUNTEER.set([prsn])
+        tech_shift.VOLUNTEERS.set([prsn])
 
-    def test_if_not_free(self):
+    def test_if_busy(self):
         prsn = Person.objects.get(NICKNAME="MyPerson")
-        start = (Event.objects.get(NAME="GDQ2").START_DATE_TIME
+        start = (Event.objects.get(SLUG="GDQ2").START_DATE_TIME
                  + timedelta(hours=1, minutes=30))
-        end = (Event.objects.get(NAME="GDQ2").START_DATE_TIME
+        end = (Event.objects.get(SLUG="GDQ2").START_DATE_TIME
                + timedelta(hours=2, minutes=30))
-        self.assertFalse(prsn.is_free(start, end))
+        self.assertTrue(prsn.is_busy(start, end))
 
-    def test_if_free(self):
+    def test_if_not_busy(self):
         prsn = Person.objects.get(NICKNAME="MyPerson")
-        start = (Event.objects.get(NAME="GDQ2").START_DATE_TIME
+        start = (Event.objects.get(SLUG="GDQ2").START_DATE_TIME
                  + timedelta(hours=2, minutes=30))
         end = (Event.objects.get(NAME="GDQ2").START_DATE_TIME
                + timedelta(minutes=30))
-        self.assertTrue(prsn.is_free(start, end))
+        self.assertFalse(prsn.is_busy(start, end))
