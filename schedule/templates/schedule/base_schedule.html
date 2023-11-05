@@ -11,7 +11,7 @@
     <div id="time-name">Time</div>
     <div id="time-runs">Speedruns / Intermissions</div>
     {% for role in shifts.keys %}
-        <div class="role-name"> {{ role.0 }} </div>
+        <div class="role-name"> {{ role.NAME }} </div>
     {% endfor %}
 </div>
 <div id="schedule-table" data-start-ts="{{ table_start }}" data-end-ts="{{ table_end }}" data-event-id="{{ room.EVENT.id }}" data-room-id="{{ room.id }}">
@@ -23,21 +23,21 @@
     <div id="runs-column">
         {% for x in runs_interms %}
             {% if x.type == 'run' %}
-                <div class="run block" data-start="{{ x.start }}" data-length="{{ x.length }}" data-id="{{ x.obj.id }}" style="visibility: hidden">
+                <div class="run block" data-start-secs-rel="{{ x.start_secs_rel }}" data-length-secs-rel="{{ x.length_secs_rel }}" data-id="{{ x.obj.id }}" style="visibility: hidden">
                     <div>{{ x.obj.START_TIME.time }} {{ x.obj.GAME }}</div>
                     <button class="add-shift-from-run">Add Shift From This Run</button>
                 </div>
             {% elif x.type == 'interm' %}
-                <div class="interm block" data-start="{{ x.start }}" data-length="{{ x.length }}" data-id="{{ x.obj.id }}" style="visibility: hidden">
+                <div class="interm block" data-start-secs-rel="{{ x.start_secs_rel }}" data-length-secs-rel="{{ x.length_secs_rel }}" data-id="{{ x.obj.id }}" style="visibility: hidden">
                     {{ x.obj.START_TIME.time }} Intermission ({{ x.obj.DURATION }})
                 </div>
             {% endif %}
         {% endfor %}
     </div>
     {% for role, shifts in shifts.items %}
-        <div class="shifts-column" data-role-id="{{ role.1 }}">
+        <div class="shifts-column" data-role-id="{{ role.id }}">
             {% for shift in shifts %}
-                <div class="shift block" data-start="{{ shift.start }}" data-length="{{ shift.length }}" data-shift-id="{{ shift.id }}" data-start-ts="{{ shift.start_iso }}" data-end-ts="{{ shift.end_iso }}" style="visibility: hidden">
+                <div class="shift block" data-start-secs-rel="{{ shift.start_secs_rel }}" data-length-secs-rel="{{ shift.length_secs_rel }}" data-shift-id="{{ shift.id }}" data-start-ts="{{ shift.start_iso }}" data-end-ts="{{ shift.end_iso }}" style="visibility: hidden">
                     <div>
                         {% for name in shift.volunteer_names %}
                             {{ name }}
