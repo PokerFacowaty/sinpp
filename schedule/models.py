@@ -190,7 +190,7 @@ class Person(models.Model):
         # start_time OR its start is earlier than end_time
         # TODO: add also checking against all the speedruns the volunteer is
         # engaged in
-        shifts = Shift.objects.filter(Q(VOLUNTEER__in=[self]),
+        shifts = Shift.objects.filter(Q(VOLUNTEERS__in=[self]),
                                       Q(END_DATE_TIME__gt=start_time)
                                       | Q(START_DATE_TIME__lt=end_time))
         return True if shifts else False
