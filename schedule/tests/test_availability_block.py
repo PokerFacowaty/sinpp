@@ -1,6 +1,7 @@
 from django.test import TestCase
 from django.utils import timezone
-from schedule.models import Event, AvailabilityBlock, Person, Role, Speedrun
+from schedule.models import (Event, AvailabilityBlock, Person, Role, Speedrun,
+                             Shift)
 from datetime import timedelta
 
 
@@ -44,10 +45,14 @@ class AvailabilityBlockTestCase(TestCase):
                                          END_DATE_TIME=p2_av_end)
         run_start = event_start_date + timedelta(hours=1)
         run_end = event_start_date + timedelta(hours=1, minutes=30)
-        Speedrun.objects.create(EVENT=esaa,
-                                GAME="GTA: Vice City",
-                                START_DATE_TIME=run_start,
-                                END_DATE_TIME=run_end)
+        run = Speedrun.objects.create(EVENT=esaa,
+                                      GAME="GTA: Vice City",
+                                      START_DATE_TIME=run_start,
+                                      END_DATE_TIME=run_end)
+        sh = Shift.objects.create(ROLE=role, EVENT=esaa,
+                                  START_DATE_TIME=run.START_DATE_TIME,
+                                  END_DATE_TIME=run.END_DATE_TIME)
+        sh.VOLUNTEERS.add(person2)
 
     def test_check_if_available_manually(self):
         run = Speedrun.objects.get(GAME="GTA: Vice City")
@@ -93,3 +98,17 @@ class AvailabilityBlockTestCase(TestCase):
         self.assertFalse(person.is_available(run.START_DATE_TIME,
                                              run.END_DATE_TIME,
                                              role))
+
+    def test_check_if_busy_function(self):
+        run = Speedrun.objects.get(GAME="GTA: Vice City")
+        st = run.START_DATE_TIME - timedelta(hours=1)
+        end = run.END_DATE_TIME + timedelta(hours=1)
+        person = Person.objects.get(NICKNAME="Elaine")
+        self.assertTrue(person.is_busy(st, end))
+
+    def test_check_if_not_busy_function(self):
+        run = Speedrun.objects.get(GAME="GTA: Vice City")
+        st = run.START_DATE_TIME
+        end = run.END_DATE_TIME
+        person = Person.objects.get(NICKNAME="Duncan")
+        self.assertFalse(person.is_busy(st, end))
