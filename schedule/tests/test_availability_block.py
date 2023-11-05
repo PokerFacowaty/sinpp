@@ -9,10 +9,11 @@ class AvailabilityBlockTestCase(TestCase):
     def setUp(self):
         event_start_date = timezone.now()
         event_end_date = timezone.now() + timedelta(days=1)
-        esaa = Event.objects.create(NAME="ESA Autumn 2028",
-                                    SHORT_TITLE="ESAA2028",
+        esaa = Event.create(NAME="ESA Autumn 2028",
+                                    SLUG="ESAA2028",
                                     START_DATE_TIME=event_start_date,
                                     END_DATE_TIME=event_end_date)
+        esaa.save()
         role = Role.objects.create(NAME="Social Media",
                                    EVENT=esaa)
         # person has two blocks, one is during the run and the other is
@@ -45,8 +46,8 @@ class AvailabilityBlockTestCase(TestCase):
         run_end = event_start_date + timedelta(hours=1, minutes=30)
         run = Speedrun.objects.create(EVENT=esaa,
                                       GAME="GTA: Vice City",
-                                      START_TIME=run_start,
-                                      END_TIME=run_end)
+                                      START_DATE_TIME=run_start,
+                                      END_DATE_TIME=run_end)
 
     def test_check_if_available_manually(self):
         run = Speedrun.objects.get(GAME="GTA: Vice City")
@@ -58,9 +59,9 @@ class AvailabilityBlockTestCase(TestCase):
         # NOTE: the only way to ensure proper time arithmetic is by using
         # PostgresSQL as the database
         # https://docs.djangoproject.com/en/4.2/ref/models/fields/#durationfield
-        self.assertTrue(((run.START_TIME - avail.START_DATE_TIME)
+        self.assertTrue(((run.START_DATE_TIME - avail.START_DATE_TIME)
                          >= margin
-                         and (avail.END_DATE_TIME - run.END_TIME)
+                         and (avail.END_DATE_TIME - run.END_DATE_TIME)
                          >= margin))
 
     def test_check_if_available_function(self):
@@ -69,7 +70,7 @@ class AvailabilityBlockTestCase(TestCase):
         role = Role.objects.get(NAME="Social Media")
         # Not 100% about this since it assumes a single block but this can
         # be changed later
-        self.assertTrue(person.is_available(run.START_TIME, run.END_TIME,
+        self.assertTrue(person.is_available(run.START_DATE_TIME, run.END_DATE_TIME,
                                             role))
 
     def test_check_if_not_available_manually(self):
@@ -79,14 +80,14 @@ class AvailabilityBlockTestCase(TestCase):
         avail_start = run.EVENT.START_DATE_TIME + timedelta(hours=4)
         avail = AvailabilityBlock.objects.get(PERSON=person,
                                               START_DATE_TIME=avail_start)
-        self.assertFalse((run.START_TIME - avail.START_DATE_TIME)
+        self.assertFalse((run.START_DATE_TIME - avail.START_DATE_TIME)
                          >= margin
-                         and (avail.END_DATE_TIME - run.END_TIME)
+                         and (avail.END_DATE_TIME - run.END_DATE_TIME)
                          >= margin)
 
     def test_check_if_not_available_function(self):
         run = Speedrun.objects.get(GAME="GTA: Vice City")
         person = Person.objects.get(NICKNAME="Elaine")
         role = Role.objects.get(NAME="Social Media")
-        self.assertFalse(person.is_available(run.START_TIME, run.END_TIME,
+        self.assertFalse(person.is_available(run.START_DATE_TIME, run.END_DATE_TIME,
                                              role))
