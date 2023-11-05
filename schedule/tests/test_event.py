@@ -18,3 +18,6 @@ class EventTestCase(TestCase):
 
     def test_proper_group_was_made(self):
         self.assertTrue(Group.objects.filter(name="GSPS26 Staff"))
+
+    def test_user_is_staff_member(self):
+        self.assertTrue(self.user.groups.filter(name="GSPS26 Staff").exists())
