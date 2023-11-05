@@ -7,7 +7,6 @@ from .models import (EventForm, Event, Room, Speedrun, Shift, Intermission,
                      Role, RoleForm, Person)
 from django.contrib.auth.models import Group, User
 from django.contrib.auth.decorators import login_required
-from django.core.exceptions import PermissionDenied
 import math
 from datetime import timedelta
 import json
