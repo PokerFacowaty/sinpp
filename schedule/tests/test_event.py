@@ -1,6 +1,6 @@
 from django.test import TestCase
 from django.utils import timezone
-from datetime import timedelta
+from datetime import timedelta, datetime
 from django.contrib.auth.models import Group, User
 from django.test import Client
 
@@ -9,8 +9,9 @@ class EventTestCase(TestCase):
     def setUp(self):
         self.user = User.objects.create_user("notverysuper", "", "password1")
         c = Client()
-        start_date = timezone.now()
-        end_date = timezone.now() + timedelta(days=1)
+        start_date = datetime(year=2020, month=4, day=7, hour=11,
+                              tzinfo=timezone.utc)
+        end_date = start_date + timedelta(days=1)
         c.login(username="notverysuper", password="password1")
         c.post("/add_event/", {"NAME": "GSPS 2026", "SLUG": "GSPS26",
                                "START_DATE_TIME": start_date,
