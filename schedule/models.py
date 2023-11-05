@@ -155,7 +155,7 @@ class Shift(models.Model):
     END_DATE_TIME = models.DateTimeField()
 
     def __str__(self) -> str:
-        result = (f'{", ".join([x.NICKNAME for x in self.VOLUNTEER.all()])}'
+        result = (f'{", ".join([x.NICKNAME for x in self.VOLUNTEERS.all()])}'
                   + f'@ {self.START_DATE_TIME}')
         if self.ROOM:
             result += f' ({self.ROOM})'
