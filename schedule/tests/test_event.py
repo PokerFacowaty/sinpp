@@ -1,6 +1,5 @@
 from django.test import TestCase
 from django.utils import timezone
-from schedule.models import Event
 from datetime import timedelta
 from django.contrib.auth.models import Group, User
 from django.test import Client
