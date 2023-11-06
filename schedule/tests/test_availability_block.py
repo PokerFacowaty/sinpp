@@ -1,5 +1,5 @@
 from django.test import TestCase
-from django.utils import timezone
+from django.utils import timezone, datetime
 from schedule.models import (Event, AvailabilityBlock, Person, Role, Speedrun,
                              Shift)
 from datetime import timedelta
@@ -8,8 +8,9 @@ from datetime import timedelta
 class AvailabilityBlockTestCase(TestCase):
 
     def setUp(self):
-        event_start_date = timezone.now()
-        event_end_date = timezone.now() + timedelta(days=1)
+        event_start_date = datetime(year=2020, month=4, day=7, hour=11,
+                                    tzinfo=timezone.utc)
+        event_end_date = event_start_date + timedelta(days=1)
         esaa = Event.create(NAME="ESA Autumn 2028",
                             SLUG="ESAA2028",
                             START_DATE_TIME=event_start_date,
