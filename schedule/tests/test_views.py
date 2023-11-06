@@ -82,11 +82,11 @@ class TestEditEvent(TestCase):
         response = self.staff_c.get("/edit_event/GTAM27/")
         self.assertEqual(response.status_code, 200)
 
-    def test_edit_event_non_existent_event(self):
+    def test_edit_event_get_non_existent_event(self):
         response = self.staff_c.get("/edit_event/yesimsure/")
         self.assertEqual(response.status_code, 404)
 
-    def test_edit_event_not_staff(self):
+    def test_edit_event_get_not_staff(self):
         response = self.non_staff_c.get("/edit_event/GTAM27/")
         self.assertEqual(response.status_code, 403)
 
@@ -95,7 +95,7 @@ class TestEditEvent(TestCase):
         self.assertIn("schedule/base_edit_event.html",
                       [x.name for x in response.templates])
 
-    def test_edit_event_post_valid(self):
+    def test_edit_event_post_valid_effect(self):
         ev = Event.objects.get(SLUG="GTAM27")
         self.staff_c.post("/edit_event/GTAM27/",
                           {"NAME": "GTAMarathon 2027_2", "SLUG": ev.SLUG,
