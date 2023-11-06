@@ -64,8 +64,8 @@ def add_event(request):
 
 @ensure_csrf_cookie
 @login_required
-def event(request, event_id):
-    events = Event.objects.filter(pk=event_id)
+def event(request, event_slug):
+    events = Event.objects.filter(SLUG=event_slug)
     if events:
         ev = events[0]
         usr = User.objects.get(username=request.user)
