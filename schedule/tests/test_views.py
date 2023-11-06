@@ -38,3 +38,7 @@ class TestEvent(TestCase):
         response = self.c.get("/event/GTAM27/")
         self.assertIn("schedule/base_event.html",
                       [x.name for x in response.templates])
+
+    def test_event_doesnt_exit(self):
+        response = self.c.get("/event/GDQ29/")
+        self.assertEqual(response.status_code, 404)
