@@ -51,3 +51,7 @@ class TestEvent(TestCase):
     def test_event_user_not_staff(self):
         response = self.non_staff_c.get("/event/GTAM27/")
         self.assertEqual(response.status_code, 403)
+
+    def test_event_non_get_request(self):
+        response = self.staff_c.post("/event/GTAM27/")
+        self.assertEqual(response.status_code, 400)
