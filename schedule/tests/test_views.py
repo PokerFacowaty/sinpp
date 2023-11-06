@@ -25,7 +25,7 @@ class TestAddEvent(TestCase):
 
         self.c.login(username="notverysuper", password="password1")
 
-    def test_user_is_staff_member(self):
+    def test_add_event_user_is_staff_member(self):
         self.c.post("/add_event/", {"NAME": "GSPS 2026", "SLUG": "GSPS26",
                                     "START_DATE_TIME": self.start,
                                     "END_DATE_TIME": self.end})
