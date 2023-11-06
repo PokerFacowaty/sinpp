@@ -82,8 +82,8 @@ def event(request, event_slug):
 
 
 @login_required
-def edit_event(request, event_id):
-    events = Event.objects.filter(pk=event_id)
+def edit_event(request, event_slug):
+    events = Event.objects.filter(SLUG=event_slug)
     if events:
         usr = User.objects.get(username=request.user)
         ev = events[0]
@@ -92,7 +92,7 @@ def edit_event(request, event_id):
                 form = EventForm(request.POST, instance=ev)
                 if form.is_valid():
                     form.save()
-                    return redirect("event", event_id=event_id)
+                    return redirect("event", event_slug=event_slug)
             elif request.method == "GET":
                 form = EventForm(instance=ev)
                 return render(request, "schedule/base_edit_event.html",
