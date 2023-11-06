@@ -293,7 +293,7 @@ class TestRemoveEvent(TestCase):
         self.assertEqual(response.status_code, 403)
 
     def test_remove_event_get_template(self):
-        response = self.c.get("/remove_event/GDMF96")
+        response = self.c.get("/remove_event/GDMF96/")
         self.assertIn("schedule/base_remove_event.html",
                       [x.name for x in response.templates])
 
