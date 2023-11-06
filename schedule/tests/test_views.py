@@ -48,6 +48,14 @@ class TestAddEvent(TestCase):
         response = add_event(request)
         self.assertEqual(response.status_code, 400)
 
+    def test_add_event_post_valid_redirect(self):
+        response = self.c.post("/add_event/",
+                               {"NAME": "GSPS 2026",
+                                "SLUG": "GSPS26",
+                                "START_DATE_TIME": self.start,
+                                "END_DATE_TIME": self.end}, follow=True)
+        self.assertEqual(response.resolver_match.url_name, "user_profile")
+
     def test_add_event_not_get_or_post(self):
         request = self.factory.delete("/add_event/",
                                       {"NAME": "GSPS 2026",
