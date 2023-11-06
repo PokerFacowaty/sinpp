@@ -30,6 +30,6 @@ class TestEvent(TestCase):
         self.c = Client()
         self.c.login(username="notsosuper", password="mypassword")
 
-    def test_base_event_200(self):
+    def test_event_200(self):
         response = self.c.get("/event/GTAM27/")
         self.assertEqual(response.status_code, 200)
