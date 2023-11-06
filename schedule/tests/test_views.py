@@ -72,6 +72,17 @@ class TestAddEvent(TestCase):
                                     "END_DATE_TIME": self.end})
         self.assertTrue(self.user.groups.filter(name="GSPS26 Staff").exists())
 
+    def test_add_event_get_200(self):
+        request = self.factory.get("/add_event/")
+        request.user = self.user
+        response = add_event(request)
+        self.assertEqual(response.status_code, 200)
+
+    def test_add_event_get_template(self):
+        response = self.c.get("/add_event/")
+        self.assertIn("schedule/base_add_event.html",
+                      [x.name for x in response.templates])
+
 
 class TestEvent(TestCase):
 
