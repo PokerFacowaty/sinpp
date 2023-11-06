@@ -249,3 +249,22 @@ class TestEditEvent(TestCase):
         request.user = self.staff_user
         response = edit_event(request, "GTAM27")
         self.assertEqual(response.status_code, 400)
+
+
+class TestRemoveEvent(TestCase):
+
+    def setUp(self):
+        self.staff_user = User.objects.create_user("userandstuff",
+                                                   "", "123456")
+        self.non_staff = User.objects.create_user("nostaffhere",
+                                                  "", "123456789")
+
+        start = datetime(year=2005, month=4, day=16, hour=9,
+                         tzinfo=timezone.utc)
+        end = start + timedelta(days=2)
+        ev = Event.create(NAME="Games Done Moderately Fast '96",
+                          SLUG="GDMF96",
+                          START_DATE_TIME=start,
+                          END_DATE_TIME=end)
+        ev.save()
+        self.staff_user.groups.add(ev.STAFF)
