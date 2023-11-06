@@ -302,3 +302,9 @@ class TestRemoveEvent(TestCase):
         request.user = self.staff_user
         response = remove_event(request, "GDMF96")
         self.assertEqual(response.status_code, 400)
+
+    def test_remove_event_post_effect(self):
+        request = self.factory.post("/remove_event/GDMF96")
+        request.user = self.staff_user
+        remove_event(request, "GDMF96")
+        self.assertFalse(Event.objects.filter(SLUG="GDMF96"))
