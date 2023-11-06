@@ -171,3 +171,9 @@ class TestEditEvent(TestCase):
         request.user = self.staff_user
         response = edit_event(request, "GTAM27")
         self.assertEqual(response.status_code, 400)
+
+    def test_edit_event_unaccepted_request(self):
+        request = self.factory.delete("/edit_event/GTAM27/")
+        request.user = self.staff_user
+        response = edit_event(request, "GTAM27")
+        self.assertEqual(response.status_code, 400)
