@@ -35,7 +35,7 @@ class TestAddEvent(TestCase):
                                      "END_DATE_TIME": self.end})
         request.user = self.user
         response = add_event(request)
-        self.assertTrue(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
 
     def test_add_event_post_invalid(self):
         request = self.factory.post("/add_event/",
@@ -45,7 +45,7 @@ class TestAddEvent(TestCase):
                                      "END_DATE_TIME": self.end})
         request.user = self.user
         response = add_event(request)
-        self.assertTrue(response.status_code, 400)
+        self.assertEqual(response.status_code, 400)
 
     def test_add_event_not_get_or_post(self):
         request = self.factory.delete("/add_event/",
