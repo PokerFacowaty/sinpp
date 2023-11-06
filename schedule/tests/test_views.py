@@ -85,3 +85,7 @@ class TestEditEvent(TestCase):
     def test_edit_event_non_existent_event(self):
         response = self.staff_c.get("/edit_event/yesimsure/")
         self.assertEqual(response.status_code, 404)
+
+    def test_edit_event_not_staff(self):
+        response = self.non_staff_c.get("/edit_event/GTAM27/")
+        self.assertEqual(response.status_code, 403)
