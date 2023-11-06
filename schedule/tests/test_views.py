@@ -292,6 +292,11 @@ class TestRemoveEvent(TestCase):
         response = remove_event(request, "GDMF96")
         self.assertEqual(response.status_code, 403)
 
+    def test_remove_event_get_template(self):
+        response = self.c.get("/remove_event/GDMF96")
+        self.assertIn("schedule/base_remove_event.html",
+                      [x.name for x in response.templates])
+
     def test_remove_event_not_get_or_post(self):
         request = self.factory.delete("/remove_event/GDMF96")
         request.user = self.staff_user
