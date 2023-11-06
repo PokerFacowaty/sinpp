@@ -94,3 +94,12 @@ class TestEditEvent(TestCase):
         response = self.staff_c.get("/edit_event/GTAM27/")
         self.assertIn("schedule/base_edit_event.html",
                       [x.name for x in response.templates])
+
+    def test_edit_event_post_valid(self):
+        ev = Event.objects.get(SLUG="GTAM27")
+        self.staff_c.post("/edit_event/GTAM27/",
+                          {"NAME": "GTAMarathon 2027_2", "SLUG": ev.SLUG,
+                           "START_DATE_TIME": ev.START_DATE_TIME,
+                           "END_DATE_TIME": ev.END_DATE_TIME})
+        ev = Event.objects.get(SLUG="GTAM27")
+        self.assertEqual(ev.NAME, "GTAMarathon 2027_2")
