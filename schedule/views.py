@@ -105,10 +105,10 @@ def edit_event(request, event_slug):
 
 
 @login_required
-def remove_event(request, event_id):
+def remove_event(request, event_slug):
     '''The confirmation page for a GET request and actual removal for POST'''
     usr = User.objects.get(username=request.user)
-    events = Event.objects.filter(pk=event_id)
+    events = Event.objects.filter(SLUG=event_slug)
     if events:
         ev = events[0]
         if usr.has_perm('event.remove_event', ev):
