@@ -271,7 +271,7 @@ class TestRemoveEvent(TestCase):
 
         self.factory = RequestFactory()
 
-    def test_remove_event_200(self):
+    def test_remove_event_get_200(self):
         request = self.factory.get("/remove_event/GDMF96")
         request.user = self.staff_user
         response = remove_event(request, "GDMF96")
