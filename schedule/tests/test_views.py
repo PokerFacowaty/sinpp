@@ -99,15 +99,21 @@ class TestEditEvent(TestCase):
         self.factory = RequestFactory()
 
     def test_edit_event_get_200(self):
-        response = self.staff_c.get("/edit_event/GTAM27/")
+        request = self.factory.get("/edit_event/GTAM27/")
+        request.user = self.staff_user
+        response = edit_event(request, "GTAM27")
         self.assertEqual(response.status_code, 200)
 
     def test_edit_event_get_non_existent_event(self):
-        response = self.staff_c.get("/edit_event/yesimsure/")
+        request = self.factory.get("/edit_event/yesimsure/")
+        request.user = self.staff_user
+        response = edit_event(request, "yesimsure")
         self.assertEqual(response.status_code, 404)
 
     def test_edit_event_get_not_staff(self):
-        response = self.non_staff_c.get("/edit_event/GTAM27/")
+        request = self.factory.get("/edit_event/GTAM27/")
+        request.user = self.non_staff_user
+        response = edit_event(request, "GTAM27")
         self.assertEqual(response.status_code, 403)
 
     def test_edit_event_get_template(self):
@@ -117,10 +123,13 @@ class TestEditEvent(TestCase):
 
     def test_edit_event_post_valid_effect(self):
         ev = Event.objects.get(SLUG="GTAM27")
-        self.staff_c.post("/edit_event/GTAM27/",
-                          {"NAME": "GTAMarathon 2027_2", "SLUG": ev.SLUG,
-                           "START_DATE_TIME": ev.START_DATE_TIME,
-                           "END_DATE_TIME": ev.END_DATE_TIME})
+        request = self.factory.post("/edit/event/GTAM27/",
+                                    {"NAME": "GTAMarathon 2027_2",
+                                     "SLUG": ev.SLUG,
+                                     "START_DATE_TIME": ev.START_DATE_TIME,
+                                     "END_DATE_TIME": ev.END_DATE_TIME})
+        request.user = self.staff_user
+        edit_event(request, "GTAM27")
         ev = Event.objects.get(SLUG="GTAM27")
         self.assertEqual(ev.NAME, "GTAMarathon 2027_2")
 
@@ -135,24 +144,30 @@ class TestEditEvent(TestCase):
         self.assertEqual(response.resolver_match.url_name, "event")
 
     def test_edit_event_post_non_existent_event(self):
-        response = self.staff_c.post("/edit_event/yesimsure/")
+        request = self.factory.post("/edit_event/yesimsure/")
+        request.user = self.staff_user
+        response = edit_event(request, "yesimsure")
         self.assertEqual(response.status_code, 404)
 
     def test_edit_event_post_not_staff(self):
         ev = Event.objects.get(SLUG="GTAM27")
-        response = self.non_staff_c.post(
+        request = self.factory.post(
                     "/edit_event/GTAM27/",
                     {"NAME": "GTAMarathon 2027_2",
                      "SLUG": ev.SLUG,
                      "START_DATE_TIME": ev.START_DATE_TIME,
                      "END_DATE_TIME": ev.END_DATE_TIME})
+        request.user = self.non_staff_user
+        response = edit_event(request, "GTAM27")
         self.assertEqual(response.status_code, 403)
 
     def test_edit_event_post_invalid(self):
         ev = Event.objects.get(SLUG="GTAM27")
-        response = self.staff_c.post("/edit_event/GTAM27/",
-                                     {"NAME": ev.NAME,
-                                      "SLUG": ev.SLUG,
-                                      "START_DATE_TIME": "yes I would",
-                                      "END_DATE_TIME": ev.END_DATE_TIME})
+        request = self.factory.post("/edit_event/GTAM27/",
+                                    {"NAME": ev.NAME,
+                                     "SLUG": ev.SLUG,
+                                     "START_DATE_TIME": "yes I would",
+                                     "END_DATE_TIME": ev.END_DATE_TIME})
+        request.user = self.staff_user
+        response = edit_event(request, "GTAM27")
         self.assertEqual(response.status_code, 400)
