@@ -93,6 +93,7 @@ def edit_event(request, event_slug):
                 if form.is_valid():
                     form.save()
                     return redirect("event", event_slug=event_slug)
+                return HttpResponseBadRequest()
             elif request.method == "GET":
                 form = EventForm(instance=ev)
                 return render(request, "schedule/base_edit_event.html",
