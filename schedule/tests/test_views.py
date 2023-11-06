@@ -89,3 +89,8 @@ class TestEditEvent(TestCase):
     def test_edit_event_not_staff(self):
         response = self.non_staff_c.get("/edit_event/GTAM27/")
         self.assertEqual(response.status_code, 403)
+
+    def test_edit_event_get_template(self):
+        response = self.staff_c.get("/edit_event/GTAM27/")
+        self.assertIn("schedule/base_edit_event.html",
+                      [x.name for x in response.templates])
