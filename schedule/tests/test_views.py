@@ -33,3 +33,8 @@ class TestEvent(TestCase):
     def test_event_200(self):
         response = self.c.get("/event/GTAM27/")
         self.assertEqual(response.status_code, 200)
+
+    def test_event_template(self):
+        response = self.c.get("/event/GTAM27/")
+        self.assertIn("schedule/base_event.html",
+                      [x.name for x in response.templates])
