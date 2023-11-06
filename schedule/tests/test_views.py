@@ -66,6 +66,12 @@ class TestAddEvent(TestCase):
         response = add_event(request)
         self.assertEqual(response.status_code, 400)
 
+    def test_add_event_staff_group_exists(self):
+        self.c.post("/add_event/", {"NAME": "GSPS 2026", "SLUG": "GSPS26",
+                                    "START_DATE_TIME": self.start,
+                                    "END_DATE_TIME": self.end})
+        self.assertTrue(Group.objects.filter(name="GSPS26 Staff"))
+
     def test_add_event_user_is_staff_member(self):
         self.c.post("/add_event/", {"NAME": "GSPS 2026", "SLUG": "GSPS26",
                                     "START_DATE_TIME": self.start,
