@@ -3,7 +3,7 @@ from django.contrib.auth.models import Group, User
 from datetime import datetime, timedelta
 from django.utils import timezone
 from schedule.models import Event
-from schedule.views import event, edit_event
+from schedule.views import add_event, event, edit_event
 
 '''I am using a RequestFactory for whenever I don't need the additional
    functions the Client provides (such as checking for templates used) and
@@ -24,6 +24,18 @@ class TestAddEvent(TestCase):
         self.end = self.start + timedelta(days=1)
 
         self.c.login(username="notverysuper", password="password1")
+
+        self.factory = RequestFactory()
+
+    def test_add_event_post_valid(self):
+        request = self.factory.post("/add_event/",
+                                    {"NAME": "GSPS 2026",
+                                     "SLUG": "GSPS26",
+                                     "START_DATE_TIME": self.start,
+                                     "END_DATE_TIME": self.end})
+        request.user = self.user
+        response = add_event(request)
+        self.assertTrue(response.status_code, 200)
 
     def test_add_event_user_is_staff_member(self):
         self.c.post("/add_event/", {"NAME": "GSPS 2026", "SLUG": "GSPS26",
