@@ -57,9 +57,10 @@ def add_event(request):
             usr = User.objects.get(username=request.user)
             grp.user_set.add(usr)
             return redirect('user_profile')
-    else:
+    elif request.method == "GET":
         form = EventForm()
-    return render(request, "schedule/base_add_event.html", {"form": form})
+        return render(request, "schedule/base_add_event.html", {"form": form})
+    return HttpResponseBadRequest()
 
 
 @ensure_csrf_cookie
