@@ -1,14 +1,15 @@
 from django.test import TestCase
 from django.utils import timezone
 from schedule.models import Role, Event
-from datetime import timedelta
+from datetime import timedelta, datetime
 
 
 class RoleTestCase(TestCase):
 
     def setUp(self):
-        event_start_date = timezone.now()
-        event_end_date = timezone.now() + timedelta(days=1)
+        event_start_date = datetime(year=2020, month=4, day=7, hour=11,
+                                    tzinfo=timezone.utc)
+        event_end_date = event_start_date + timedelta(days=1)
         gtam = Event.create(NAME="GTAMarathon 2027",
                             SLUG="GTAM27",
                             START_DATE_TIME=event_start_date,
