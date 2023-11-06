@@ -1,8 +1,13 @@
-from django.test import TestCase, Client
+from django.test import TestCase, Client, RequestFactory
 from django.contrib.auth.models import Group, User
 from datetime import datetime, timedelta
 from django.utils import timezone
 from schedule.models import Event
+from schedule.views import event, edit_event
+
+'''I am using a RequestFactory for whenever I don't need the additional
+   functions the Client provides (such as checking for templates used) and
+   a Client whenever I do.'''
 
 
 class TestUploadCSV(TestCase):
@@ -16,8 +21,10 @@ class TestAddEvent(TestCase):
 class TestEvent(TestCase):
 
     def setUp(self):
-        staff_user = User.objects.create_user("notsosuper", "", "mypassword")
-        User.objects.create_user("regularjoe", "", "password123")
+        self.staff_user = User.objects.create_user("notsosuper",
+                                                   "", "mypassword")
+        self.non_staff_user = User.objects.create_user("regularjoe",
+                                                       "", "password123")
 
         start = datetime(year=2018, month=6, day=21, hour=11,
                          tzinfo=timezone.utc)
@@ -27,12 +34,14 @@ class TestEvent(TestCase):
                           START_DATE_TIME=start,
                           END_DATE_TIME=end)
         ev.save()
-        staff_user.groups.add(ev.STAFF)
+        self.staff_user.groups.add(ev.STAFF)
 
         self.staff_c = Client()
         self.staff_c.login(username="notsosuper", password="mypassword")
         self.non_staff_c = Client()
         self.non_staff_c.login(username="regularjoe", password="password123")
+
+        self.factory = RequestFactory()
 
     def test_event_200(self):
         response = self.staff_c.get("/event/GTAM27/")
