@@ -1,8 +1,8 @@
 from django.test import TestCase
-from django.utils import timezone, datetime
+from django.utils import timezone
 from schedule.models import (Event, AvailabilityBlock, Person, Role, Speedrun,
                              Shift)
-from datetime import timedelta
+from datetime import timedelta, datetime
 
 
 class AvailabilityBlockTestCase(TestCase):
