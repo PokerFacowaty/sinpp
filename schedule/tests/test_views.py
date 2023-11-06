@@ -3,7 +3,7 @@ from django.contrib.auth.models import Group, User
 from datetime import datetime, timedelta
 from django.utils import timezone
 from schedule.models import Event
-from schedule.views import add_event, event, edit_event
+from schedule.views import add_event, event, edit_event, remove_event
 
 '''I am using a RequestFactory for whenever I don't need the additional
    functions the Client provides (such as checking for templates used) and
@@ -268,3 +268,11 @@ class TestRemoveEvent(TestCase):
                           END_DATE_TIME=end)
         ev.save()
         self.staff_user.groups.add(ev.STAFF)
+
+        self.factory = RequestFactory()
+
+    def test_remove_event_200(self):
+        request = self.factory.get("/remove_event/GDMF96")
+        request.user = self.staff_user
+        response = remove_event(request, "GDMF96")
+        self.assertEqual(response.status_code, 200)
