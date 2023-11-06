@@ -269,6 +269,9 @@ class TestRemoveEvent(TestCase):
         ev.save()
         self.staff_user.groups.add(ev.STAFF)
 
+        self.c = Client()
+        self.c.login(username="userandstuff", password="123456")
+
         self.factory = RequestFactory()
 
     def test_remove_event_get_200(self):
