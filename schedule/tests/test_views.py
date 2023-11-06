@@ -114,6 +114,20 @@ class TestEditEvent(TestCase):
                                      follow=True)
         self.assertEqual(response.resolver_match.url_name, "event")
 
+    def test_edit_event_post_non_existent_event(self):
+        response = self.staff_c.post("/edit_event/yesimsure/")
+        self.assertEqual(response.status_code, 404)
+
+    def test_edit_event_post_not_staff(self):
+        ev = Event.objects.get(SLUG="GTAM27")
+        response = self.non_staff_c.post(
+                    "/edit_event/GTAM27/",
+                    {"NAME": "GTAMarathon 2027_2",
+                     "SLUG": ev.SLUG,
+                     "START_DATE_TIME": ev.START_DATE_TIME,
+                     "END_DATE_TIME": ev.END_DATE_TIME})
+        self.assertEqual(response.status_code, 403)
+
     def test_edit_event_post_invalid(self):
         ev = Event.objects.get(SLUG="GTAM27")
         response = self.staff_c.post("/edit_event/GTAM27/",
