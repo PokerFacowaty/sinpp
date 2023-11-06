@@ -104,6 +104,16 @@ class TestEditEvent(TestCase):
         ev = Event.objects.get(SLUG="GTAM27")
         self.assertEqual(ev.NAME, "GTAMarathon 2027_2")
 
+    def test_edit_event_post_valid_redirect(self):
+        ev = Event.objects.get(SLUG="GTAM27")
+        response = self.staff_c.post("/edit_event/GTAM27/",
+                                     {"NAME": "GTAMarathon 2027_2",
+                                      "SLUG": ev.SLUG,
+                                      "START_DATE_TIME": ev.START_DATE_TIME,
+                                      "END_DATE_TIME": ev.END_DATE_TIME},
+                                     follow=True)
+        self.assertEqual(response.resolver_match.url_name, "event")
+
     def test_edit_event_post_invalid(self):
         ev = Event.objects.get(SLUG="GTAM27")
         response = self.staff_c.post("/edit_event/GTAM27/",
