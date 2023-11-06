@@ -44,7 +44,9 @@ class TestEvent(TestCase):
         self.factory = RequestFactory()
 
     def test_event_200(self):
-        response = self.staff_c.get("/event/GTAM27/")
+        request = self.factory.get("/event/GTAM27/")
+        request.user = self.staff_user
+        response = event(request, "GTAM27")
         self.assertEqual(response.status_code, 200)
 
     def test_event_template(self):
@@ -53,15 +55,21 @@ class TestEvent(TestCase):
                       [x.name for x in response.templates])
 
     def test_event_doesnt_exit(self):
-        response = self.staff_c.get("/event/GDQ29/")
+        request = self.factory.get("/event/GDQ29/")
+        request.user = self.staff_user
+        response = event(request, "GDQ29")
         self.assertEqual(response.status_code, 404)
 
     def test_event_user_not_staff(self):
-        response = self.non_staff_c.get("/event/GTAM27/")
+        request = self.factory.get("/event/GTAM27/")
+        request.user = self.non_staff_user
+        response = event(request, "GTAM27")
         self.assertEqual(response.status_code, 403)
 
     def test_event_non_get_request(self):
-        response = self.staff_c.post("/event/GTAM27/")
+        request = self.factory.post("/event/GTAM27/")
+        request.user = self.staff_user
+        response = event(request, "GTAM27")
         self.assertEqual(response.status_code, 400)
 
 
