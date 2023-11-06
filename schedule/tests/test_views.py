@@ -34,8 +34,9 @@ class TestAddEvent(TestCase):
                                      "START_DATE_TIME": self.start,
                                      "END_DATE_TIME": self.end})
         request.user = self.user
-        response = add_event(request)
-        self.assertEqual(response.status_code, 200)
+        add_event(request)
+        ev = Event.objects.filter(SLUG="GSPS26")
+        self.assertTrue(ev)
 
     def test_add_event_post_invalid(self):
         request = self.factory.post("/add_event/",
