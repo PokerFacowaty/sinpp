@@ -15,7 +15,21 @@ class TestUploadCSV(TestCase):
 
 
 class TestAddEvent(TestCase):
-    pass
+    def setUp(self):
+        self.user = User.objects.create_user("notverysuper", "", "password1")
+        self.c = Client()
+
+        self.start = datetime(year=2020, month=4, day=7, hour=11,
+                              tzinfo=timezone.utc)
+        self.end = self.start + timedelta(days=1)
+
+        self.c.login(username="notverysuper", password="password1")
+
+    def test_user_is_staff_member(self):
+        self.c.post("/add_event/", {"NAME": "GSPS 2026", "SLUG": "GSPS26",
+                                    "START_DATE_TIME": self.start,
+                                    "END_DATE_TIME": self.end})
+        self.assertTrue(self.user.groups.filter(name="GSPS26 Staff").exists())
 
 
 class TestEvent(TestCase):
