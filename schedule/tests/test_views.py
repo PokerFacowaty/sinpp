@@ -2,7 +2,7 @@ from django.test import TestCase, Client, RequestFactory
 from django.contrib.auth.models import Group, User
 from datetime import datetime, timedelta
 from django.utils import timezone
-from schedule.models import Event
+from schedule.models import Event, Role
 from schedule.views import add_event, event, edit_event, remove_event, add_role
 
 '''I am using a RequestFactory for whenever I don't need the additional
