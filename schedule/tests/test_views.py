@@ -324,3 +324,26 @@ class TestRemoveEvent(TestCase):
         request.user = self.non_staff
         response = remove_event(request, "GDMF96")
         self.assertEqual(response.status_code, 403)
+
+
+class TestAddRole(TestCase):
+
+    def setUp(self):
+        self.staff_user = User.objects.create_user("IusethereforeIam",
+                                                   "qwerty", )
+        self.non_staff_user = User.objects.create_user("nostaffforme",
+                                                       "", "qwertyuiop")
+
+        start = datetime(year=2011, month=3, day=1, hour=11,
+                         tzinfo=timezone.utc)
+        end = start + timedelta(days=3)
+        ev = Event.create(NAME="Religious Mothers Against Speedrunning 4",
+                          SLUG="RMAS4",
+                          START_DATE_TIME=start,
+                          END_DATE_TIME=end)
+        ev.save()
+
+        self.staff_user.groups.add(ev.STAFF)
+
+        self.c = Client()
+        self.c.login(username="IusethereforeIam", password="qwerty")
