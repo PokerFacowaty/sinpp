@@ -318,3 +318,9 @@ class TestRemoveEvent(TestCase):
     def test_remove_event_post_redirect(self):
         response = self.c.post("/remove_event/GDMF96/", follow=True)
         self.assertEqual(response.resolver_match.url_name, "user_profile")
+
+    def test_remove_event_post_non_staff_user(self):
+        request = self.factory.post("/remove_event/GDMF96/")
+        request.user = self.non_staff
+        response = remove_event(request, "GDMF96")
+        self.assertEqual(response.status_code, 403)
