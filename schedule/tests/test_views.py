@@ -330,7 +330,7 @@ class TestAddRole(TestCase):
 
     def setUp(self):
         self.staff_user = User.objects.create_user("IusethereforeIam",
-                                                   "qwerty", )
+                                                   "", "qwerty")
         self.non_staff_user = User.objects.create_user("nostaffforme",
                                                        "", "qwertyuiop")
 
