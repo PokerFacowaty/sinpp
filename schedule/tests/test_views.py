@@ -376,3 +376,9 @@ class TestAddRole(TestCase):
         request.user = self.staff_user
         response = add_role(request, "RMAS4")
         self.assertEqual(response.status_code, 400)
+
+    def test_add_role_post_not_get_or_post(self):
+        request = self.factory.delete("/add_role/RMAS4/")
+        request.user = self.staff_user
+        response = add_role(request, "RMAS4")
+        self.assertEqual(response.status_code, 400)
