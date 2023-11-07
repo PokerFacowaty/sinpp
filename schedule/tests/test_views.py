@@ -366,3 +366,13 @@ class TestAddRole(TestCase):
                                 "TIME_SAFETY_MARGIN": "00:15:00"},
                                follow=True)
         self.assertEqual(response.resolver_match.url_name, "event")
+
+    def test_add_role_post_invalid(self):
+        request = self.factory.post("/add_role/RMAS4/",
+                                    {"NAME": "Fundraising",
+                                     "EVENT": self.ev,
+                                     "TIME_SAFETY_MARGIN": "idlikeoneyeah"},
+                                    follow=True)
+        request.user = self.staff_user
+        response = add_role(request, "RMAS4")
+        self.assertEqual(response.status_code, 400)
