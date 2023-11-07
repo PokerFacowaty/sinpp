@@ -448,3 +448,14 @@ class TestRole(TestCase):
         self.c.login(username="StanleyIs", password="CheatingOnHisWife")
 
         self.factory = RequestFactory()
+
+    def test_role_get_template(self):
+        response = self.c.get(f"/role/{self.rl.id}/")
+        self.assertIn("schedule/base_role.html",
+                      [x.name for x in response.templates])
+
+    def test_role_not_get(self):
+        request = self.factory.delete(f"/role/{self.rl.id}/")
+        request.user = self.staff_user
+        response = role(request, self.rl.id)
+        self.assertEqual(response.status_code, 400)
