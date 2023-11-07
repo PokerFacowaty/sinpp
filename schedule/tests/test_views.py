@@ -358,3 +358,11 @@ class TestAddRole(TestCase):
         request.user = self.staff_user
         add_role(request, "RMAS4")
         self.assertTrue(Role.objects.filter(NAME="Fundraising", EVENT=self.ev))
+
+    def test_add_role_post_redirect(self):
+        response = self.c.post("/add_role/RMAS4/",
+                               {"NAME": "Fundraising",
+                                "EVENT": self.ev,
+                                "TIME_SAFETY_MARGIN": "00:15:00"},
+                               follow=True)
+        self.assertEqual(response.resolver_match.url_name, "event")
