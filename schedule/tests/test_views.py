@@ -351,7 +351,7 @@ class TestAddRole(TestCase):
         self.factory = RequestFactory()
 
     def test_add_role_post_effect(self):
-        request = self.factory.post("/add_role/",
+        request = self.factory.post("/add_role/RMAS4",
                                     {"NAME": "Fundraising",
                                      "EVENT": self.ev,
                                      "TIME_SAFETY_MARGIN": "00:15:00"})
