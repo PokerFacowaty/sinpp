@@ -393,3 +393,9 @@ class TestAddRole(TestCase):
         request.user = self.non_staff_user
         response = add_role(request, "RMAS4")
         self.assertEqual(response.status_code, 403)
+
+    def test_add_role_get_nonexistent_event(self):
+        request = self.factory.get("/add_role/FathersWhoSpeedrun/")
+        request.user = self.staff_user
+        response = add_role(request, "FathersWhoSpeedrun")
+        self.assertEqual(response.status_code, 404)
