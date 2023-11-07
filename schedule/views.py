@@ -124,9 +124,9 @@ def remove_event(request, event_slug):
 
 
 @login_required
-def add_role(request, event_id):
+def add_role(request, event_slug):
     usr = User.objects.get(username=request.user)
-    events = Event.objects.filter(pk=event_id)
+    events = Event.objects.filter(SLUG=event_slug)
     if events:
         ev = events[0]
         if usr.has_perm('event.add_role', ev):
@@ -139,7 +139,7 @@ def add_role(request, event_id):
                                              TIME_SAFETY_MARGIN=tsm,
                                              EVENT=ev)
                     rl.save()
-                    return redirect('event', event_id=ev.id)
+                    return redirect('event', event_slug=ev.SLUG)
             elif request.method == "GET":
                 form = RoleForm()
                 return render(request, 'schedule/base_add_role.html',
