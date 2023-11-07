@@ -353,7 +353,8 @@ class TestAddRole(TestCase):
     def test_add_role_post_effect(self):
         request = self.factory.post("/add_role/",
                                     {"NAME": "Fundraising",
-                                     "EVENT": self.ev})
+                                     "EVENT": self.ev,
+                                     "TIME_SAFETY_MARGIN": "00:15:00"})
         request.user = self.staff_user
         add_role(request, "RMAS4")
         self.assertTrue(Role.objects.filter(NAME="Fundraising", EVENT=self.ev))
