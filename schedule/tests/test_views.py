@@ -337,13 +337,13 @@ class TestAddRole(TestCase):
         start = datetime(year=2011, month=3, day=1, hour=11,
                          tzinfo=timezone.utc)
         end = start + timedelta(days=3)
-        ev = Event.create(NAME="Religious Mothers Against Speedrunning 4",
-                          SLUG="RMAS4",
-                          START_DATE_TIME=start,
-                          END_DATE_TIME=end)
-        ev.save()
+        self.ev = Event.create(NAME="Religious Mothers Against Speedrunning 4",
+                               SLUG="RMAS4",
+                               START_DATE_TIME=start,
+                               END_DATE_TIME=end)
+        self.ev.save()
 
-        self.staff_user.groups.add(ev.STAFF)
+        self.staff_user.groups.add(self.ev.STAFF)
 
         self.c = Client()
         self.c.login(username="IusethereforeIam", password="qwerty")
