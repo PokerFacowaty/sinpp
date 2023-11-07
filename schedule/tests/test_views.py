@@ -350,8 +350,10 @@ class TestAddRole(TestCase):
 
         self.factory = RequestFactory()
 
-    def test_add_role_post_200(self):
-        request = self.factory.get("/add_role/")
+    def test_add_role_post_effect(self):
+        request = self.factory.post("/add_role/",
+                                    {"NAME": "Fundraising",
+                                     "EVENT": self.ev})
         request.user = self.staff_user
-        response = add_role(request, "RMAS4")
-        self.assertEqual(response.status_code, 200)
+        add_role(request, "RMAS4")
+        self.assertTrue(Role.objects.filter(NAME="Fundraising", EVENT=self.ev))
