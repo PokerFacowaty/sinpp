@@ -314,3 +314,7 @@ class TestRemoveEvent(TestCase):
         request.user = self.staff_user
         response = remove_event(request, "someeventiguess")
         self.assertEqual(response.status_code, 404)
+
+    def test_remove_event_post_redirect(self):
+        response = self.c.post("/remove_event/GDMF96/", follow=True)
+        self.assertEqual(response.resolver_match.url_name, "user_profile")
