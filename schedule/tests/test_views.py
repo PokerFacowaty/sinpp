@@ -382,3 +382,8 @@ class TestAddRole(TestCase):
         request.user = self.staff_user
         response = add_role(request, "RMAS4")
         self.assertEqual(response.status_code, 400)
+
+    def test_add_role_get_template(self):
+        response = self.c.get("/add_role/RMAS4/")
+        self.assertIn("schedule/base_add_role.html",
+                      [x.name for x in response.templates])
