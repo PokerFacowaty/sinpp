@@ -383,6 +383,26 @@ class TestAddRole(TestCase):
         response = add_role(request, "RMAS4")
         self.assertEqual(response.status_code, 400)
 
+    def test_add_role_post_non_staff_user(self):
+        request = self.factory.post("/add_role/RMAS4/",
+                                    {"NAME": "Fundraising",
+                                     "EVENT": self.ev,
+                                     "TIME_SAFETY_MARGIN": "00:15:00"},
+                                    follow=True)
+        request.user = self.non_staff_user
+        response = add_role(request, "RMAS4")
+        self.assertEqual(response.status_code, 403)
+
+    def test_add_role_post_nonexistent_event(self):
+        request = self.factory.post("/add_role/FathersWhoSpeedrun/",
+                                    {"NAME": "Fundraising",
+                                     "EVENT": self.ev,
+                                     "TIME_SAFETY_MARGIN": "00:15:00"},
+                                    follow=True)
+        request.user = self.staff_user
+        response = add_role(request, "FathersWhoSpeedrun")
+        self.assertEqual(response.status_code, 404)
+
     def test_add_role_get_template(self):
         response = self.c.get("/add_role/RMAS4/")
         self.assertIn("schedule/base_add_role.html",
