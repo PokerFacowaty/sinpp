@@ -419,3 +419,31 @@ class TestAddRole(TestCase):
         request.user = self.staff_user
         response = add_role(request, "FathersWhoSpeedrun")
         self.assertEqual(response.status_code, 404)
+
+
+class TestRole(TestCase):
+
+    def setUp(self):
+        self.staff_user = User.objects.create_user("StanleyIs",
+                                                   "", "CheatingOnHisWife")
+        self.non_staff = User.objects.create_user("HowDoYouUntellSomething",
+                                                  "", "YouCant")
+
+        start = datetime(year=2003, month=7, day=12, hour=10,
+                         tzinfo=timezone.utc)
+        end = start + timedelta(days=2)
+        self.ev = Event.create(NAME="A Baby Conceived Out Of Wedlock",
+                               SLUG="BCOOW",
+                               START_DATE_TIME=start,
+                               END_DATE_TIME=end)
+        self.ev.save()
+
+        self.staff_user.groups.add(self.ev.STAFF)
+
+        self.rl = Role.objects.create(NAME="One True Rumour", EVENT=self.ev)
+        self.rl.save()
+
+        self.c = Client()
+        self.c.login(username="StanleyIs", password="CheatingOnHisWife")
+
+        self.factory = RequestFactory()
