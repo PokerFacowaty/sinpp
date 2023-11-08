@@ -465,3 +465,9 @@ class TestRole(TestCase):
         request.user = self.non_staff
         response = role(request, self.rl.id)
         self.assertEqual(response.status_code, 403)
+
+    def test_role_non_existent_role(self):
+        request = self.factory.get("/role/123456/")
+        request.user = self.staff_user
+        response = role(request, 123456)
+        self.assertEqual(response.status_code, 404)
