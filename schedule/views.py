@@ -172,7 +172,7 @@ def edit_role(request, role_id):
     if roles:
         usr = User.objects.get(username=request.user)
         rl = roles[0]
-        if usr.has_perm('event.edit_role', rl):
+        if usr.has_perm('event.edit_role', rl.EVENT):
             if request.method == "POST":
                 form = RoleForm(request.POST, instance=rl)
                 if form.is_valid():
