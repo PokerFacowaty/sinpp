@@ -706,3 +706,34 @@ class TestRoomSchedule(TestCase):
         response = self.c.get(f"/schedule/{self.ev.SLUG}/{self.rm.SLUG}/")
         self.assertIn("schedule/base_schedule.html",
                       [x.name for x in response.templates])
+
+    def test_room_schedule_get_context_room(self):
+        response = self.c.get(f"/schedule/{self.ev.SLUG}/{self.rm.SLUG}/")
+        self.assertEqual(response.context["room"], self.rm)
+
+    def test_room_schedule_get_context_runs_interms(self):
+        response = self.c.get(f"/schedule/{self.ev.SLUG}/{self.rm.SLUG}/")
+        runs = Speedrun.objects.filter(EVENT=self.ev, ROOM=self.rm)
+        interms = Intermission.objects.filter(EVENT=self.ev, ROOM=self.rm)
+        timed_runs = [{'type': 'run',
+                       'obj': x,
+                       'start_secs_rel': (
+                            (x.START_DATE_TIME
+                             - self.ev.START_DATE_TIME).total_seconds() // 60),
+                       'length_secs_rel': math.ceil(
+                            x.ESTIMATE.total_seconds() // 60
+                        )} for x in runs]
+        timed_interms = [{'type': 'interm',
+                          'obj': x,
+                          'start_secs_rel': (
+                               (x.START_DATE_TIME
+                                - self.ev.START_DATE_TIME).total_seconds()
+                               // 60),
+                          'length_secs_rel': math.ceil(
+                               x.DURATION.total_seconds() // 60
+                           )} for x in interms]
+        runs_interms = [x for x in timed_runs]
+        runs_interms.extend(timed_interms)
+        runs_interms.sort(key=lambda x: x["obj"].START_DATE_TIME)
+        self.maxDiff = None
+        self.assertCountEqual(response.context["runs_interms"], runs_interms)
