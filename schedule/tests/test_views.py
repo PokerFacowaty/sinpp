@@ -738,3 +738,37 @@ class TestRoomSchedule(TestCase):
         runs_interms.sort(key=lambda x: x["obj"].START_DATE_TIME)
         self.maxDiff = None
         self.assertCountEqual(response.context["runs_interms"], runs_interms)
+
+    def get_info_for_times(self):
+        ev_start = self.ev.START_DATE_TIME
+        ev_end = self.ev.END_DATE_TIME
+
+        rounded_start = (ev_start
+                         - timedelta(minutes=ev_start.minute,
+                                     seconds=ev_start.second,
+                                     microseconds=ev_start.microsecond))
+        rounded_end = (ev_end + timedelta(hours=1)
+                       - timedelta(minutes=ev_end.minute,
+                                   seconds=ev_end.second,
+                                   microseconds=ev_end.microsecond))
+
+        return rounded_start, rounded_end
+
+    def test_room_schedule_context_times_length(self):
+        response = self.c.get(f"/schedule/{self.ev.SLUG}/{self.rm.SLUG}/")
+        rounded_start, rounded_end = self.get_info_for_times()
+        ev_len_hours = (rounded_end
+                        - rounded_start).total_seconds() // 60 // 60
+        self.assertEqual(len(response.context["times"]), ev_len_hours + 1)
+
+    def test_room_schedule_context_times_start(self):
+        response = self.c.get(f"/schedule/{self.ev.SLUG}/{self.rm.SLUG}/")
+        rounded_start, rounded_end = self.get_info_for_times()
+        self.assertEqual(response.context["times"][0],
+                         rounded_start.isoformat(sep="\n").split("+")[0])
+
+    def test_room_schedule_context_times_end(self):
+        response = self.c.get(f"/schedule/{self.ev.SLUG}/{self.rm.SLUG}/")
+        rounded_start, rounded_end = self.get_info_for_times()
+        self.assertEqual(response.context["times"][-1],
+                         rounded_end.isoformat(sep="\n").split("+")[0])
