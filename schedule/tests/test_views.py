@@ -641,14 +641,60 @@ class TestRoomSchedule(TestCase):
 
         start = datetime(year=2005, month=4, day=16, hour=9,
                          tzinfo=timezone.utc)
-        end = start + timedelta(days=2)
-        ev = Event.create(NAME="Games Done Moderately Fast '96",
-                          SLUG="GDMF96",
-                          START_DATE_TIME=start,
-                          END_DATE_TIME=end)
-        ev.save()
+        end = start + timedelta(days=1)
+        self.ev = Event.create(NAME="Antarctic Speedrunner Assembly '05",
+                               SLUG="ASA5",
+                               START_DATE_TIME=start,
+                               END_DATE_TIME=end)
+        self.ev.save()
 
-        self.staff_user.groups.add(ev.STAFF)
+        self.rm = Room.objects.create(EVENT=self.ev,
+                                      NAME="Stream 1",
+                                      SLUG="S1")
+        self.rm.save()
+
+        sr1_st = self.ev.START_DATE_TIME
+        sr1 = Speedrun.objects.create(EVENT=self.ev,
+                                      ROOM=self.rm,
+                                      GAME="Grand Theft Auto: Vice City",
+                                      START_DATE_TIME=sr1_st,
+                                      ESTIMATE=timedelta(hours=1))
+        sr1.save()
+
+        interm_st = sr1.END_DATE_TIME
+        interm = Intermission.objects.create(EVENT=self.ev,
+                                             ROOM=self.rm,
+                                             START_DATE_TIME=interm_st,
+                                             DURATION=timedelta(minutes=15))
+        interm.save()
+
+        sr2 = Speedrun.objects.create(EVENT=self.ev,
+                                      ROOM=self.rm,
+                                      GAME="Grand Theft Auto III",
+                                      ESTIMATE=timedelta(hours=3))
+
+        fund = Role.objects.create(NAME="Fundraising", EVENT=self.ev)
+        fund.save()
+        tech = Role.objects.create(NAME="Tech", EVENT=self.ev)
+        fund.save()
+
+        Shift.objects.create(ROLE=fund,
+                             EVENT=self.ev,
+                             ROOM=self.rm,
+                             START_DATE_TIME=sr1.START_DATE_TIME,
+                             END_DATE_TIME=interm.END_DATE_TIME)
+        Shift.objects.create(ROLE=fund,
+                             EVENT=self.ev,
+                             ROOM=self.rm,
+                             START_DATE_TIME=interm.END_DATE_TIME,
+                             END_DATE_TIME=sr2.END_DATE_TIME)
+        Shift.objects.create(ROLE=tech,
+                             EVENT=self.ev,
+                             ROOM=self.rm,
+                             START_DATE_TIME=self.ev.END_DATE_TIME,
+                             END_DATE_TIME=sr2.END_DATE_TIME)
+
+        self.staff_user.groups.add(self.ev.STAFF)
 
         self.c = Client()
         self.c.login(username="IOwnThisCity", password="OopsImeantevent")
