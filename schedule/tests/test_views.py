@@ -701,3 +701,8 @@ class TestRoomSchedule(TestCase):
         self.c.login(username="IOwnThisCity", password="OopsImeantevent")
 
         self.factory = RequestFactory()
+
+    def test_room_schedule_get_template(self):
+        response = self.c.get(f"/schedule/{self.ev.SLUG}/{self.rm.SLUG}/")
+        self.assertIn("schedule/base_schedule.html",
+                      [x.name for x in response.templates])
