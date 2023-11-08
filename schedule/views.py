@@ -201,7 +201,7 @@ def remove_role(request, role_id):
                               {'role': rl})
             elif request.method == "POST":
                 rl.delete()
-                return redirect('event', event_id=ev.id)
+                return redirect('event', event_slug=ev.SLUG)
             return HttpResponseBadRequest()
         return HttpResponseForbidden()
     return HttpResponseNotFound()
