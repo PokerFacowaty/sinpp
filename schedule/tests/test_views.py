@@ -599,3 +599,9 @@ class TestRemoveRole(TestCase):
         request.user = self.staff_user
         remove_role(request, self.rl.id)
         self.assertFalse(Role.objects.filter(pk=self.rl.id))
+
+    def test_remove_role_post_non_staff_user(self):
+        request = self.factory.post(f"/remove_role/{self.rl.id}/")
+        request.user = self.non_staff
+        response = remove_role(request, self.rl.id)
+        self.assertEqual(response.status_code, 403)
