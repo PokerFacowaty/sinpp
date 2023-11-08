@@ -703,16 +703,16 @@ class TestRoomSchedule(TestCase):
 
         self.factory = RequestFactory()
 
-    def test_room_schedule_get_template(self):
+    def test_room_schedule_template(self):
         response = self.c.get(f"/schedule/{self.ev.SLUG}/{self.rm.SLUG}/")
         self.assertIn("schedule/base_schedule.html",
                       [x.name for x in response.templates])
 
-    def test_room_schedule_get_context_room(self):
+    def test_room_schedule_context_room(self):
         response = self.c.get(f"/schedule/{self.ev.SLUG}/{self.rm.SLUG}/")
         self.assertEqual(response.context["room"], self.rm)
 
-    def test_room_schedule_get_context_runs_interms(self):
+    def test_room_schedule_context_runs_interms(self):
         response = self.c.get(f"/schedule/{self.ev.SLUG}/{self.rm.SLUG}/")
         runs = Speedrun.objects.filter(EVENT=self.ev, ROOM=self.rm)
         interms = Intermission.objects.filter(EVENT=self.ev, ROOM=self.rm)
