@@ -511,6 +511,12 @@ class TestEditRole(TestCase):
         response = edit_role(request, self.rl.id)
         self.assertEqual(response.status_code, 403)
 
+    def test_edit_role_get_nonexistent_event(self):
+        request = self.factory.get("/edit_role/123456/")
+        request.user = self.staff_user
+        response = edit_role(request, 123456)
+        self.assertEqual(response.status_code, 404)
+
     def test_edit_role_not_get_or_post(self):
         request = self.factory.put(f"/edit_role/{self.rl.id}/")
         request.user = self.staff_user
