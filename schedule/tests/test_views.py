@@ -554,3 +554,31 @@ class TestEditRole(TestCase):
         request.user = self.staff_user
         response = edit_role(request, 123456)
         self.assertEqual(response.status_code, 404)
+
+
+class TestRemoveRole(TestCase):
+
+    def setUp(self):
+        self.staff_user = User.objects.create_user("fristajla",
+                                                   "", "łakamakafą")
+        self.non_staff = User.objects.create_user("jesusimreallyrunningoutof",
+                                                  "", "ideasits326am")
+
+        start = datetime(year=2016, month=2, day=9, hour=12,
+                         tzinfo=timezone.utc)
+        end = start + timedelta(days=2)
+        self.ev = Event.create(NAME="And I Can't Sleep On a Weekday",
+                               SLUG="AICSOW",
+                               START_DATE_TIME=start,
+                               END_DATE_TIME=end)
+        self.ev.save()
+
+        self.staff_user.groups.add(self.ev.STAFF)
+
+        self.rl = Role.objects.create(NAME="Best wingman", EVENT=self.ev)
+        self.rl.save()
+
+        self.c = Client()
+        self.c.login(username="fristajla", password="łakamakafą")
+
+        self.factory = RequestFactory()
