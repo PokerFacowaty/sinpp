@@ -499,3 +499,8 @@ class TestEditRole(TestCase):
         self.c.login(username="Mocking Ridiculing", password="Dork Game")
 
         self.factory = RequestFactory()
+
+    def test_edit_role_get_template(self):
+        response = self.c.get(f"/edit_role/{self.rl.id}/")
+        self.assertIn("schedule/base_edit_role.html",
+                      [x.name for x in response.templates])
