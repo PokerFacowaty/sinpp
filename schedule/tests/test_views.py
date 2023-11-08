@@ -2,7 +2,7 @@ from django.test import TestCase, Client, RequestFactory
 from django.contrib.auth.models import Group, User
 from datetime import datetime, timedelta
 from django.utils import timezone
-from schedule.models import Event, Role, Speedrun, Room, Intermission
+from schedule.models import Event, Role, Speedrun, Room, Intermission, Shift
 from schedule.views import (add_event, event, edit_event, remove_event,
                             add_role, role, edit_role, remove_role,
                             room_schedule)
