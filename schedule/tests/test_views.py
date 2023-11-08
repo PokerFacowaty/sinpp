@@ -505,6 +505,12 @@ class TestEditRole(TestCase):
         self.assertIn("schedule/base_edit_role.html",
                       [x.name for x in response.templates])
 
+    def test_edit_role_get_non_staff_user(self):
+        request = self.factory.get(f"/edit_role/{self.rl.id}/")
+        request.user = self.non_staff
+        response = edit_role(request, self.rl.id)
+        self.assertEqual(response.status_code, 403)
+
     def test_edit_role_not_get_or_post(self):
         request = self.factory.put(f"/edit_role/{self.rl.id}/")
         request.user = self.staff_user
