@@ -6,6 +6,7 @@ from schedule.models import Event, Role, Speedrun, Room, Intermission, Shift
 from schedule.views import (add_event, event, edit_event, remove_event,
                             add_role, role, edit_role, remove_role,
                             room_schedule)
+import math
 
 '''I am using a RequestFactory for whenever I don't need the additional
    functions the Client provides (such as checking for templates used) and
@@ -717,19 +718,19 @@ class TestRoomSchedule(TestCase):
         interms = Intermission.objects.filter(EVENT=self.ev, ROOM=self.rm)
         timed_runs = [{'type': 'run',
                        'obj': x,
-                       'start_secs_rel': (
+                       'start_mins_rel': (
                             (x.START_DATE_TIME
                              - self.ev.START_DATE_TIME).total_seconds() // 60),
-                       'length_secs_rel': math.ceil(
+                       'length_mins_rel': math.ceil(
                             x.ESTIMATE.total_seconds() // 60
                         )} for x in runs]
         timed_interms = [{'type': 'interm',
                           'obj': x,
-                          'start_secs_rel': (
+                          'start_mins_rel': (
                                (x.START_DATE_TIME
                                 - self.ev.START_DATE_TIME).total_seconds()
                                // 60),
-                          'length_secs_rel': math.ceil(
+                          'length_mins_rel': math.ceil(
                                x.DURATION.total_seconds() // 60
                            )} for x in interms]
         runs_interms = [x for x in timed_runs]

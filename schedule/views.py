@@ -241,19 +241,19 @@ def room_schedule(request, event_slug, room_slug):
 
             timed_runs = [{'type': 'run',
                            'obj': x,
-                           'start_secs_rel': ((x.START_DATE_TIME
+                           'start_mins_rel': ((x.START_DATE_TIME
                                               - ev_start).total_seconds()
                                               // 60),
-                           'length_secs_rel': math.ceil(
+                           'length_mins_rel': math.ceil(
                                               x.ESTIMATE.total_seconds()
                                               // 60)}
                           for x in runs]
             timed_interms = [{'type': 'interm',
                               'obj': x,
-                              'start_secs_rel': ((x.START_DATE_TIME
+                              'start_mins_rel': ((x.START_DATE_TIME
                                                  - ev_start).total_seconds()
                                                  // 60),
-                              'length_secs_rel': math.ceil(
+                              'length_mins_rel': math.ceil(
                                                  x.DURATION.total_seconds()
                                                  // 60)}
                              for x in interms]
