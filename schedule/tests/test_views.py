@@ -628,3 +628,28 @@ class TestRemoveRole(TestCase):
         request.user = self.staff_user
         response = remove_role(request, 123456)
         self.assertEqual(response.status_code, 404)
+
+
+class TestRoomSchedule(TestCase):
+
+    def setUp(self):
+        self.staff_user = User.objects.create_user("IOwnThisCity",
+                                                   "", "OopsImeantevent")
+        self.non_staff_user = User.objects.create_user("Bernard",
+                                                       "Icantwaittogotojail")
+
+        start = datetime(year=2005, month=4, day=16, hour=9,
+                         tzinfo=timezone.utc)
+        end = start + timedelta(days=2)
+        ev = Event.create(NAME="Games Done Moderately Fast '96",
+                          SLUG="GDMF96",
+                          START_DATE_TIME=start,
+                          END_DATE_TIME=end)
+        ev.save()
+
+        self.staff_user.groups.add(ev.STAFF)
+
+        self.c = Client()
+        self.c.login(username="IOwnThisCity", password="OopsImeantevent")
+
+        self.factory = RequestFactory()
