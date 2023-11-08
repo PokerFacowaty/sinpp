@@ -522,3 +522,12 @@ class TestEditRole(TestCase):
         request.user = self.staff_user
         response = edit_role(request, self.rl.id)
         self.assertEqual(response.status_code, 400)
+
+    def test_edit_role_post_reditect(self):
+        response = self.c.post(
+            f"/edit_role/{self.rl.id}/",
+            {"NAME": self.rl.NAME,
+             "EVENT": self.ev,
+             "TIME_SAFETY_MARGIN": self.rl.TIME_SAFETY_MARGIN},
+            follow=True)
+        self.assertEqual(response.resolver_match.url_name, "role")
