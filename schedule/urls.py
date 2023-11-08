@@ -16,7 +16,7 @@ urlpatterns = [
     path('event/<str:event_slug>/', views.event, name='event'),
     path('edit_event/<str:event_slug>/', views.edit_event),
     path('add_role/<str:event_slug>/', views.add_role, name='add_role'),
-    path('remove_role/<int:role_id>', views.remove_role, name='remove_role'),
+    path('remove_role/<int:role_id>/', views.remove_role, name='remove_role'),
     path('role/<int:role_id>/', views.role, name='role'),
     path('edit_role/<int:role_id>/', views.edit_role, name='edit_role'),
     path('all_usernames/', views.all_usernames),
