@@ -471,3 +471,31 @@ class TestRole(TestCase):
         request.user = self.staff_user
         response = role(request, 123456)
         self.assertEqual(response.status_code, 404)
+
+
+class TestEditRole(TestCase):
+
+    def setUp(self):
+        self.staff_user = User.objects.create_user("Mocking Ridiculing",
+                                                   "", "Dork Game")
+        self.non_staff = User.objects.create_user("Could you have picked",
+                                                  "", "tom bring on a plane")
+
+        start = datetime(year=2016, month=2, day=9, hour=12,
+                         tzinfo=timezone.utc)
+        end = start + timedelta(days=2)
+        self.ev = Event.create(NAME="Healthy Relationship Now",
+                               SLUG="HRN",
+                               START_DATE_TIME=start,
+                               END_DATE_TIME=end)
+        self.ev.save()
+
+        self.staff_user.groups.add(self.ev.STAFF)
+
+        self.rl = Role.objects.create(NAME="Best wingman", EVENT=self.ev)
+        self.rl.save()
+
+        self.c = Client()
+        self.c.login(username="Mocking Ridiculing", password="Dork Game")
+
+        self.factory = RequestFactory()
