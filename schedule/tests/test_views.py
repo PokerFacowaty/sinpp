@@ -622,3 +622,9 @@ class TestRemoveRole(TestCase):
         request.user = self.non_staff
         response = remove_role(request, self.rl.id)
         self.assertEqual(response.status_code, 403)
+
+    def test_remove_role_get_non_existent_role(self):
+        request = self.factory.get("/remove_role/123456/")
+        request.user = self.staff_user
+        response = remove_role(request, 123456)
+        self.assertEqual(response.status_code, 404)
