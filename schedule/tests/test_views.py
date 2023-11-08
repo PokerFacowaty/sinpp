@@ -582,3 +582,9 @@ class TestRemoveRole(TestCase):
         self.c.login(username="fristajla", password="łakamakafą")
 
         self.factory = RequestFactory()
+
+    def test_remove_role_post_effect(self):
+        request = self.factory.post(f"/remove_role/{self.rl.id}/")
+        request.user = self.staff_user
+        remove_role(request, self.rl.id)
+        self.assertFalse(Role.objects.filter(pk=self.rl.id))
