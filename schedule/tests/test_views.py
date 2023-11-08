@@ -542,3 +542,15 @@ class TestEditRole(TestCase):
         request.user = self.staff_user
         response = edit_role(request, self.rl.id)
         self.assertEqual(response.status_code, 400)
+
+    def test_edit_role_post_non_staff_user(self):
+        request = self.factory.post(f"/edit_role/{self.rl.id}/")
+        request.user = self.non_staff
+        response = edit_role(request, self.rl.id)
+        self.assertEqual(response.status_code, 403)
+
+    def test_edit_role_post_nonexistent_role(self):
+        request = self.factory.post("/edit_role/123456/")
+        request.user = self.staff_user
+        response = edit_role(request, 123456)
+        self.assertEqual(response.status_code, 404)
