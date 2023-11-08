@@ -523,6 +523,17 @@ class TestEditRole(TestCase):
         response = edit_role(request, self.rl.id)
         self.assertEqual(response.status_code, 400)
 
+    def test_edit_role_post_effect(self):
+        response = self.c.post(
+            f"/edit_role/{self.rl.id}/",
+            {"NAME": "The same but better",
+             "EVENT": self.ev,
+             "TIME_SAFETY_MARGIN": self.rl.TIME_SAFETY_MARGIN},
+            follow=True)
+        print(response)
+        self.assertEqual(Role.objects.get(pk=self.rl.id).NAME,
+                         "The same but better")
+
     def test_edit_role_post_redirect(self):
         response = self.c.post(
             f"/edit_role/{self.rl.id}/",
