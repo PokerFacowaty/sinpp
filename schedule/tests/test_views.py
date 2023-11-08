@@ -671,6 +671,7 @@ class TestRoomSchedule(TestCase):
         sr2 = Speedrun.objects.create(EVENT=self.ev,
                                       ROOM=self.rm,
                                       GAME="Grand Theft Auto III",
+                                      START_DATE_TIME=interm.END_DATE_TIME,
                                       ESTIMATE=timedelta(hours=3))
 
         fund = Role.objects.create(NAME="Fundraising", EVENT=self.ev)
