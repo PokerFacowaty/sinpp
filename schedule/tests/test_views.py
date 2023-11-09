@@ -1136,3 +1136,49 @@ class TestEditShift(TestCase):
         request.user = self.staff_user
         response = edit_shift(request, 12321)
         self.assertEqual(response.status_code, 404)
+
+
+class TestRemoveShift(TestCase):
+
+    def setUp(self):
+
+        self.staff_user = User.objects.create_user("TwoSantasInTheRoom",
+                                                   "", "ThingsGetRuthless")
+        self.non_staff_user = User.objects.create_user("ExcuseMe",
+                                                       "", "NotAGun")
+
+        start = datetime(year=2016, month=7, day=9, hour=12,
+                         tzinfo=timezone.utc)
+        end = start + timedelta(days=1)
+        self.ev = Event.create(NAME="Buy Me Something Expensive",
+                               SLUG="BMSE",
+                               START_DATE_TIME=start,
+                               END_DATE_TIME=end)
+        self.ev.save()
+
+        self.rm = Room.objects.create(EVENT=self.ev,
+                                      NAME="Conference Room",
+                                      SLUG="CR")
+        self.rm.save()
+
+        self.mark = Role.objects.create(NAME="Market", EVENT=self.ev)
+        self.mark.save()
+
+        self.staff_user.groups.add(self.ev.STAFF)
+
+        self.c = Client()
+        self.c.login(username="TwoSantasInTheRoom",
+                     password="ThingsGetRuthless")
+
+        self.factory = RequestFactory()
+
+        self.start_time = datetime(year=2016, month=7, day=9, hour=12,
+                                   tzinfo=timezone.utc)
+        self.end_time = datetime(year=2016, month=7, day=9, hour=13,
+                                 tzinfo=timezone.utc)
+        self.sh = Shift.objects.create(ROLE=self.mark,
+                                       ROOM=self.rm,
+                                       EVENT=self.ev,
+                                       START_DATE_TIME=self.start_time,
+                                       END_DATE_TIME=self.end_time)
+        self.sh.save()
