@@ -1006,3 +1006,10 @@ class TestShift(TestCase):
         request.user = self.staff_user
         response = shift(request, self.shift.id)
         self.assertEqual(response.status_code, 400)
+
+    def test_shift_non_ajax_get(self):
+        request = self.factory.get(f"/shift/{self.shift.id}/",
+                                   content_type="application/json")
+        request.user = self.staff_user
+        response = shift(request, self.shift.id)
+        self.assertEqual(response.status_code, 400)
