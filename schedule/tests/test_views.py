@@ -526,7 +526,7 @@ class TestEditRole(TestCase):
         self.assertEqual(response.status_code, 400)
 
     def test_edit_role_post_effect(self):
-        response = self.c.post(
+        self.c.post(
             f"/edit_role/{self.rl.id}/",
             {"NAME": "The same but better",
              "EVENT": self.ev,
