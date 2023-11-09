@@ -331,8 +331,9 @@ def shift(request, shift_id):
             is_ajax = (request.headers.get("X-Requested-With")
                        == "XMLHttpRequest")
             if is_ajax and request.method == "GET":
-                data = serializers.serialize('json', shift)
-                return JsonResponse({'context': data})
+                data = serializers.serialize('json', [shift])
+                # [1:-1] so that it's a single object
+                return JsonResponse({'context': data[1:-1]})
             return JsonResponse({'context': 'Invalid request.'}, status=400)
         return JsonResponse({'context': 'Permission denied'}, status=403)
     return JsonResponse({'context': "Shift not found"}, status=404)
