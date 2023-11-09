@@ -771,3 +771,23 @@ class TestRoomSchedule(TestCase):
         rounded_start, rounded_end = self.get_info_for_times()
         self.assertEqual(response.context["times"][-1],
                          rounded_end.isoformat(sep="\n").split("+")[0])
+
+    def test_room_schedule_context_shifts(self):
+        response = self.c.get(f"/schedule/{self.ev.SLUG}/{self.rm.SLUG}/")
+        role_shifts = {x: [y for y in Shift.objects.filter(EVENT=self.ev,
+                                                           ROOM=self.rm,
+                                                           ROLE=x)]
+                       for x in Role.objects.filter(EVENT=self.ev)}
+        for rl in role_shifts.values():
+            for sh in rl:
+                sh.volunteer_names = sh.VOLUNTEERS.all()
+                sh.start_mins_rel = ((
+                    sh.START_DATE_TIME
+                    - self.ev.START_DATE_TIME).total_seconds() // 60)
+                sh.length_mins_rel = math.ceil(
+                    (sh.END_DATE_TIME
+                     - sh.START_DATE_TIME).total_seconds() // 60)
+                sh.start_iso = sh.START_DATE_TIME.isoformat()
+                sh.end_iso = sh.END_DATE_TIME.isoformat()
+
+        self.assertCountEqual(response.context["shifts"], role_shifts)
