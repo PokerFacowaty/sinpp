@@ -897,3 +897,18 @@ class TestAddShift(TestCase):
         request.user = self.staff_user
         response = add_shift(request)
         self.assertEqual(response.status_code, 400)
+
+    def test_add_shift_ajax_non_post(self):
+        payload = {"ROLE": self.fund.id,
+                   "ROOM": self.rm.id,
+                   "EVENT": self.ev.id,
+                   "START_DATE_TIME": self.start_time.isoformat(),
+                   "END_DATE_TIME": self.end_time.isoformat()}
+        request = self.factory.delete("/add_shift/",
+                                      data={"payload": payload},
+                                      headers={"X-Requested-With":
+                                               "XMLHttpRequest"},
+                                      content_type="application/json")
+        request.user = self.staff_user
+        response = add_shift(request)
+        self.assertEqual(response.status_code, 400)
