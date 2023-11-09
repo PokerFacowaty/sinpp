@@ -952,7 +952,7 @@ class TestShift(TestCase):
         self.staff_user = User.objects.create_user("DoingThings",
                                                    "", "BeforeYouDie")
         self.non_staff_user = User.objects.create_user("DoIReallyWannaGo",
-                                                       "Snowboarding")
+                                                       "", "Snowboarding")
 
         start = datetime(year=2010, month=8, day=21, hour=10,
                          tzinfo=timezone.utc)
