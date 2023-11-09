@@ -1124,3 +1124,15 @@ class TestEditShift(TestCase):
         request.user = self.non_staff_user
         response = edit_shift(request, self.sh.id)
         self.assertEqual(response.status_code, 403)
+
+    def test_edit_shift_nonexistent_shift(self):
+        new_end = (self.sh.END_DATE_TIME + timedelta(hours=1)).isoformat()
+        request = self.factory.put("/edit_shift/12321/",
+                                   headers={"X-Requested-With":
+                                            "XMLHttpRequest"},
+                                   data={"payload":
+                                         {"END_DATE_TIME": new_end}},
+                                   content_type="application/json")
+        request.user = self.staff_user
+        response = edit_shift(request, 12321)
+        self.assertEqual(response.status_code, 404)
