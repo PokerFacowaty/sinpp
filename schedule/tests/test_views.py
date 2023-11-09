@@ -1226,3 +1226,28 @@ class TestRemoveShift(TestCase):
         request.user = self.non_staff_user
         response = remove_shift(request, 2017)
         self.assertEqual(response.status_code, 404)
+
+
+class TestAddStaff(TestCase):
+
+    def setUp(self):
+
+        self.staff_user = User.objects.create_user("GlorifiedFactChecker",
+                                                   "", "ActuallyAFactChecker")
+        self.non_staff_user = User.objects.create_user("HaveFunYouTwo",
+                                                       "", "YesWeWill")
+
+        start = datetime(year=2016, month=7, day=9, hour=12,
+                         tzinfo=timezone.utc)
+        end = start + timedelta(days=1)
+        self.ev = Event.create(NAME="Buy Me Something Expensive",
+                               SLUG="BMSE",
+                               START_DATE_TIME=start,
+                               END_DATE_TIME=end)
+        self.ev.save()
+
+        self.c = Client()
+        self.c.login(username="GlorifiedFactChecker",
+                     password="ActuallyAFactChecker")
+
+        self.factory = RequestFactory()
