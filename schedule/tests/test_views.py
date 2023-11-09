@@ -1201,3 +1201,10 @@ class TestRemoveShift(TestCase):
         request.user = self.staff_user
         response = remove_shift(request, self.sh.id)
         self.assertEqual(response.status_code, 400)
+
+    def test_remove_shift_not_ajax_delete(self):
+        request = self.factory.delete(f"/remove_shift/{self.sh.id}/",
+                                      content_type="application/json")
+        request.user = self.staff_user
+        response = remove_shift(request, self.sh.id)
+        self.assertEqual(response.status_code, 400)
