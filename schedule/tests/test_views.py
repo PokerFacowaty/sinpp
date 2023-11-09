@@ -855,8 +855,8 @@ class TestAddShift(TestCase):
                                       SLUG="S1")
         self.rm.save()
 
-        fund = Role.objects.create(NAME="Fundraising", EVENT=self.ev)
-        fund.save()
+        self.fund = Role.objects.create(NAME="Fundraising", EVENT=self.ev)
+        self.fund.save()
 
         self.staff_user.groups.add(self.ev.STAFF)
 
