@@ -1090,3 +1090,25 @@ class TestEditShift(TestCase):
         self.assertTrue(
             Shift.objects.get(pk=self.sh.id).END_DATE_TIME.isoformat()
             == new_end)
+
+    def test_edit_shift_ajax_not_put(self):
+        new_end = (self.sh.END_DATE_TIME + timedelta(hours=1)).isoformat()
+        request = self.factory.post(f"/edit_shift/{self.sh.id}/",
+                                    headers={"X-Requested-With":
+                                             "XMLHttpRequest"},
+                                    data={"payload":
+                                          {"END_DATE_TIME": new_end}},
+                                    content_type="application/json")
+        request.user = self.staff_user
+        response = edit_shift(request, self.sh.id)
+        self.assertEqual(response.status_code, 400)
+
+    def test_edit_shift_not_ajax_put(self):
+        new_end = (self.sh.END_DATE_TIME + timedelta(hours=1)).isoformat()
+        request = self.factory.put(f"/edit_shift/{self.sh.id}/",
+                                   data={"payload":
+                                         {"END_DATE_TIME": new_end}},
+                                   content_type="application/json")
+        request.user = self.staff_user
+        response = edit_shift(request, self.sh.id)
+        self.assertEqual(response.status_code, 400)
