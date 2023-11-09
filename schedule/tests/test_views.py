@@ -997,3 +997,12 @@ class TestShift(TestCase):
         data = serializers.serialize('json', [self.shift])
         expected_response = JsonResponse({'context': data[1:-1]})
         self.assertEqual(response.content, expected_response.content)
+
+    def test_shift_ajax_non_get(self):
+        request = self.factory.post(f"/shift/{self.shift.id}/",
+                                    headers={"X-Requested-With":
+                                             "XMLHttpRequest"},
+                                    content_type="application/json")
+        request.user = self.staff_user
+        response = shift(request, self.shift.id)
+        self.assertEqual(response.status_code, 400)
