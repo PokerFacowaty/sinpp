@@ -678,7 +678,7 @@ class TestRoomSchedule(TestCase):
         fund = Role.objects.create(NAME="Fundraising", EVENT=self.ev)
         fund.save()
         tech = Role.objects.create(NAME="Tech", EVENT=self.ev)
-        fund.save()
+        tech.save()
 
         Shift.objects.create(ROLE=fund,
                              EVENT=self.ev,
