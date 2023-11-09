@@ -791,3 +791,15 @@ class TestRoomSchedule(TestCase):
                 sh.end_iso = sh.END_DATE_TIME.isoformat()
 
         self.assertCountEqual(response.context["shifts"], role_shifts)
+
+    def test_room_schedule_context_table_start(self):
+        response = self.c.get(f"/schedule/{self.ev.SLUG}/{self.rm.SLUG}/")
+        rounded_start, rounded_end = self.get_info_for_times()
+        self.assertEqual(response.context["table_start"],
+                         rounded_start.isoformat())
+
+    def test_room_schedule_context_table_end(self):
+        response = self.c.get(f"/schedule/{self.ev.SLUG}/{self.rm.SLUG}/")
+        rounded_start, rounded_end = self.get_info_for_times()
+        self.assertEqual(response.context["table_end"],
+                         rounded_end.isoformat())
