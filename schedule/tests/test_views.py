@@ -1037,16 +1037,16 @@ class TestEditShift(TestCase):
 
     def setUp(self):
 
-        self.staff_user = User.objects.create_user("DoingThings",
-                                                       "", "BeforeYouDie")
-        self.non_staff_user = User.objects.create_user("DoIReallyWannaGo",
-                                                       "Snowboarding")
+        self.staff_user = User.objects.create_user("IDoDeclare",
+                                                       "", "MamaJuJuBooBoo")
+        self.non_staff_user = User.objects.create_user("Recreation",
+                                                       "", "OfTheCrimeScene")
 
-        start = datetime(year=2010, month=8, day=21, hour=10,
+        start = datetime(year=1997, month=2, day=1, hour=8,
                          tzinfo=timezone.utc)
-        end = start + timedelta(days=2)
-        self.ev = Event.create(NAME="You Like Lame Things 2010",
-                               SLUG="YLLM2010",
+        end = start + timedelta(days=3)
+        self.ev = Event.create(NAME="We Fully Expect To Be Out Of Money",
+                               SLUG="WFETBOOF",
                                START_DATE_TIME=start,
                                END_DATE_TIME=end)
         self.ev.save()
@@ -1066,9 +1066,9 @@ class TestEditShift(TestCase):
 
         self.factory = RequestFactory()
 
-        self.start_time = datetime(year=2010, month=8, day=21, hour=10,
+        self.start_time = datetime(year=1997, month=2, day=1, hour=8,
                                    tzinfo=timezone.utc)
-        self.end_time = datetime(year=2010, month=8, day=21, hour=10,
+        self.end_time = datetime(year=1997, month=2, day=1, hour=10,
                                  tzinfo=timezone.utc)
         self.shift = Shift.objects.create(ROLE=self.tech,
                                           ROOM=self.rm,
@@ -1076,3 +1076,6 @@ class TestEditShift(TestCase):
                                           START_DATE_TIME=self.start_time,
                                           END_DATE_TIME=self.end_time)
         self.shift.save()
+
+    # def test_edit_shift_effect(self):
+        
