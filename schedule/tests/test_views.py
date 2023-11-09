@@ -1022,3 +1022,12 @@ class TestShift(TestCase):
         request.user = self.non_staff_user
         response = shift(request, self.shift.id)
         self.assertEqual(response.status_code, 403)
+
+    def test_shift_nonexistent_shift(self):
+        request = self.factory.get("/shift/12223444/",
+                                   headers={"X-Requested-With":
+                                            "XMLHttpRequest"},
+                                   content_type="application/json")
+        request.user = self.non_staff_user
+        response = shift(request, 12223444)
+        self.assertEqual(response.status_code, 404)
