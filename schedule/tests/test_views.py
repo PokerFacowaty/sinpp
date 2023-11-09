@@ -5,7 +5,7 @@ from django.utils import timezone
 from schedule.models import Event, Role, Speedrun, Room, Intermission, Shift
 from schedule.views import (add_event, event, edit_event, remove_event,
                             add_role, role, edit_role, remove_role,
-                            room_schedule, add_shift, shift)
+                            room_schedule, add_shift, shift, edit_shift)
 import math
 from django.http import Http404, JsonResponse
 from django.core import serializers
@@ -1070,12 +1070,12 @@ class TestEditShift(TestCase):
                                    tzinfo=timezone.utc)
         self.end_time = datetime(year=1997, month=2, day=1, hour=10,
                                  tzinfo=timezone.utc)
-        self.shift = Shift.objects.create(ROLE=self.tech,
-                                          ROOM=self.rm,
-                                          EVENT=self.ev,
-                                          START_DATE_TIME=self.start_time,
-                                          END_DATE_TIME=self.end_time)
-        self.shift.save()
+        self.sh = Shift.objects.create(ROLE=self.tech,
+                                       ROOM=self.rm,
+                                       EVENT=self.ev,
+                                       START_DATE_TIME=self.start_time,
+                                       END_DATE_TIME=self.end_time)
+        self.sh.save()
 
     # def test_edit_shift_effect(self):
         
