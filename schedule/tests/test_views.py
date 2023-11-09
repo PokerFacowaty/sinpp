@@ -884,3 +884,16 @@ class TestAddShift(TestCase):
         request.user = self.staff_user
         add_shift(request)
         self.assertTrue(Shift.objects.filter(ROLE=self.fund, EVENT=self.ev))
+
+    def test_add_shift_non_ajax_post(self):
+        payload = {"ROLE": self.fund.id,
+                   "ROOM": self.rm.id,
+                   "EVENT": self.ev.id,
+                   "START_DATE_TIME": self.start_time.isoformat(),
+                   "END_DATE_TIME": self.end_time.isoformat()}
+        request = self.factory.post("/add_shift/",
+                                    data={"payload": payload},
+                                    content_type="application/json")
+        request.user = self.staff_user
+        response = add_shift(request)
+        self.assertEqual(response.status_code, 400)
