@@ -8,7 +8,6 @@ from schedule.views import (add_event, event, edit_event, remove_event,
                             room_schedule, add_shift)
 import math
 from django.http import Http404
-import json
 
 '''I am using a RequestFactory for whenever I don't need the additional
    functions the Client provides (such as checking for templates used) and
