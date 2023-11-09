@@ -231,9 +231,9 @@ def room_schedule(request, event_slug, room_slug):
                 for sh in role:
                     # Lower case for things added here and not in the model
                     sh.volunteer_names = sh.VOLUNTEERS.all()
-                    sh.start_secs_rel = ((sh.START_DATE_TIME
+                    sh.start_mins_rel = ((sh.START_DATE_TIME
                                           - ev_start).total_seconds() // 60)
-                    sh.length_secs_rel = math.ceil(
+                    sh.length_mins_rel = math.ceil(
                         (sh.END_DATE_TIME
                          - sh.START_DATE_TIME).total_seconds() // 60)
                     sh.start_iso = sh.START_DATE_TIME.isoformat()

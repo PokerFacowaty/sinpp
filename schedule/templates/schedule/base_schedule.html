@@ -23,12 +23,12 @@
     <div id="runs-column">
         {% for x in runs_interms %}
             {% if x.type == 'run' %}
-                <div class="run block" data-start-secs-rel="{{ x.start_secs_rel }}" data-length-secs-rel="{{ x.length_secs_rel }}" data-id="{{ x.obj.id }}" style="visibility: hidden">
+                <div class="run block" data-start-mins-rel="{{ x.start_mins_rel }}" data-length-mins-rel="{{ x.length_mins_rel }}" data-id="{{ x.obj.id }}" style="visibility: hidden">
                     <div>{{ x.obj.START_TIME.time }} {{ x.obj.GAME }}</div>
                     <button class="add-shift-from-run">Add Shift From This Run</button>
                 </div>
             {% elif x.type == 'interm' %}
-                <div class="interm block" data-start-secs-rel="{{ x.start_secs_rel }}" data-length-secs-rel="{{ x.length_secs_rel }}" data-id="{{ x.obj.id }}" style="visibility: hidden">
+                <div class="interm block" data-start-mins-rel="{{ x.start_mins_rel }}" data-length-mins-rel="{{ x.length_mins_rel }}" data-id="{{ x.obj.id }}" style="visibility: hidden">
                     {{ x.obj.START_TIME.time }} Intermission ({{ x.obj.DURATION }})
                 </div>
             {% endif %}
@@ -37,7 +37,7 @@
     {% for role, shifts in shifts.items %}
         <div class="shifts-column" data-role-id="{{ role.id }}">
             {% for shift in shifts %}
-                <div class="shift block" data-start-secs-rel="{{ shift.start_secs_rel }}" data-length-secs-rel="{{ shift.length_secs_rel }}" data-shift-id="{{ shift.id }}" data-start-ts="{{ shift.start_iso }}" data-end-ts="{{ shift.end_iso }}" style="visibility: hidden">
+                <div class="shift block" data-start-mins-rel="{{ shift.start_mins_rel }}" data-length-mins-rel="{{ shift.length_mins_rel }}" data-shift-id="{{ shift.id }}" data-start-ts="{{ shift.start_iso }}" data-end-ts="{{ shift.end_iso }}" style="visibility: hidden">
                     <div>
                         {% for name in shift.volunteer_names %}
                             {{ name }}
