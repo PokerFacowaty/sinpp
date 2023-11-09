@@ -942,3 +942,48 @@ class TestAddShift(TestCase):
         request.user = self.staff_user
         response = add_shift(request)
         self.assertEqual(response.status_code, 404)
+
+
+class TestShift(TestCase):
+
+    def setUp(self):
+
+        self.staff_user = User.objects.create_user("DoingThings",
+                                                   "", "BeforeYouDie")
+        self.non_staff_user = User.objects.create_user("DoIReallyWannaGo",
+                                                       "Snowboarding")
+
+        start = datetime(year=2010, month=8, day=21, hour=10,
+                         tzinfo=timezone.utc)
+        end = start + timedelta(days=2)
+        self.ev = Event.create(NAME="You Like Lame Things 2010",
+                               SLUG="YLLM2010",
+                               START_DATE_TIME=start,
+                               END_DATE_TIME=end)
+        self.ev.save()
+
+        self.rm = Room.objects.create(EVENT=self.ev,
+                                      NAME="Stream 7",
+                                      SLUG="S7")
+        self.rm.save()
+
+        self.tech = Role.objects.create(NAME="Tech", EVENT=self.ev)
+        self.tech.save()
+
+        self.staff_user.groups.add(self.ev.STAFF)
+
+        self.c = Client()
+        self.c.login(username="DoingThings", password="BeforeYouDie")
+
+        self.factory = RequestFactory()
+
+        self.start_time = datetime(year=2010, month=8, day=21, hour=10,
+                                   tzinfo=timezone.utc)
+        self.end_time = datetime(year=2010, month=8, day=21, hour=10,
+                                 tzinfo=timezone.utc)
+        self.shift = Shift.objects.create(ROLE=self.tech,
+                                          ROOM=self.rm,
+                                          EVENT=self.ev,
+                                          START_DATE_TIME=self.start_time,
+                                          END_DATE_TIME=self.end_time)
+        self.shift.save()
