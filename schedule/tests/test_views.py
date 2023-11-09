@@ -7,6 +7,7 @@ from schedule.views import (add_event, event, edit_event, remove_event,
                             add_role, role, edit_role, remove_role,
                             room_schedule)
 import math
+from django.http import Http404
 
 '''I am using a RequestFactory for whenever I don't need the additional
    functions the Client provides (such as checking for templates used) and
@@ -803,3 +804,30 @@ class TestRoomSchedule(TestCase):
         rounded_start, rounded_end = self.get_info_for_times()
         self.assertEqual(response.context["table_end"],
                          rounded_end.isoformat())
+
+    def test_room_schedule_non_staff_user(self):
+        request = self.factory.get(f"/schedule/{self.ev.SLUG}/{self.rm.SLUG}/")
+        request.user = self.non_staff_user
+        response = room_schedule(request, self.ev.SLUG, self.rm.SLUG)
+        self.assertEqual(response.status_code, 403)
+
+    def test_room_schedule_non_get_request(self):
+        request = self.factory.post(
+            f"/schedule/{self.ev.SLUG}/{self.rm.SLUG}/")
+        request.user = self.staff_user
+        response = room_schedule(request, self.ev.SLUG, self.rm.SLUG)
+        self.assertEqual(response.status_code, 400)
+
+    def test_room_schedule_nonexistent_event(self):
+        request = self.factory.get("/schedule/someevent/s1/")
+        request.user = self.staff_user
+
+        with self.assertRaises(Http404):
+            room_schedule(request, "someevent", self.rm.SLUG)
+
+    def test_room_schedule_nonexistent_room(self):
+        request = self.factory.get(f"/schedule/{self.ev.SLUG}/bathroom/")
+        request.user = self.staff_user
+
+        with self.assertRaises(Http404):
+            room_schedule(request, self.ev.SLUG, "bathroom")
