@@ -1183,3 +1183,12 @@ class TestRemoveShift(TestCase):
                                        START_DATE_TIME=self.start_time,
                                        END_DATE_TIME=self.end_time)
         self.sh.save()
+
+    def test_remove_shift_effect(self):
+        request = self.factory.delete(f"/remove_shift/{self.sh.id}/",
+                                      headers={"X-Requested-With":
+                                               "XMLHttpRequest"},
+                                      content_type="application/json")
+        request.user = self.staff_user
+        remove_shift(request, self.sh.id)
+        self.assertFalse(Shift.objects.filter(pk=self.sh.id))
