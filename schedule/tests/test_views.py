@@ -831,3 +831,36 @@ class TestRoomSchedule(TestCase):
 
         with self.assertRaises(Http404):
             room_schedule(request, self.ev.SLUG, "bathroom")
+
+
+class TestAddShift(TestCase):
+
+    def setUp(self):
+        self.staff_user = User.objects.create_user("WhoTheLuckyLady",
+                                                   "", "PamsMom")
+        self.non_staff_user = User.objects.create_user("NeverTellPam",
+                                                       "OverDinner")
+
+        start = datetime(year=2005, month=4, day=16, hour=9,
+                         tzinfo=timezone.utc)
+        end = start + timedelta(days=1)
+        self.ev = Event.create(NAME="Antarctic Speedrunner Assembly '05",
+                               SLUG="ASA5",
+                               START_DATE_TIME=start,
+                               END_DATE_TIME=end)
+        self.ev.save()
+
+        self.rm = Room.objects.create(EVENT=self.ev,
+                                      NAME="Stream 1",
+                                      SLUG="S1")
+        self.rm.save()
+
+        fund = Role.objects.create(NAME="Fundraising", EVENT=self.ev)
+        fund.save()
+
+        self.staff_user.groups.add(self.ev.STAFF)
+
+        self.c = Client()
+        self.c.login(username="WhoTheLuckyLady", password="PamsMom")
+
+        self.factory = RequestFactory()
