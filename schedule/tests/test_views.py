@@ -6,7 +6,7 @@ from schedule.models import Event, Role, Speedrun, Room, Intermission, Shift
 from schedule.views import (add_event, event, edit_event, remove_event,
                             add_role, role, edit_role, remove_role,
                             room_schedule, add_shift, shift, edit_shift,
-                            remove_shift)
+                            remove_shift, add_staff)
 import math
 from django.http import Http404, JsonResponse
 from django.core import serializers
