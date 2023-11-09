@@ -7,7 +7,8 @@ from schedule.views import (add_event, event, edit_event, remove_event,
                             add_role, role, edit_role, remove_role,
                             room_schedule, add_shift, shift)
 import math
-from django.http import Http404
+from django.http import Http404, JsonResponse
+from django.core import serializers
 
 '''I am using a RequestFactory for whenever I don't need the additional
    functions the Client provides (such as checking for templates used) and
@@ -987,3 +988,12 @@ class TestShift(TestCase):
                                           START_DATE_TIME=self.start_time,
                                           END_DATE_TIME=self.end_time)
         self.shift.save()
+
+    def test_shift_response_content(self):
+        response = self.c.get(f"/shift/{self.shift.id}/",
+                              headers={"X-Requested-With":
+                                       "XMLHttpRequest"},
+                              content_type="application/json")
+        data = serializers.serialize('json', [self.shift])
+        expected_response = JsonResponse({'context': data[1:-1]})
+        self.assertEqual(response.content, expected_response.content)
