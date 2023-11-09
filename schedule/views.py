@@ -284,8 +284,8 @@ def room_schedule(request, event_slug, room_slug):
                        'table_start': table_start.isoformat(),
                        'table_end': table_end.isoformat()}
             return render(request, 'schedule/base_schedule.html', content)
-        return HttpResponseBadRequest()
-    return HttpResponseForbidden()
+        return HttpResponseForbidden()
+    return HttpResponseBadRequest()
 
 
 # # # # # # # #
