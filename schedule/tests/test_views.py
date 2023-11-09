@@ -532,7 +532,6 @@ class TestEditRole(TestCase):
              "EVENT": self.ev,
              "TIME_SAFETY_MARGIN": self.rl.TIME_SAFETY_MARGIN},
             follow=True)
-        print(response)
         self.assertEqual(Role.objects.get(pk=self.rl.id).NAME,
                          "The same but better")
 
