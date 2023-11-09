@@ -8,6 +8,7 @@ from schedule.views import (add_event, event, edit_event, remove_event,
                             room_schedule, add_shift)
 import math
 from django.http import Http404
+import json
 
 '''I am using a RequestFactory for whenever I don't need the additional
    functions the Client provides (such as checking for templates used) and
@@ -864,3 +865,23 @@ class TestAddShift(TestCase):
         self.c.login(username="WhoTheLuckyLady", password="PamsMom")
 
         self.factory = RequestFactory()
+
+        self.start_time = datetime(year=2005, month=4, day=16, hour=10,
+                                   tzinfo=timezone.utc)
+        self.end_time = datetime(year=2005, month=4, day=16, hour=11,
+                                 tzinfo=timezone.utc)
+
+    def test_add_shift_ajax_post_effect(self):
+        payload = {"ROLE": self.fund.id,
+                   "ROOM": self.rm.id,
+                   "EVENT": self.ev.id,
+                   "START_DATE_TIME": self.start_time.isoformat(),
+                   "END_DATE_TIME": self.end_time.isoformat()}
+        request = self.factory.post("/add_shift/",
+                                    data={"payload": payload},
+                                    headers={"X-Requested-With":
+                                             "XMLHttpRequest"},
+                                    content_type="application/json")
+        request.user = self.staff_user
+        add_shift(request)
+        self.assertTrue(Shift.objects.filter(ROLE=self.fund, EVENT=self.ev))
