@@ -7,11 +7,12 @@ from schedule.views import (add_event, event, edit_event, remove_event,
                             add_role, role, edit_role, remove_role,
                             room_schedule, add_shift, shift, edit_shift,
                             remove_shift, add_staff, remove_staff,
-                            all_usernames)
+                            all_usernames, upload_csv)
 import math
 from django.http import Http404, JsonResponse
 from django.core import serializers
 import json
+from pathlib import Path
 
 '''I am using a RequestFactory for whenever I don't need the additional
    functions the Client provides (such as checking for templates used) and
@@ -37,7 +38,22 @@ class TestUploadCSV(TestCase):
                                       EVENT=self.ev)
         self.rm.save()
 
-        self.staff_user.groups.add(ev.STAFF)
+        self.staff_user.groups.add(self.ev.STAFF)
+
+        self.factory = RequestFactory()
+
+    def test_csv_200(self):
+        fpath = (Path(__file__).parent.resolve()
+                 / "fixtures" / "ESA-Win22-oengus.csv")
+        with open(fpath) as f:
+            request = self.factory.post("/upload_csv/",
+                                        {"event": self.ev.id,
+                                         "room": self.rm.id,
+                                         "title": "ESAWIN22",
+                                         "file_": f})
+            request.user = self.staff_user
+            response = upload_csv(request)
+        self.assertEqual(response.status_code, 200)
 
 
 class TestAddEvent(TestCase):
