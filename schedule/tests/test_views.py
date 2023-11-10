@@ -706,6 +706,12 @@ class TestRemoveRole(TestCase):
         response = remove_role(request, 123456)
         self.assertEqual(response.status_code, 404)
 
+    def test_remove_role_not_get_or_post(self):
+        request = self.factory.delete(f"/remove_role/{self.rl.id}/")
+        request.user = self.staff_user
+        response = remove_role(request, self.rl.id)
+        self.assertEqual(response.status_code, 400)
+
     def test_remove_role_get_template(self):
         response = self.c.get(f"/remove_role/{self.rl.id}/")
         self.assertIn("schedule/base_remove_role.html",
