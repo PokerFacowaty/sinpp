@@ -70,7 +70,7 @@ class TestUploadCSV(TestCase):
     def test_csv_non_post_or_get(self):
         with open(self.fpath) as f:
             request = self.factory.delete("/upload_csv/",
-                                          {"event": "yes",
+                                          {"event": self.ev.id,
                                            "room": self.rm.id,
                                            "title": "ESAWIN22",
                                            "file_": f})
