@@ -411,7 +411,7 @@ def add_staff(request, event_id):
                 return JsonResponse({'context':
                                     f"The user {username} doesn't exist"},
                                     status=404)
-            return JsonResponse(status=400)
+            return JsonResponse({'context': 'Invalid request'}, status=400)
         return JsonResponse({'context': 'Permission denied'}, status=403)
     return JsonResponse({'context': 'Event not found'}, status=404)
 
