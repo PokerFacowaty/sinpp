@@ -10,6 +10,7 @@ from schedule.views import (add_event, event, edit_event, remove_event,
 import math
 from django.http import Http404, JsonResponse
 from django.core import serializers
+import json
 
 '''I am using a RequestFactory for whenever I don't need the additional
    functions the Client provides (such as checking for templates used) and
@@ -1424,3 +1425,25 @@ class TestRemoveStaff(TestCase):
         request.user = self.staff_user
         response = remove_staff(request, self.ev.id)
         self.assertEqual(response.status_code, 404)
+
+
+class TestAllUsernames(TestCase):
+
+    def setUp(self):
+        self.user1 = User.objects.create_user("Ryan", "", "theTemp")
+        self.user2 = User.objects.create_user("YoungestVP", "", "inDMHistory")
+        self.user3 = User.objects.create_user("FireGuy", "", "FireGuy")
+
+        self.factory = RequestFactory()
+
+        self.c = Client()
+        self.c.login(username="Ryan", password="theTemp")
+
+    def test_all_usernames_200(self):
+        response = self.c.get("/all_usernames/",
+                              headers={"X-Requested-With": "XMLHttpRequest"})
+        users = User.objects.all()
+        users_expected = [[user.id, user.username] for user in users]
+        data_expected = json.dumps(users_expected)
+        expected_response = JsonResponse({'context': data_expected})
+        self.assertEqual(response.content, expected_response.content)
