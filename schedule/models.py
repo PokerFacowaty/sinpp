@@ -113,10 +113,14 @@ class Speedrun(models.Model):
         super(Speedrun, self).save(*args, **kwargs)
 
     def __str__(self) -> str:
-        result = self.GAME + f' [{self.CATEGORY}]'
+        result = self.GAME
+        if self.CATEGORY:
+            result += f' [{self.CATEGORY}]'
         if self.ROOM:
+            # __str__ for Room has the event already
             result += f' ({self.ROOM})'
-        result += f' ({self.EVENT})'
+        else:
+            result += f' ({self.EVENT})'
         return result
 
 
