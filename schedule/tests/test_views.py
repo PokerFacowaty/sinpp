@@ -1264,3 +1264,14 @@ class TestAddStaff(TestCase):
         add_staff(request, self.ev.id)
         self.assertTrue(self.staff_to_be.groups.filter(
                                             name=self.ev.STAFF.name).exists())
+
+    def test_add_staff_already_a_member(self):
+        request = self.factory.post("/add_staff/",
+                                    data={"payload":
+                                          {"username": "Sabre"}},
+                                    headers={"X-Requested-With":
+                                             "XMLHttpRequest"},
+                                    content_type="application/json")
+        request.user = self.staff_user
+        response = add_staff(request, self.ev.id)
+        self.assertEqual(response.status_code, 409)
