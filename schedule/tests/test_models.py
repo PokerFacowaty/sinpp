@@ -62,33 +62,31 @@ class TestSpeedrun(TestCase):
                                   PRONOUNS=peoples_pronouns[i])
             i += 1
 
-        run_start_time = event_start_date + timedelta(minutes=1)
-        estimate = timedelta(minutes=5)
-        alice = Person.objects.get(NICKNAME="Alice")
-        candy = Person.objects.get(NICKNAME="Candy")
-        Speedrun.objects.create(EVENT=Event.objects.get(SLUG="GSPS26"),
-                                GAME="GTA IV", START_DATE_TIME=run_start_time,
-                                ESTIMATE=estimate)
-        iv = Speedrun.objects.get(GAME="GTA IV")
-        iv.VOLUNTEERS_ENGAGED.add(alice)
-        iv.VOLUNTEERS_ENGAGED.add(candy)
+        iv_start_time = event_start_date + timedelta(minutes=1)
+        iv_estimate = timedelta(minutes=5)
+        self.alice = Person.objects.get(NICKNAME="Alice")
+        self.candy = Person.objects.get(NICKNAME="Candy")
+        self.iv = Speedrun.objects.create(EVENT=ev,
+                                          GAME="GTA IV",
+                                          START_DATE_TIME=iv_start_time,
+                                          ESTIMATE=iv_estimate)
+        self.iv.VOLUNTEERS_ENGAGED.add(self.alice)
+        self.iv.VOLUNTEERS_ENGAGED.add(self.candy)
 
     def test_speedrun_has_calculated_end_time(self):
-        run = Speedrun.objects.get(GAME="GTA IV")
         # NOTE: the only way to ensure proper time arithmetic is by using
         # PostgresSQL as the database
         # https://docs.djangoproject.com/en/4.2/ref/models/fields/#durationfield
-        self.assertEqual(run.END_DATE_TIME, run.START_DATE_TIME + run.ESTIMATE)
+        self.assertEqual(self.iv.END_DATE_TIME,
+                         self.iv.START_DATE_TIME + self.iv.ESTIMATE)
 
     def test_speedrun_has_volunteer_one_engaged(self):
-        run = Speedrun.objects.get(GAME="GTA IV")
         alice = Person.objects.get(NICKNAME="Alice")
-        self.assertIn(alice, run.VOLUNTEERS_ENGAGED.all())
+        self.assertIn(self.alice, self.iv.VOLUNTEERS_ENGAGED.all())
 
     def test_speedrun_has_volunteer_two_engaged(self):
-        run = Speedrun.objects.get(GAME="GTA IV")
         candy = Person.objects.get(NICKNAME="Candy")
-        self.assertIn(candy, run.VOLUNTEERS_ENGAGED.all())
+        self.assertIn(self.candy, self.iv.VOLUNTEERS_ENGAGED.all())
 
 
 class TestIntermission(TestCase):
