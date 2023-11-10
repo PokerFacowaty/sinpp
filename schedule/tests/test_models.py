@@ -75,10 +75,12 @@ class TestSpeedrun(TestCase):
 
         v_start_time = event_start_date + timedelta(hours=1)
         v_end_time = v_start_time + timedelta(hours=5)
+        self.rm = Room.objects.create(NAME="Stream 1", EVENT=ev)
         self.v = Speedrun.objects.create(EVENT=ev,
                                          GAME="GTA V",
                                          START_DATE_TIME=v_start_time,
-                                         END_DATE_TIME=v_end_time)
+                                         END_DATE_TIME=v_end_time,
+                                         ROOM=self.rm)
 
     def test_speedrun_has_calculated_end_time(self):
         # NOTE: the only way to ensure proper time arithmetic is by using
@@ -96,6 +98,20 @@ class TestSpeedrun(TestCase):
 
     def test_speedrun_has_volunteer_two_engaged(self):
         self.assertIn(self.candy, self.iv.VOLUNTEERS_ENGAGED.all())
+
+    def test_speedrun_str_no_room_no_category(self):
+        self.assertEqual(str(self.iv), "GTA IV (GSPS 2026)")
+
+    def test_speedrun_str_no_room_category(self):
+        self.iv.CATEGORY = "Any%"
+        self.assertEqual(str(self.iv), "GTA IV [Any%] (GSPS 2026)")
+
+    def test_speedrun_str_room_no_category(self):
+        self.assertEqual(str(self.v), f"GTA V ({self.rm})")
+
+    def test_speedrun_str_room_category(self):
+        self.v.CATEGORY = "100%"
+        self.assertEqual(str(self.v), f"GTA V [100%] ({self.rm})")
 
 
 class TestIntermission(TestCase):
