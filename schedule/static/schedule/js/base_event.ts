@@ -152,7 +152,7 @@ async function sendRemoveStaffRequest(username: string){
             "X-Requested-With": "XMLHttpRequest",
             "X-CSRFToken": CSRFTOKEN
         },
-        body: JSON.stringify({payload: username})
+        body: JSON.stringify({payload: {username: username}})
     });
 
     if (response.ok){
