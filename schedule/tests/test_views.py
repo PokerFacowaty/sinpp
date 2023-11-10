@@ -19,6 +19,17 @@ from pathlib import Path
    a Client whenever I do.'''
 
 
+class TestIndex(TestCase):
+
+    def setUp(self):
+        self.c = Client()
+
+    def test_index_template(self):
+        response = self.c.get("/")
+        self.assertIn("schedule/base_main.html",
+                      [x.name for x in response.templates])
+
+
 class TestUploadCSV(TestCase):
     def setUp(self):
         self.staff_user = User.objects.create_user("CruiseSafelyVisually", "",
