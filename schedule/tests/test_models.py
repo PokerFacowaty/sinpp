@@ -33,7 +33,10 @@ class TestRoom(TestCase):
         self.ev = Event.create(NAME="GSPS 2026", SLUG="GSPS26",
                                START_DATE_TIME=start_date,
                                END_DATE_TIME=end_date)
-        self.rm = Room.objects.add(EVENT=self.ev, NAME="Stream 1", SLUG="S1")
+        self.ev.save()
+        self.rm = Room.objects.create(EVENT=self.ev,
+                                      NAME="Stream 1",
+                                      SLUG="S1")
 
     def test_room_str(self):
         self.assertEqual(str(self.rm), self.rm.NAME + f' ({self.ev})')
