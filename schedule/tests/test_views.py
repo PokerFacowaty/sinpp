@@ -28,13 +28,14 @@ class TestUploadCSV(TestCase):
         start = datetime(year=2022, month=11, day=9, hour=7,
                          tzinfo=timezone.utc)
         end = start + timedelta(days=2)
-        ev = Event.create(NAME="Cucumber Speedy Velocity '22",
-                          SLUG="CSV22",
-                          START_DATE_TIME=start,
-                          END_DATE_TIME=end)
-        ev.save()
-        rm = Room.objects.create(NAME="CurrentlySolelyVentrillo", EVENT=ev)
-        rm.save()
+        self.ev = Event.create(NAME="Cucumber Speedy Velocity '22",
+                               SLUG="CSV22",
+                               START_DATE_TIME=start,
+                               END_DATE_TIME=end)
+        self.ev.save()
+        self.rm = Room.objects.create(NAME="CurrentlySolelyVentrillo",
+                                      EVENT=self.ev)
+        self.rm.save()
 
         self.staff_user.groups.add(ev.STAFF)
 
