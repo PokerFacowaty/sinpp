@@ -56,6 +56,17 @@ class TestUploadCSV(TestCase):
             response = upload_csv(request)
         self.assertEqual(response.status_code, 200)
 
+    def test_csv_invalid_form(self):
+        with open(self.fpath) as f:
+            request = self.factory.post("/upload_csv/",
+                                        {"event": "yes",
+                                         "room": self.rm.id,
+                                         "title": "ESAWIN22",
+                                         "file_": f})
+            request.user = self.staff_user
+            response = upload_csv(request)
+        self.assertEqual(response.status_code, 400)
+
 
 class TestAddEvent(TestCase):
     def setUp(self):
