@@ -118,13 +118,31 @@ class TestIntermission(TestCase):
 
     def setUp(self):
         self.user = User.objects.create_user("notverysuper", "", "password1")
+
         start_date = datetime(year=2020, month=4, day=7, hour=11,
                               tzinfo=timezone.utc)
         end_date = start_date + timedelta(days=1)
         self.ev = Event.create(NAME="GSPS 2026", SLUG="GSPS26",
                                START_DATE_TIME=start_date,
                                END_DATE_TIME=end_date)
-        interm = Interm
+        self.ev.save()
+
+        self.rm = Room.objects.create(EVENT=self.ev,
+                                      NAME="Stream 2",
+                                      SLUG="S2")
+
+        i1_start = self.ev.START_DATE_TIME + timedelta(hours=1)
+        i1_end = i1_start + timedelta(minutes=15)
+        self.interm1 = Intermission.objects.create(START_DATE_TIME=i1_start,
+                                                   END_DATE_TIME=i1_end,
+                                                   EVENT=self.ev,
+                                                   ROOM=self.rm)
+
+        i2_start = self.ev.START_DATE_TIME + timedelta(hours=2)
+        i2_duration = timedelta(minutes=15)
+        self.interm2 = Intermission.objects.create(START_DATE_TIME=i2_start,
+                                                   DURATION=i2_duration,
+                                                   EVENT=self.ev)
 
 
 class TestShift(TestCase):
