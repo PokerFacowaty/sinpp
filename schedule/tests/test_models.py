@@ -175,6 +175,9 @@ class TestShift(TestCase):
                                START_DATE_TIME=ev_start,
                                END_DATE_TIME=ev_end)
         self.ev.save()
+        self.rm = Room.objects.create(EVENT=self.ev,
+                                      NAME="Main Stream",
+                                      SLUG="MS")
         tech = Role.objects.create(NAME="Tech",
                                    EVENT=self.ev)
         media = Role.objects.create(NAME="Social Media",
@@ -202,6 +205,14 @@ class TestShift(TestCase):
         end = (Event.objects.get(NAME="GDQ2").START_DATE_TIME
                + timedelta(minutes=30))
         self.assertFalse(prsn.is_busy(start, end))
+
+    def test_shift_str_room(self):
+        self.tech_shift.ROOM = self.rm
+        nicknames = ", ".join([x.NICKNAME
+                               for x in self.tech_shift.VOLUNTEERS.all()])
+        self.assertEqual(str(self.tech_shift),
+                         f"{nicknames}@ {self.tech_shift.START_DATE_TIME}"
+                         + f" ({str(self.rm)})")
 
     def test_shift_str_no_room(self):
         nicknames = ", ".join([x.NICKNAME
