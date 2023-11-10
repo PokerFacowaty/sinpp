@@ -73,12 +73,23 @@ class TestSpeedrun(TestCase):
         self.iv.VOLUNTEERS_ENGAGED.add(self.alice)
         self.iv.VOLUNTEERS_ENGAGED.add(self.candy)
 
+        v_start_time = event_start_date + timedelta(hours=1)
+        v_end_time = v_start_time + timedelta(hours=5)
+        self.v = Speedrun.objects.create(EVENT=ev,
+                                         GAME="GTA V",
+                                         START_DATE_TIME=v_start_time,
+                                         END_DATE_TIME=v_end_time)
+
     def test_speedrun_has_calculated_end_time(self):
         # NOTE: the only way to ensure proper time arithmetic is by using
         # PostgresSQL as the database
         # https://docs.djangoproject.com/en/4.2/ref/models/fields/#durationfield
         self.assertEqual(self.iv.END_DATE_TIME,
                          self.iv.START_DATE_TIME + self.iv.ESTIMATE)
+
+    def test_speedrun_has_calulcated_estimate(self):
+        self.assertEqual(self.v.ESTIMATE,
+                         self.v.END_DATE_TIME - self.v.START_DATE_TIME)
 
     def test_speedrun_has_volunteer_one_engaged(self):
         self.assertIn(self.alice, self.iv.VOLUNTEERS_ENGAGED.all())
