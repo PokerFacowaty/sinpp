@@ -1402,3 +1402,14 @@ class TestRemoveStaff(TestCase):
         request.user = self.non_staff
         response = remove_staff(request, self.ev.id)
         self.assertEqual(response.status_code, 403)
+
+    def test_remove_staff_nonexistent_event(self):
+        request = self.factory.delete("/remove_staff/11111/",
+                                      data={"payload":
+                                            {"username": "betterManager"}},
+                                      headers={"X-Requested-With":
+                                               "XMLHttpRequest"},
+                                      content_type="application/json")
+        request.user = self.staff_user
+        response = remove_staff(request, 11111)
+        self.assertEqual(response.status_code, 404)
