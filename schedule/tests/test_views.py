@@ -1371,3 +1371,14 @@ class TestRemoveStaff(TestCase):
         request.user = self.staff_user
         response = remove_staff(request, self.ev.id)
         self.assertEqual(response.status_code, 409)
+
+    def test_remove_staff_ajax_not_delete(self):
+        request = self.factory.post(f"/remove_staff/{self.ev.id}/",
+                                    data={"payload":
+                                          {"username": "betterManager"}},
+                                    headers={"X-Requested-With":
+                                             "XMLHttpRequest"},
+                                    content_type="application/json")
+        request.user = self.staff_user
+        response = remove_staff(request, self.ev.id)
+        self.assertEqual(response.status_code, 400)
