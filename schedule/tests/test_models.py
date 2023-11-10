@@ -3,9 +3,124 @@ from django.utils import timezone
 from schedule.models import (Event, AvailabilityBlock, Person, Role, Speedrun,
                              Shift)
 from datetime import timedelta, datetime
+from django.contrib.auth.models import Group, User
 
 
-class AvailabilityBlockTestCase(TestCase):
+class TestEvent(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user("notverysuper", "", "password1")
+        start_date = datetime(year=2020, month=4, day=7, hour=11,
+                              tzinfo=timezone.utc)
+        end_date = start_date + timedelta(days=1)
+        Event.create(NAME="GSPS 2026", SLUG="GSPS26",
+                     START_DATE_TIME=start_date, END_DATE_TIME=end_date)
+
+    def test_proper_group_was_made(self):
+        self.assertTrue(Group.objects.filter(name="GSPS26 Staff"))
+
+
+class TestRoom(TestCase):
+    pass
+
+
+class TestSpeedrun(TestCase):
+
+    def setUp(self):
+        event_start_date = datetime(year=2020, month=4, day=7, hour=11,
+                                    tzinfo=timezone.utc)
+        event_end_date = event_start_date + timedelta(days=1)
+        ev = Event.create(NAME="GSPS 2026",
+                          SLUG="GSPS26",
+                          START_DATE_TIME=event_start_date,
+                          END_DATE_TIME=event_end_date)
+        ev.save()
+
+        peoples_names = ["Alice", "Bob", "Candy"]
+        peoples_pronouns = ["", "She/They", ""]
+        i = 0
+        while i < 3:
+            Person.objects.create(NICKNAME=peoples_names[i],
+                                  PRONOUNS=peoples_pronouns[i])
+            i += 1
+
+        run_start_time = event_start_date + timedelta(minutes=1)
+        estimate = timedelta(minutes=5)
+        alice = Person.objects.get(NICKNAME="Alice")
+        candy = Person.objects.get(NICKNAME="Candy")
+        Speedrun.objects.create(EVENT=Event.objects.get(SLUG="GSPS26"),
+                                GAME="GTA IV", START_DATE_TIME=run_start_time,
+                                ESTIMATE=estimate)
+        iv = Speedrun.objects.get(GAME="GTA IV")
+        iv.VOLUNTEERS_ENGAGED.add(alice)
+        iv.VOLUNTEERS_ENGAGED.add(candy)
+
+    def test_speedrun_has_calculated_end_time(self):
+        run = Speedrun.objects.get(GAME="GTA IV")
+        # NOTE: the only way to ensure proper time arithmetic is by using
+        # PostgresSQL as the database
+        # https://docs.djangoproject.com/en/4.2/ref/models/fields/#durationfield
+        self.assertEqual(run.END_DATE_TIME, run.START_DATE_TIME + run.ESTIMATE)
+
+    def test_speedrun_has_volunteer_one_engaged(self):
+        run = Speedrun.objects.get(GAME="GTA IV")
+        alice = Person.objects.get(NICKNAME="Alice")
+        self.assertIn(alice, run.VOLUNTEERS_ENGAGED.all())
+
+    def test_speedrun_has_volunteer_two_engaged(self):
+        run = Speedrun.objects.get(GAME="GTA IV")
+        candy = Person.objects.get(NICKNAME="Candy")
+        self.assertIn(candy, run.VOLUNTEERS_ENGAGED.all())
+
+
+class TestIntermission(TestCase):
+    pass
+
+
+class TestShift(TestCase):
+
+    def setUp(self):
+        ev_start = datetime(year=2022, month=2, day=3, hour=14,
+                            tzinfo=timezone.utc)
+        ev_end = ev_start + timedelta(days=1)
+        ev = Event.create(NAME="GDQ2",
+                          SLUG="GDQ2",
+                          START_DATE_TIME=ev_start,
+                          END_DATE_TIME=ev_end)
+        ev.save()
+        tech = Role.objects.create(NAME="Tech",
+                                   EVENT=ev)
+        media = Role.objects.create(NAME="Social Media",
+                                    EVENT=ev)
+        prsn = Person.objects.create(NICKNAME="MyPerson")
+        prsn.ROLES.set([tech, media])
+        tech_shift = Shift.objects.create(
+                     ROLE=tech, EVENT=ev,
+                     START_DATE_TIME=ev_start + timedelta(hours=1),
+                     END_DATE_TIME=ev_start + timedelta(hours=2))
+        tech_shift.VOLUNTEERS.set([prsn])
+
+    def test_if_busy(self):
+        prsn = Person.objects.get(NICKNAME="MyPerson")
+        start = (Event.objects.get(SLUG="GDQ2").START_DATE_TIME
+                 + timedelta(hours=1, minutes=30))
+        end = (Event.objects.get(SLUG="GDQ2").START_DATE_TIME
+               + timedelta(hours=2, minutes=30))
+        self.assertTrue(prsn.is_busy(start, end))
+
+    def test_if_not_busy(self):
+        prsn = Person.objects.get(NICKNAME="MyPerson")
+        start = (Event.objects.get(SLUG="GDQ2").START_DATE_TIME
+                 + timedelta(hours=2, minutes=30))
+        end = (Event.objects.get(NAME="GDQ2").START_DATE_TIME
+               + timedelta(minutes=30))
+        self.assertFalse(prsn.is_busy(start, end))
+
+
+class TestPerson(TestCase):
+    pass
+
+
+class TestAvailabilityBlock(TestCase):
 
     def setUp(self):
         event_start_date = datetime(year=2020, month=4, day=7, hour=11,
@@ -113,3 +228,18 @@ class AvailabilityBlockTestCase(TestCase):
         end = run.END_DATE_TIME
         person = Person.objects.get(NICKNAME="Duncan")
         self.assertFalse(person.is_busy(st, end))
+
+
+class RoleTestCase(TestCase):
+
+    def setUp(self):
+        event_start_date = datetime(year=2020, month=4, day=7, hour=11,
+                                    tzinfo=timezone.utc)
+        event_end_date = event_start_date + timedelta(days=1)
+        gtam = Event.create(NAME="GTAMarathon 2027",
+                            SLUG="GTAM27",
+                            START_DATE_TIME=event_start_date,
+                            END_DATE_TIME=event_end_date)
+        gtam.save()
+        Role.objects.create(NAME="Tech", EVENT=gtam)
+        Role.objects.create(NAME="Fundraising", EVENT=gtam)
