@@ -1452,3 +1452,7 @@ class TestAllUsernames(TestCase):
         response = self.c.post("/all_usernames/",
                                headers={"X-Requested-With": "XMLHttpRequest"})
         self.assertEqual(response.status_code, 400)
+
+    def test_all_usernames_not_ajax_get(self):
+        response = self.c.get("/all_usernames/")
+        self.assertEqual(response.status_code, 400)
