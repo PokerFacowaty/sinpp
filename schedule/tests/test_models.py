@@ -12,11 +12,15 @@ class TestEvent(TestCase):
         start_date = datetime(year=2020, month=4, day=7, hour=11,
                               tzinfo=timezone.utc)
         end_date = start_date + timedelta(days=1)
-        Event.create(NAME="GSPS 2026", SLUG="GSPS26",
-                     START_DATE_TIME=start_date, END_DATE_TIME=end_date)
+        self.ev = Event.create(NAME="GSPS 2026", SLUG="GSPS26",
+                               START_DATE_TIME=start_date,
+                               END_DATE_TIME=end_date)
 
-    def test_proper_group_was_made(self):
+    def test_event_proper_group_was_made(self):
         self.assertTrue(Group.objects.filter(name="GSPS26 Staff"))
+
+    def test_event_str(self):
+        self.assertEqual(str(self.ev), self.ev.NAME)
 
 
 class TestRoom(TestCase):
