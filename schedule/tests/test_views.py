@@ -1039,7 +1039,7 @@ class TestEditShift(TestCase):
     def setUp(self):
 
         self.staff_user = User.objects.create_user("IDoDeclare",
-                                                       "", "MamaJuJuBooBoo")
+                                                   "", "MamaJuJuBooBoo")
         self.non_staff_user = User.objects.create_user("Recreation",
                                                        "", "OfTheCrimeScene")
 
@@ -1261,6 +1261,6 @@ class TestAddStaff(TestCase):
                                              "XMLHttpRequest"},
                                     content_type="application/json")
         request.user = self.staff_user
-        response = add_staff(request, self.ev.id)
+        add_staff(request, self.ev.id)
         self.assertTrue(self.staff_to_be.groups.filter(
                                             name=self.ev.STAFF.name).exists())
