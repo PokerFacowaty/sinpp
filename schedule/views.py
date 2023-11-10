@@ -450,12 +450,11 @@ def remove_staff(request, event_id):
 @login_required
 def all_usernames(request):
     users = User.objects.all()
-    if users:
-        is_ajax = (request.headers.get("X-Requested-With")
-                   == "XMLHttpRequest")
-        if is_ajax and request.method == "GET":
-            pks_names = [[user.id, user.username] for user in users]
-            data = json.dumps(pks_names)
-            return JsonResponse({'context': data})
-        return JsonResponse({'context': 'Invalid request.'}, status=400)
-    return JsonResponse({'context': "Shift not found"}, status=404)
+    # Never a case of no users because login_required
+    is_ajax = (request.headers.get("X-Requested-With")
+               == "XMLHttpRequest")
+    if is_ajax and request.method == "GET":
+        pks_names = [[user.id, user.username] for user in users]
+        data = json.dumps(pks_names)
+        return JsonResponse({'context': data})
+    return JsonResponse({'context': 'Invalid request.'}, status=400)
