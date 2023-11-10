@@ -45,6 +45,10 @@ class TestUploadCSV(TestCase):
         self.fpath = (Path(__file__).parent.resolve()
                       / "fixtures" / "ESA-Win22-oengus.csv")
 
+        self.c = Client()
+        self.c.login(username="CruiseSafelyVisually",
+                     password="CriticalSafetyViolation")
+
     def test_csv_200(self):
         with open(self.fpath) as f:
             request = self.factory.post("/upload_csv/",
@@ -88,6 +92,11 @@ class TestUploadCSV(TestCase):
             request.user = self.staff_user
             response = upload_csv(request)
         self.assertEqual(response.status_code, 400)
+
+    def test_csv_get_template(self):
+        response = self.c.get("/upload_csv/")
+        self.assertIn("schedule/base_parse_csv.html",
+                      [x.name for x in response.templates])
 
 
 class TestAddEvent(TestCase):
