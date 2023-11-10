@@ -81,11 +81,9 @@ class TestSpeedrun(TestCase):
                          self.iv.START_DATE_TIME + self.iv.ESTIMATE)
 
     def test_speedrun_has_volunteer_one_engaged(self):
-        alice = Person.objects.get(NICKNAME="Alice")
         self.assertIn(self.alice, self.iv.VOLUNTEERS_ENGAGED.all())
 
     def test_speedrun_has_volunteer_two_engaged(self):
-        candy = Person.objects.get(NICKNAME="Candy")
         self.assertIn(self.candy, self.iv.VOLUNTEERS_ENGAGED.all())
 
 
