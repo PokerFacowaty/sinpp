@@ -139,13 +139,13 @@ class Intermission(models.Model):
             self.DURATION = self.END_DATE_TIME - self.START_DATE_TIME
         super(Intermission, self).save(*args, **kwargs)
 
-        def __str__(self) -> str:
-            result = f'Intermission @ {self.START_DATE_TIME}'
-            if self.ROOM:
-                result += f' ({self.ROOM})'
-            else:
-                result += f' ({self.EVENT})'
-            return result
+    def __str__(self) -> str:
+        result = f'Intermission @ {self.START_DATE_TIME}'
+        if self.ROOM:
+            result += f' ({self.ROOM})'
+        else:
+            result += f' ({self.EVENT})'
+        return result
 
 
 class Shift(models.Model):
