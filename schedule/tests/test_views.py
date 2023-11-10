@@ -67,6 +67,17 @@ class TestUploadCSV(TestCase):
             response = upload_csv(request)
         self.assertEqual(response.status_code, 400)
 
+    def test_csv_non_staff_user(self):
+        with open(self.fpath) as f:
+            request = self.factory.post("/upload_csv/",
+                                        {"event": self.ev.id,
+                                         "room": self.rm.id,
+                                         "title": "ESAWIN22",
+                                         "file_": f})
+            request.user = self.non_staff
+            response = upload_csv(request)
+        self.assertEqual(response.status_code, 403)
+
     def test_csv_non_post_or_get(self):
         with open(self.fpath) as f:
             request = self.factory.delete("/upload_csv/",
