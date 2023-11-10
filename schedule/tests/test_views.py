@@ -1329,4 +1329,22 @@ class TestAddStaff(TestCase):
 class TestRemoveStaff(TestCase):
 
     def setUp(self):
-        
+        self.staff_user = User.objects.create_user("manager",
+                                                   "", "salesman")
+        self.staff_user2 = User.objects.create_user("betterManager",
+                                                    "", "Manuel")
+        self.non_staff = User.objects.create_user("According",
+                                                  "", "toTheManual")
+
+        start = datetime(year=2009, month=3, day=2, hour=10,
+                         tzinfo=timezone.utc)
+        end = start + timedelta(days=2)
+        self.ev = Event.create(NAME="For So Many Reasons '09",
+                               SLUG="FSMR09",
+                               START_DATE_TIME=start,
+                               END_DATE_TIME=end)
+        self.ev.save()
+        self.staff_user.groups.add(self.ev.STAFF)
+        self.staff_user2.groups.add(self.ev.STAFF)
+
+        self.factory = RequestFactory()
