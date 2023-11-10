@@ -1275,3 +1275,14 @@ class TestAddStaff(TestCase):
         request.user = self.staff_user
         response = add_staff(request, self.ev.id)
         self.assertEqual(response.status_code, 409)
+
+    def test_add_staff_nonexistent_user(self):
+        request = self.factory.post("/add_staff/",
+                                    data={"payload":
+                                          {"username": "Printer"}},
+                                    headers={"X-Requested-With":
+                                             "XMLHttpRequest"},
+                                    content_type="application/json")
+        request.user = self.staff_user
+        response = add_staff(request, self.ev.id)
+        self.assertEqual(response.status_code, 404)
