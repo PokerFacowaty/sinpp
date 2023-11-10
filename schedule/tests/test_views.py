@@ -1247,10 +1247,6 @@ class TestAddStaff(TestCase):
         self.ev.save()
         self.staff_user.groups.add(self.ev.STAFF)
 
-        self.c = Client()
-        self.c.login(username="Sabre",
-                     password="GlorifiedFactChecker")
-
         self.factory = RequestFactory()
 
     def test_add_staff_effect(self):
@@ -1328,3 +1324,9 @@ class TestAddStaff(TestCase):
         request.user = self.staff_user
         response = add_staff(request, 1222)
         self.assertEqual(response.status_code, 404)
+
+
+class TestRemoveStaff(TestCase):
+
+    def setUp(self):
+        
