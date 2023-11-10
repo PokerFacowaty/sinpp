@@ -1,7 +1,7 @@
 from django.test import TestCase
 from django.utils import timezone
 from schedule.models import (Event, AvailabilityBlock, Person, Role, Speedrun,
-                             Shift, Room)
+                             Shift, Room, Intermission)
 from datetime import timedelta, datetime
 from django.contrib.auth.models import Group, User
 
@@ -115,7 +115,16 @@ class TestSpeedrun(TestCase):
 
 
 class TestIntermission(TestCase):
-    pass
+
+    def setUp(self):
+        self.user = User.objects.create_user("notverysuper", "", "password1")
+        start_date = datetime(year=2020, month=4, day=7, hour=11,
+                              tzinfo=timezone.utc)
+        end_date = start_date + timedelta(days=1)
+        self.ev = Event.create(NAME="GSPS 2026", SLUG="GSPS26",
+                               START_DATE_TIME=start_date,
+                               END_DATE_TIME=end_date)
+        interm = Interm
 
 
 class TestShift(TestCase):
