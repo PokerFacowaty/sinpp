@@ -1250,7 +1250,7 @@ class TestAddStaff(TestCase):
         self.factory = RequestFactory()
 
     def test_add_staff_effect(self):
-        request = self.factory.post(f"/add_staff/{self.ev.id}",
+        request = self.factory.post(f"/add_staff/{self.ev.id}/",
                                     data={"payload":
                                           {"username": "HaveFunYouTwo"}},
                                     headers={"X-Requested-With":
