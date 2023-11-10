@@ -34,13 +34,18 @@ def upload_csv(request):
     if request.method == "POST":
         form = UploadCSVForm(request.POST, request.FILES,
                              data={'groups': groups})
-        print(form.errors)
-        if form.is_valid():
-            event = form.cleaned_data['event']
-            room = form.cleaned_data.get('room', None)
-            filepath = handle_uploaded_file(request.FILES['file_'], "Oengus")
-            parse_oengus(filepath, event, room)
-            return HttpResponse()
+        if form.data['event'].isnumeric():
+            ev = Event.objects.get(pk=int(form.data['event']))
+            if usr.has_perm('event.edit_event', ev):
+                if form.is_valid():
+                    event = form.cleaned_data['event']
+                    room = form.cleaned_data.get('room', None)
+                    filepath = handle_uploaded_file(request.FILES['file_'],
+                                                    "Oengus")
+                    parse_oengus(filepath, event, room)
+                    return HttpResponse()
+                return HttpResponseBadRequest()
+            return HttpResponseForbidden()
         return HttpResponseBadRequest()
     elif request.method == "GET":
         form = UploadCSVForm(data={'groups': groups})
