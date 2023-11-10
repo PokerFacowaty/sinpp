@@ -6,7 +6,8 @@ from schedule.models import Event, Role, Speedrun, Room, Intermission, Shift
 from schedule.views import (add_event, event, edit_event, remove_event,
                             add_role, role, edit_role, remove_role,
                             room_schedule, add_shift, shift, edit_shift,
-                            remove_shift, add_staff, remove_staff)
+                            remove_shift, add_staff, remove_staff,
+                            all_usernames)
 import math
 from django.http import Http404, JsonResponse
 from django.core import serializers
@@ -1449,10 +1450,15 @@ class TestAllUsernames(TestCase):
         self.assertEqual(response.content, expected_response.content)
 
     def test_all_usernames_ajax_not_get(self):
-        response = self.c.post("/all_usernames/",
-                               headers={"X-Requested-With": "XMLHttpRequest"})
+        request = self.factory.post("/all_usernames/",
+                                    headers={"X-Requested-With":
+                                             "XMLHttpRequest"})
+        request.user = self.user1
+        response = all_usernames(request)
         self.assertEqual(response.status_code, 400)
 
     def test_all_usernames_not_ajax_get(self):
-        response = self.c.get("/all_usernames/")
+        request = self.factory.get("/all_usernames/")
+        request.user = self.user1
+        response = all_usernames(request)
         self.assertEqual(response.status_code, 400)
