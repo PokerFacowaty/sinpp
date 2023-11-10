@@ -1447,3 +1447,8 @@ class TestAllUsernames(TestCase):
         data_expected = json.dumps(users_expected)
         expected_response = JsonResponse({'context': data_expected})
         self.assertEqual(response.content, expected_response.content)
+
+    def test_all_usernames_ajax_not_get(self):
+        response = self.c.post("/all_usernames/",
+                               headers={"X-Requested-With": "XMLHttpRequest"})
+        self.assertEqual(response.status_code, 400)
