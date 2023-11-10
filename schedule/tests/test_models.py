@@ -170,22 +170,22 @@ class TestShift(TestCase):
         ev_start = datetime(year=2022, month=2, day=3, hour=14,
                             tzinfo=timezone.utc)
         ev_end = ev_start + timedelta(days=1)
-        ev = Event.create(NAME="GDQ2",
-                          SLUG="GDQ2",
-                          START_DATE_TIME=ev_start,
-                          END_DATE_TIME=ev_end)
-        ev.save()
+        self.ev = Event.create(NAME="GDQ2",
+                               SLUG="GDQ2",
+                               START_DATE_TIME=ev_start,
+                               END_DATE_TIME=ev_end)
+        self.ev.save()
         tech = Role.objects.create(NAME="Tech",
-                                   EVENT=ev)
+                                   EVENT=self.ev)
         media = Role.objects.create(NAME="Social Media",
-                                    EVENT=ev)
+                                    EVENT=self.ev)
         prsn = Person.objects.create(NICKNAME="MyPerson")
         prsn.ROLES.set([tech, media])
-        tech_shift = Shift.objects.create(
-                     ROLE=tech, EVENT=ev,
-                     START_DATE_TIME=ev_start + timedelta(hours=1),
-                     END_DATE_TIME=ev_start + timedelta(hours=2))
-        tech_shift.VOLUNTEERS.set([prsn])
+        self.tech_shift = Shift.objects.create(
+                          ROLE=tech, EVENT=self.ev,
+                          START_DATE_TIME=ev_start + timedelta(hours=1),
+                          END_DATE_TIME=ev_start + timedelta(hours=2))
+        self.tech_shift.VOLUNTEERS.set([prsn])
 
     def test_if_busy(self):
         prsn = Person.objects.get(NICKNAME="MyPerson")
@@ -202,6 +202,13 @@ class TestShift(TestCase):
         end = (Event.objects.get(NAME="GDQ2").START_DATE_TIME
                + timedelta(minutes=30))
         self.assertFalse(prsn.is_busy(start, end))
+
+    def test_shift_str_no_room(self):
+        nicknames = ", ".join([x.NICKNAME
+                               for x in self.tech_shift.VOLUNTEERS.all()])
+        self.assertEqual(str(self.tech_shift),
+                         f"{nicknames}@ {self.tech_shift.START_DATE_TIME}"
+                         + f" ({str(self.ev)})")
 
 
 class TestPerson(TestCase):
