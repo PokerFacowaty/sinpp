@@ -1232,8 +1232,8 @@ class TestAddStaff(TestCase):
 
     def setUp(self):
 
-        self.staff_user = User.objects.create_user("GlorifiedFactChecker",
-                                                   "", "ActuallyAFactChecker")
+        self.staff_user = User.objects.create_user("Sabre",
+                                                   "", "GlorifiedFactChecker")
         self.staff_to_be = User.objects.create_user("HaveFunYouTwo",
                                                     "", "YesWeWill")
 
@@ -1248,8 +1248,8 @@ class TestAddStaff(TestCase):
         self.staff_user.groups.add(self.ev.STAFF)
 
         self.c = Client()
-        self.c.login(username="GlorifiedFactChecker",
-                     password="ActuallyAFactChecker")
+        self.c.login(username="Sabre",
+                     password="GlorifiedFactChecker")
 
         self.factory = RequestFactory()
 
