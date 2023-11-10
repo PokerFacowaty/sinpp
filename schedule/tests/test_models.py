@@ -144,6 +144,10 @@ class TestIntermission(TestCase):
                                                    DURATION=i2_duration,
                                                    EVENT=self.ev)
 
+    def test_interm_has_calculated_end_time(self):
+        self.assertEqual(self.interm1.END_DATE_TIME,
+                         self.interm1.START_DATE_TIME + self.interm1.DURATION)
+
 
 class TestShift(TestCase):
 
