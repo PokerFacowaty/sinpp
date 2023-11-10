@@ -115,7 +115,7 @@ async function sendAddStaffRequest(){
             "X-Requested-With": "XMLHttpRequest",
             "X-CSRFToken": CSRFTOKEN
         },
-        body: JSON.stringify({payload: username})
+        body: JSON.stringify({payload: {username: username}})
     })
 
     if (response.ok){
