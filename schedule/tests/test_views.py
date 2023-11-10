@@ -1254,7 +1254,7 @@ class TestAddStaff(TestCase):
         self.factory = RequestFactory()
 
     def test_add_staff_effect(self):
-        request = self.factory.post("/add_staff/",
+        request = self.factory.post(f"/add_staff/{self.ev.id}",
                                     data={"payload":
                                           {"username": "HaveFunYouTwo"}},
                                     headers={"X-Requested-With":
@@ -1266,7 +1266,7 @@ class TestAddStaff(TestCase):
                                             name=self.ev.STAFF.name).exists())
 
     def test_add_staff_already_a_member(self):
-        request = self.factory.post("/add_staff/",
+        request = self.factory.post(f"/add_staff/{self.ev.id}/",
                                     data={"payload":
                                           {"username": "Sabre"}},
                                     headers={"X-Requested-With":
@@ -1277,7 +1277,7 @@ class TestAddStaff(TestCase):
         self.assertEqual(response.status_code, 409)
 
     def test_add_staff_nonexistent_user(self):
-        request = self.factory.post("/add_staff/",
+        request = self.factory.post(f"/add_staff/{self.ev.id}/",
                                     data={"payload":
                                           {"username": "Printer"}},
                                     headers={"X-Requested-With":
@@ -1288,7 +1288,7 @@ class TestAddStaff(TestCase):
         self.assertEqual(response.status_code, 404)
 
     def test_add_staff_ajax_not_post(self):
-        request = self.factory.delete("/add_staff/",
+        request = self.factory.delete(f"/add_staff/{self.ev.id}/",
                                       data={"payload":
                                             {"username": "HaveFunYouTwo"}},
                                       headers={"X-Requested-With":
@@ -1299,7 +1299,7 @@ class TestAddStaff(TestCase):
         self.assertEqual(response.status_code, 400)
 
     def test_add_staff_not_ajax_post(self):
-        request = self.factory.post("/add_staff/",
+        request = self.factory.post(f"/add_staff/{self.ev.id}/",
                                     data={"payload":
                                           {"username": "HaveFunYouTwo"}},
                                     content_type="application/json")
@@ -1308,7 +1308,7 @@ class TestAddStaff(TestCase):
         self.assertEqual(response.status_code, 400)
 
     def test_add_staff_non_staff_user(self):
-        request = self.factory.post("/add_staff/",
+        request = self.factory.post(f"/add_staff/{self.ev.id}/",
                                     data={"payload":
                                           {"username": "HaveFunYouTwo"}},
                                     headers={"X-Requested-With":
