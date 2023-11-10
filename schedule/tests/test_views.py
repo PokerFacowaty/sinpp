@@ -42,10 +42,11 @@ class TestUploadCSV(TestCase):
 
         self.factory = RequestFactory()
 
+        self.fpath = (Path(__file__).parent.resolve()
+                      / "fixtures" / "ESA-Win22-oengus.csv")
+
     def test_csv_200(self):
-        fpath = (Path(__file__).parent.resolve()
-                 / "fixtures" / "ESA-Win22-oengus.csv")
-        with open(fpath) as f:
+        with open(self.fpath) as f:
             request = self.factory.post("/upload_csv/",
                                         {"event": self.ev.id,
                                          "room": self.rm.id,
