@@ -419,7 +419,7 @@ def add_staff(request, event_id):
 @login_required
 def remove_staff(request, event_id):
     data = json.load(request)
-    staff_member_username = data.get('payload')
+    staff_member_username = data.get('payload')["username"]
     staff_members = User.objects.filter(username=staff_member_username)
     if staff_members:
         staff_member = staff_members[0]
