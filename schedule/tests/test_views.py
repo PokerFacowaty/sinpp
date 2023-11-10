@@ -1234,8 +1234,8 @@ class TestAddStaff(TestCase):
 
         self.staff_user = User.objects.create_user("GlorifiedFactChecker",
                                                    "", "ActuallyAFactChecker")
-        self.non_staff_user = User.objects.create_user("HaveFunYouTwo",
-                                                       "", "YesWeWill")
+        self.staff_to_be = User.objects.create_user("HaveFunYouTwo",
+                                                    "", "YesWeWill")
 
         start = datetime(year=2016, month=7, day=9, hour=12,
                          tzinfo=timezone.utc)
@@ -1245,9 +1245,23 @@ class TestAddStaff(TestCase):
                                START_DATE_TIME=start,
                                END_DATE_TIME=end)
         self.ev.save()
+        self.staff_user.groups.add(self.ev.STAFF)
 
         self.c = Client()
         self.c.login(username="GlorifiedFactChecker",
                      password="ActuallyAFactChecker")
 
         self.factory = RequestFactory()
+
+    def test_add_staff_effect(self):
+        request = self.factory.post("/add_staff/",
+                                    data={"payload":
+                                          {"username": "HaveFunYouTwo"}},
+                                    headers={"X-Requested-With":
+                                             "XMLHttpRequest"},
+                                    content_type="application/json")
+        request.user = self.staff_user
+        response = add_staff(request, self.ev.id)
+        print(response.content)
+        self.assertTrue(self.staff_to_be.groups.filter(
+                                            name=self.ev.STAFF.name).exists())
