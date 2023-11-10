@@ -42,9 +42,10 @@ def upload_csv(request):
             parse_oengus(filepath, event, room)
             return HttpResponse()
         return HttpResponseBadRequest()
-    else:
+    elif request.method == "GET":
         form = UploadCSVForm(data={'groups': groups})
-    return render(request, "schedule/base_parse_csv.html", {"form": form})
+        return render(request, "schedule/base_parse_csv.html", {"form": form})
+    return HttpResponseBadRequest()
 
 
 @login_required
