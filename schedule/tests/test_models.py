@@ -153,6 +153,16 @@ class TestIntermission(TestCase):
                          self.interm1.END_DATE_TIME
                          - self.interm1.START_DATE_TIME)
 
+    def test_interm_str_room(self):
+        self.assertEqual(str(self.interm1),
+                         f"Intermission @ {self.interm1.START_DATE_TIME}"
+                         + f" ({self.rm})")
+
+    def test_interm_str_no_room(self):
+        self.assertEqual(str(self.interm2),
+                         f"Intermission @ {self.interm2.START_DATE_TIME}"
+                         + f" ({self.ev})")
+
 
 class TestShift(TestCase):
 
