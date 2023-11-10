@@ -1286,3 +1286,14 @@ class TestAddStaff(TestCase):
         request.user = self.staff_user
         response = add_staff(request, self.ev.id)
         self.assertEqual(response.status_code, 404)
+
+    def test_add_staff_ajax_not_post(self):
+        request = self.factory.delete("/add_staff/",
+                                      data={"payload":
+                                            {"username": "Sabre"}},
+                                      headers={"X-Requested-With":
+                                               "XMLHttpRequest"},
+                                      content_type="application/json")
+        request.user = self.staff_user
+        response = add_staff(request, self.ev.id)
+        self.assertEqual(response.status_code, 400)
