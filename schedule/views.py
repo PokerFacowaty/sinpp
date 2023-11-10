@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import (JsonResponse, HttpResponseNotFound,
-                         HttpResponseForbidden, HttpResponseBadRequest)
+                         HttpResponseForbidden, HttpResponseBadRequest,
+                         HttpResponse)
 from .forms import UploadCSVForm
 from schedule.parse_schedule_csv import parse_oengus, handle_uploaded_file
 from .models import (EventForm, Event, Room, Speedrun, Shift, Intermission,
@@ -39,6 +40,8 @@ def upload_csv(request):
             room = form.cleaned_data.get('room', None)
             filepath = handle_uploaded_file(request.FILES['file_'], "Oengus")
             parse_oengus(filepath, event, room)
+            return HttpResponse()
+        return HttpResponseBadRequest()
     else:
         form = UploadCSVForm(data={'groups': groups})
     return render(request, "schedule/base_parse_csv.html", {"form": form})
