@@ -1360,3 +1360,14 @@ class TestRemoveStaff(TestCase):
         remove_staff(request, self.ev.id)
         self.assertFalse(self.staff_user2.groups.filter(
                                             name=self.ev.STAFF.name).exists())
+
+    def test_remove_staff_not_member(self):
+        request = self.factory.delete(f"/remove_staff/{self.ev.id}/",
+                                      data={"payload":
+                                            {"username": "According"}},
+                                      headers={"X-Requested-With":
+                                               "XMLHttpRequest"},
+                                      content_type="application/json")
+        request.user = self.staff_user
+        response = remove_staff(request, self.ev.id)
+        self.assertEqual(response.status_code, 409)
