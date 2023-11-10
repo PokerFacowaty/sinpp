@@ -1262,6 +1262,5 @@ class TestAddStaff(TestCase):
                                     content_type="application/json")
         request.user = self.staff_user
         response = add_staff(request, self.ev.id)
-        print(response.content)
         self.assertTrue(self.staff_to_be.groups.filter(
                                             name=self.ev.STAFF.name).exists())
