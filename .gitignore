@@ -16,3 +16,4 @@ venv/
 docker-compose-custom.yml
 docker-compose-dev-custom.yml
 *.csv
+.coverage
