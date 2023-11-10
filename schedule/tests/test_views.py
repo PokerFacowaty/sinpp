@@ -1290,7 +1290,7 @@ class TestAddStaff(TestCase):
     def test_add_staff_ajax_not_post(self):
         request = self.factory.delete("/add_staff/",
                                       data={"payload":
-                                            {"username": "Sabre"}},
+                                            {"username": "HaveFunYouTwo"}},
                                       headers={"X-Requested-With":
                                                "XMLHttpRequest"},
                                       content_type="application/json")
