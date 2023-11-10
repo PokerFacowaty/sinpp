@@ -1348,3 +1348,15 @@ class TestRemoveStaff(TestCase):
         self.staff_user2.groups.add(self.ev.STAFF)
 
         self.factory = RequestFactory()
+
+    def test_remove_staff_effect(self):
+        request = self.factory.delete(f"/remove_staff/{self.ev.id}/",
+                                      data={"payload":
+                                            {"username": "betterManager"}},
+                                      headers={"X-Requested-With":
+                                               "XMLHttpRequest"},
+                                      content_type="application/json")
+        request.user = self.staff_user
+        remove_staff(request, self.ev.id)
+        self.assertFalse(self.staff_user2.groups.filter(
+                                            name=self.ev.STAFF.name).exists())
