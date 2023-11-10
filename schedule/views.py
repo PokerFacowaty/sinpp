@@ -396,7 +396,7 @@ def add_staff(request, event_id):
                        == "XMLHttpRequest")
             if is_ajax and request.method == "POST":
                 data = json.load(request)
-                username = data.get('payload')
+                username = data.get('payload')["username"]
                 new_staff_member = User.objects.filter(username=username)
                 if new_staff_member:
                     new_staff_member = new_staff_member[0]
