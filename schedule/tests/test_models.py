@@ -298,10 +298,13 @@ class RoleTestCase(TestCase):
         event_start_date = datetime(year=2020, month=4, day=7, hour=11,
                                     tzinfo=timezone.utc)
         event_end_date = event_start_date + timedelta(days=1)
-        gtam = Event.create(NAME="GTAMarathon 2027",
-                            SLUG="GTAM27",
-                            START_DATE_TIME=event_start_date,
-                            END_DATE_TIME=event_end_date)
-        gtam.save()
-        Role.objects.create(NAME="Tech", EVENT=gtam)
-        Role.objects.create(NAME="Fundraising", EVENT=gtam)
+        self.gtam = Event.create(NAME="GTAMarathon 2027",
+                                 SLUG="GTAM27",
+                                 START_DATE_TIME=event_start_date,
+                                 END_DATE_TIME=event_end_date)
+        self.gtam.save()
+        self.tech = Role.objects.create(NAME="Tech", EVENT=self.gtam)
+        self.fund = Role.objects.create(NAME="Fundraising", EVENT=self.gtam)
+
+    def test_role_str(self):
+        self.assertEqual(str(self.tech), f"Tech ({self.gtam})")
