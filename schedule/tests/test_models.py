@@ -237,24 +237,24 @@ class TestPerson(TestCase):
                           END_DATE_TIME=ev_start + timedelta(hours=2))
         self.tech_shift.VOLUNTEERS.set([self.prsn])
 
-    def test_if_available(self):
+    def test_person_if_available(self):
         self.assertTrue(self.prsn.is_available(self.tech_shift.START_DATE_TIME,
                                                self.tech_shift.END_DATE_TIME,
                                                self.tech))
 
-    def test_if_not_available(self):
+    def test_person_if_not_available(self):
         st = self.ev.END_DATE_TIME - timedelta(hours=2)
         end = self.ev.END_DATE_TIME - timedelta(hours=1)
         self.assertFalse(self.prsn.is_available(st, end, self.tech))
 
-    def test_if_busy(self):
+    def test_person_if_busy(self):
         start = (Event.objects.get(SLUG="GDQ2").START_DATE_TIME
                  + timedelta(hours=1, minutes=30))
         end = (Event.objects.get(SLUG="GDQ2").START_DATE_TIME
                + timedelta(hours=2, minutes=30))
         self.assertTrue(self.prsn.is_busy(start, end))
 
-    def test_if_not_busy(self):
+    def test_person_if_not_busy(self):
         start = (Event.objects.get(SLUG="GDQ2").START_DATE_TIME
                  + timedelta(hours=2, minutes=30))
         end = (Event.objects.get(NAME="GDQ2").START_DATE_TIME
