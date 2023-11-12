@@ -1,4 +1,4 @@
-from django.test import TestCase, Client
+from django.test import TestCase, Client, RequestFactory
 from sinpp.views import user_profile, register_account
 from django.contrib.auth.models import User
 from schedule.models import Event, Room, Role
@@ -29,6 +29,8 @@ class TestUserProfile(TestCase):
         self.c = Client()
         self.c.login(username="somedude", password="somerduder")
 
+        self.factory = RequestFactory()
+
     def test_user_profile_template(self):
         response = self.c.get("/accounts/profile/")
         self.assertIn("registration/profile.html",
@@ -45,3 +47,9 @@ class TestUserProfile(TestCase):
     def test_user_profile_rooms(self):
         response = self.c.get("/accounts/profile/")
         self.assertIn(self.rm, response.context["events"][0].rooms)
+
+    def test_user_profile_non_get(self):
+        request = self.factory.post("/accounts/profile/")
+        request.user = self.usr
+        response = user_profile(request)
+        self.assertEqual(response.status_code, 400)
