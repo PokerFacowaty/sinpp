@@ -306,5 +306,8 @@ class RoleTestCase(TestCase):
         self.tech = Role.objects.create(NAME="Tech", EVENT=self.gtam)
         self.fund = Role.objects.create(NAME="Fundraising", EVENT=self.gtam)
 
+    def test_role_default_margin(self):
+        self.assertEqual(self.tech.TIME_SAFETY_MARGIN, timedelta(minutes=15))
+
     def test_role_str(self):
         self.assertEqual(str(self.tech), f"Tech ({self.gtam})")
