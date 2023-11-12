@@ -4,7 +4,7 @@ from django.contrib.auth.forms import UserCreationForm
 from schedule.views import index
 from schedule.models import Event, Room, Role
 from django.db.models import Q
-from django.contrib.auth.models import User, Group
+from django.contrib.auth.models import User
 from django.http import HttpResponseBadRequest
 
 
