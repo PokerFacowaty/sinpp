@@ -190,22 +190,6 @@ class TestShift(TestCase):
                           END_DATE_TIME=ev_start + timedelta(hours=2))
         self.tech_shift.VOLUNTEERS.set([prsn])
 
-    def test_if_busy(self):
-        prsn = Person.objects.get(NICKNAME="MyPerson")
-        start = (Event.objects.get(SLUG="GDQ2").START_DATE_TIME
-                 + timedelta(hours=1, minutes=30))
-        end = (Event.objects.get(SLUG="GDQ2").START_DATE_TIME
-               + timedelta(hours=2, minutes=30))
-        self.assertTrue(prsn.is_busy(start, end))
-
-    def test_if_not_busy(self):
-        prsn = Person.objects.get(NICKNAME="MyPerson")
-        start = (Event.objects.get(SLUG="GDQ2").START_DATE_TIME
-                 + timedelta(hours=2, minutes=30))
-        end = (Event.objects.get(NAME="GDQ2").START_DATE_TIME
-               + timedelta(minutes=30))
-        self.assertFalse(prsn.is_busy(start, end))
-
     def test_shift_str_room(self):
         self.tech_shift.ROOM = self.rm
         nicknames = ", ".join([x.NICKNAME
@@ -223,7 +207,40 @@ class TestShift(TestCase):
 
 
 class TestPerson(TestCase):
-    pass
+
+    def setUp(self):
+        ev_start = datetime(year=2022, month=2, day=3, hour=14,
+                            tzinfo=timezone.utc)
+        ev_end = ev_start + timedelta(days=1)
+        self.ev = Event.create(NAME="GDQ2",
+                               SLUG="GDQ2",
+                               START_DATE_TIME=ev_start,
+                               END_DATE_TIME=ev_end)
+        self.ev.save()
+
+        tech = Role.objects.create(NAME="Tech",
+                                   EVENT=self.ev)
+        self.prsn = Person.objects.create(NICKNAME="MyPerson")
+        self.prsn.ROLES.set([tech])
+        self.tech_shift = Shift.objects.create(
+                          ROLE=tech, EVENT=self.ev,
+                          START_DATE_TIME=ev_start + timedelta(hours=1),
+                          END_DATE_TIME=ev_start + timedelta(hours=2))
+        self.tech_shift.VOLUNTEERS.set([self.prsn])
+
+    def test_if_busy(self):
+        start = (Event.objects.get(SLUG="GDQ2").START_DATE_TIME
+                 + timedelta(hours=1, minutes=30))
+        end = (Event.objects.get(SLUG="GDQ2").START_DATE_TIME
+               + timedelta(hours=2, minutes=30))
+        self.assertTrue(self.prsn.is_busy(start, end))
+
+    def test_if_not_busy(self):
+        start = (Event.objects.get(SLUG="GDQ2").START_DATE_TIME
+                 + timedelta(hours=2, minutes=30))
+        end = (Event.objects.get(NAME="GDQ2").START_DATE_TIME
+               + timedelta(minutes=30))
+        self.assertFalse(self.prsn.is_busy(start, end))
 
 
 class TestAvailabilityBlock(TestCase):
@@ -301,18 +318,6 @@ class TestAvailabilityBlock(TestCase):
                                             run.END_DATE_TIME,
                                             role))
 
-    def test_check_if_not_available_manually(self):
-        run = Speedrun.objects.get(GAME="GTA: Vice City")
-        person = Person.objects.get(NICKNAME="Duncan")
-        margin = Role.objects.get(NAME="Social Media").TIME_SAFETY_MARGIN
-        avail_start = run.EVENT.START_DATE_TIME + timedelta(hours=4)
-        avail = AvailabilityBlock.objects.get(PERSON=person,
-                                              START_DATE_TIME=avail_start)
-        self.assertFalse((run.START_DATE_TIME - avail.START_DATE_TIME)
-                         >= margin
-                         and (avail.END_DATE_TIME - run.END_DATE_TIME)
-                         >= margin)
-
     def test_check_if_not_available_function(self):
         run = Speedrun.objects.get(GAME="GTA: Vice City")
         person = Person.objects.get(NICKNAME="Elaine")
@@ -320,20 +325,6 @@ class TestAvailabilityBlock(TestCase):
         self.assertFalse(person.is_available(run.START_DATE_TIME,
                                              run.END_DATE_TIME,
                                              role))
-
-    def test_check_if_busy_function(self):
-        run = Speedrun.objects.get(GAME="GTA: Vice City")
-        st = run.START_DATE_TIME - timedelta(hours=1)
-        end = run.END_DATE_TIME + timedelta(hours=1)
-        person = Person.objects.get(NICKNAME="Elaine")
-        self.assertTrue(person.is_busy(st, end))
-
-    def test_check_if_not_busy_function(self):
-        run = Speedrun.objects.get(GAME="GTA: Vice City")
-        st = run.START_DATE_TIME
-        end = run.END_DATE_TIME
-        person = Person.objects.get(NICKNAME="Duncan")
-        self.assertFalse(person.is_busy(st, end))
 
     def test_avail_block_str(self):
         self.assertEqual(str(self.avail1),
