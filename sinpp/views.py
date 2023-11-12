@@ -31,6 +31,7 @@ def register_account(request):
             form.save()
             return redirect(index)
         return HttpResponseBadRequest()
-    else:
+    elif request.method == "GET":
         form = UserCreationForm()
         return render(request, 'registration/register.html', {'form': form})
+    return HttpResponseBadRequest()
