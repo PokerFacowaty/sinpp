@@ -9,7 +9,7 @@
         <h2>Rooms:</h2>
         <ul>
         {% for room in event.rooms %}
-            <li><a href="/schedule/{{ event.id }}/{{ room.id }}/">{{ room.NAME }}</a></li>
+            <li><a href="/schedule/{{ event.SLUG }}/{{ room.SLUG }}/">{{ room.NAME }}</a></li>
         {% endfor %}
         </ul>
         <h2>Staff:</h2>
@@ -25,7 +25,7 @@
             <li><a href="{% url 'role' role.id %}">{{ role.NAME }}</a></li>
         {% endfor %}
         </ul>
-        <a href="/add_role/{{ event.id }}/">Add Role</a>
-        <a href="/edit_event/{{ event.id }}/">Edit event</a>
-        <a href="/remove_event/{{ event.id }}/">Remove event</a>
+        <a href="/add_role/{{ event.SLUG }}/">Add Role</a>
+        <a href="/edit_event/{{ event.SLUG }}/">Edit event</a>
+        <a href="/remove_event/{{ event.SLUG }}/">Remove event</a>
 {% endblock %}
