@@ -5,7 +5,7 @@
 <h1>Your events:</h1>
 <ul>
 {% for event in events %}
-    <li><a href="/event/{{ event.id }}/">{{ event.NAME }}</a></li>
+    <li><a href="/event/{{ event.SLUG }}/">{{ event.NAME }}</a></li>
 {% endfor %}
 </ul>
 <div><a href="/add_event/">Add event</a></div>
