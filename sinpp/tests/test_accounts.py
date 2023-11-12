@@ -53,3 +53,26 @@ class TestUserProfile(TestCase):
         request.user = self.usr
         response = user_profile(request)
         self.assertEqual(response.status_code, 400)
+
+
+class TestRegisterAccount(TestCase):
+
+    def setUp(self):
+        self.c = Client()
+        self.factory = RequestFactory()
+
+    def test_register_post_effect(self):
+        request = self.factory.post("/accounts/register/",
+                                    {"username": "myusername",
+                                     "password1": "3tcF9sf@y@@gHM5@HxuA",
+                                     "password2": "3tcF9sf@y@@gHM5@HxuA"})
+        response = register_account(request)
+        self.assertTrue(User.objects.all())
+
+    def test_register_post_invalid_form(self):
+        request = self.factory.post("/accounts/register/",
+                                    {"username": "myusername",
+                                     "password1": "123",
+                                     "password2": "123"})
+        response = register_account(request)
+        self.assertEqual(response.status_code, 400)

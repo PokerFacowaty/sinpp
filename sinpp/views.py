@@ -28,9 +28,9 @@ def register_account(request):
     if request.method == "POST":
         form = UserCreationForm(request.POST)
         if form.is_valid():
-            print("form valid")
-            user = form.save()
+            form.save()
             return redirect(index)
+        return HttpResponseBadRequest()
     else:
         form = UserCreationForm()
         return render(request, 'registration/register.html', {'form': form})
