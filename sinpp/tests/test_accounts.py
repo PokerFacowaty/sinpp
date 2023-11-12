@@ -1,7 +1,7 @@
 from django.test import TestCase, Client
 from sinpp.views import user_profile, register_account
 from django.contrib.auth.models import User
-from schedule.models import Event
+from schedule.models import Event, Room, Role
 from datetime import datetime
 from django.utils import timezone
 
@@ -22,6 +22,10 @@ class TestUserProfile(TestCase):
         self.ev.save()
         self.usr.groups.add(self.ev.STAFF)
 
+        self.rm = Room.objects.create(NAME="Stream 1", EVENT=self.ev)
+
+        self.rl = Role.objects.create(NAME="Fundraising", EVENT=self.ev)
+
         self.c = Client()
         self.c.login(username="somedude", password="somerduder")
 
@@ -29,3 +33,7 @@ class TestUserProfile(TestCase):
         response = self.c.get("/accounts/profile/")
         self.assertIn("registration/profile.html",
                       [x.name for x in response.templates])
+
+    def test_user_profile_roles(self):
+        response = self.c.get("/accounts/profile/")
+        self.assertIn(self.rl, response.context["events"][0].roles)
