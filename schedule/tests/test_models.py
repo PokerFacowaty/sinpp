@@ -222,6 +222,15 @@ class TestPerson(TestCase):
                                    EVENT=self.ev)
         self.prsn = Person.objects.create(NICKNAME="MyPerson")
         self.prsn.ROLES.set([tech])
+
+        # Available for the tech shift
+        avail1_start = ev_start
+        avail1_end = ev_start + timedelta(hours=3)
+        self.avail1 = AvailabilityBlock.objects.create(
+                                                PERSON=self.prsn,
+                                                EVENT=self.ev,
+                                                START_DATE_TIME=avail1_start,
+                                                END_DATE_TIME=avail1_end)
         self.tech_shift = Shift.objects.create(
                           ROLE=tech, EVENT=self.ev,
                           START_DATE_TIME=ev_start + timedelta(hours=1),
