@@ -37,3 +37,11 @@ class TestUserProfile(TestCase):
     def test_user_profile_roles(self):
         response = self.c.get("/accounts/profile/")
         self.assertIn(self.rl, response.context["events"][0].roles)
+
+    def test_user_profile_staff(self):
+        response = self.c.get("/accounts/profile/")
+        self.assertIn(self.usr, response.context["events"][0].staff)
+
+    def test_user_profile_rooms(self):
+        response = self.c.get("/accounts/profile/")
+        self.assertIn(self.rm, response.context["events"][0].rooms)
