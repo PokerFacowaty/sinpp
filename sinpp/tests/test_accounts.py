@@ -66,7 +66,7 @@ class TestRegisterAccount(TestCase):
                                     {"username": "myusername",
                                      "password1": "3tcF9sf@y@@gHM5@HxuA",
                                      "password2": "3tcF9sf@y@@gHM5@HxuA"})
-        response = register_account(request)
+        register_account(request)
         self.assertTrue(User.objects.all())
 
     def test_register_post_invalid_form(self):
