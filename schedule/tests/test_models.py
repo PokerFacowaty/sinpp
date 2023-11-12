@@ -248,10 +248,10 @@ class TestAvailabilityBlock(TestCase):
         person2.ROLES.set([role])
         avail_start = event_start_date + timedelta(minutes=30)
         avail_end = event_start_date + timedelta(hours=2)
-        AvailabilityBlock.objects.create(PERSON=person,
-                                         EVENT=esaa,
-                                         START_DATE_TIME=avail_start,
-                                         END_DATE_TIME=avail_end)
+        self.avail1 = AvailabilityBlock.objects.create(PERSON=person,
+                                                       EVENT=esaa,
+                                                       START_DATE_TIME=avail_start,
+                                                       END_DATE_TIME=avail_end)
         avail2_start = event_start_date + timedelta(hours=4)
         avail2_end = event_start_date + timedelta(hours=5)
         AvailabilityBlock.objects.create(PERSON=person,
@@ -334,6 +334,12 @@ class TestAvailabilityBlock(TestCase):
         end = run.END_DATE_TIME
         person = Person.objects.get(NICKNAME="Duncan")
         self.assertFalse(person.is_busy(st, end))
+
+    def test_avail_block_str(self):
+        self.assertEqual(str(self.avail1),
+                         f"{self.avail1.PERSON} @ "
+                         + f"{self.avail1.START_DATE_TIME} "
+                         + f"({self.avail1.EVENT})")
 
 
 class RoleTestCase(TestCase):
