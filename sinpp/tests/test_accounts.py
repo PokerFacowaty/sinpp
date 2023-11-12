@@ -76,3 +76,11 @@ class TestRegisterAccount(TestCase):
                                      "password2": "123"})
         response = register_account(request)
         self.assertEqual(response.status_code, 400)
+
+    def test_register_not_get_or_post(self):
+        request = self.factory.delete("/accounts/register/",
+                                      {"username": "myusername",
+                                       "password1": "123",
+                                       "password2": "123"})
+        response = register_account(request)
+        self.assertEqual(response.status_code, 400)
