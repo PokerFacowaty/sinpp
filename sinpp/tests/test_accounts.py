@@ -84,3 +84,8 @@ class TestRegisterAccount(TestCase):
                                        "password2": "123"})
         response = register_account(request)
         self.assertEqual(response.status_code, 400)
+
+    def test_register_get_template(self):
+        response = self.c.get("/accounts/register/")
+        self.assertIn("registration/register.html",
+                      [x.name for x in response.templates])
